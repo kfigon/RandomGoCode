@@ -15,5 +15,5 @@ func listner()  {
 }
 
 func main() {
-	core.NewServer(8080).Run()
+	core.NewServer(8080, core.DefaultAllowedMethods()).Run()
 }	

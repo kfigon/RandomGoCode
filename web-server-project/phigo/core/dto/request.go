@@ -6,9 +6,13 @@ import (
 	"strings"
 )
 
-type HttpRequest struct {
+type HttpEndpointId struct {
 	Method string
 	Url string
+}
+
+type HttpRequest struct {
+	HttpEndpointId
 	Body []byte
 }
 
