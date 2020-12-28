@@ -42,7 +42,7 @@ func createServer()  {
 						"Server: Phigo\r\n"+
 						"Date: Mon, 28 Dec 2020 11:48:50 CET\r\n"+
 						"Content-Type: text/html\r\n"+
-						"Content-Length: 0\r\n")
+						"Content-Length: 0\r\n\r\n")
 
 		byteLen, err = conn.Write([]byte(responseBody))
 		if err != nil {
