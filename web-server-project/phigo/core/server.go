@@ -5,15 +5,20 @@ import (
 	"net"
 	"log"
 )
+const bufferSize = 4096
 
+// HttpServer - server class
 type HttpServer struct {
 	Port int
+	Running bool
 }
 
+// NewServer - contructor for HttpServer
 func NewServer(port int) *HttpServer {
-	return &HttpServer{Port: port}
+	return &HttpServer{Port: port, Running: true}
 }
 
+// Run - creates connection and handles request
 func (server *HttpServer) Run() {
 	ln, err := net.Listen("tcp", "localhost:"+ fmt.Sprintf("%d",server.Port))
 	if err != nil {
@@ -21,7 +26,7 @@ func (server *HttpServer) Run() {
 	}
 	defer ln.Close()
 
-	for {
+	for server.Running == true {
 		conn, err := ln.Accept()
 		if err != nil {
 			log.Println("error during listening to requests", err)
@@ -34,7 +39,7 @@ func (server *HttpServer) Run() {
 }
 
 func handleConnection(conn net.Conn)  {
-	var data = make([]byte, 512)
+	var data = make([]byte, bufferSize)
 	byteLen, err := conn.Read(data)
 	if err != nil {
 		log.Println("error when reading data", err)
