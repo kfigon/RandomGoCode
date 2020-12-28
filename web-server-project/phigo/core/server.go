@@ -67,12 +67,15 @@ func (server *HttpServer) handleConnection(conn net.Conn)  {
 	if err != nil {
 		log.Println("error when reading data", err)
 		sendResponse(prepareBasicResponse("500", "Internal Server Error"), conn)
+		return
 	}
+	
 	log.Println("response size", byteLen)
 	request, err := dto.ParseResponse(data)
 	if err != nil {
 		log.Println("error when parsing request", err)
 		sendResponse(prepareBasicResponse("400", "Bad Request"), conn)
+		return
 	}
 
 	handler, allowed := server.isMethodAllowed(request)
