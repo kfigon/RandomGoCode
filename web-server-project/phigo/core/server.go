@@ -8,8 +8,7 @@ import (
 )
 const bufferSize = 4096
 
-
-
+// HandlerFunction - return Http response
 type HandlerFunction (func() string)
 
 // HttpServer - server class
@@ -19,6 +18,7 @@ type HttpServer struct {
 	AllowedMethods map[dto.HttpEndpointId]HandlerFunction
 }
 
+//DefaultAllowedMethods - maps entity -> handler
 func DefaultAllowedMethods() map[dto.HttpEndpointId]HandlerFunction {
 	methods := make(map[dto.HttpEndpointId]HandlerFunction)
 	methods[dto.HttpEndpointId{Method: "GET", Url: "/health"}] = func() string{return prepareBasicResponse("200", "Ok")}
@@ -61,15 +61,15 @@ func (server *HttpServer) Run() {
 	}
 }
 
-func (server *HttpServer) handleConnection(conn net.Conn)  {
-	var data = make([]byte, bufferSize)
+func (server *HttpServer) handleConnection(conn IConnection)  {
+	data := make([]byte, bufferSize)
 	byteLen, err := conn.Read(data)
 	if err != nil {
 		log.Println("error when reading data", err)
 		sendResponse(prepareBasicResponse("500", "Internal Server Error"), conn)
 		return
 	}
-	
+
 	log.Println("response size", byteLen)
 	request, err := dto.ParseResponse(data)
 	if err != nil {
@@ -89,7 +89,13 @@ func (server *HttpServer) handleConnection(conn net.Conn)  {
 	sendResponse(handler(), conn)
 }
 
-func sendResponse(resp string, conn net.Conn) {
+// IConnection - abstracts net.Conn
+type IConnection interface {
+	Write(data []byte) (int, error)
+	Read(data []byte) (int, error)
+}
+
+func sendResponse(resp string, conn IConnection) {
 	byteLen, err := conn.Write([]byte(resp))
 	if err != nil {
 		log.Println("error during responding", err)
