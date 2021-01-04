@@ -17,7 +17,7 @@ type PersonModel struct {
 	Street string
 }
 
-type ReadCommand struct {
+type ReadQuery struct {
 	userId int
 }
 
@@ -41,7 +41,7 @@ type Application struct {
 }
 
 // no change in state
-func (app *Application) readHandler(cmd ReadCommand) (PersonModel, error) {
+func (app *Application) readHandler(cmd ReadQuery) (PersonModel, error) {
 	val, ok := app.db[cmd.userId]
 	if !ok {
 		return val, errors.New(fmt.Sprint("No object with id ", cmd.userId))
@@ -76,12 +76,12 @@ func (app *Application) updatePerson(cmd UpdateCommand) error {
 	val.Age = cmd.Age
 	val.Name = cmd.Name
 	val.Street = cmd.Street
-	
+
 	app.db[cmd.Id] = val
 	return nil
 }
 
-func read(app Application, cmd ReadCommand) {
+func read(app Application, cmd ReadQuery) {
 	usr, err := app.readHandler(cmd)
 	if err != nil {
 		fmt.Println("Got error during reading:", err.Error())
@@ -101,14 +101,14 @@ func main() {
 		fmt.Println("should have error here!")
 	}
 
-	read(app, ReadCommand{userId: 1})
+	read(app, ReadQuery{userId: 1})
 	
 	err = app.updatePerson(UpdateCommand{Id: 1, Name: "Name changed!"})
 	if err != nil {
 		fmt.Println("Got error during update")
 	}
 
-	read(app, ReadCommand{userId: 1})
+	read(app, ReadQuery{userId: 1})
 }
 
 
