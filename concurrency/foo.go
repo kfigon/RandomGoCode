@@ -7,17 +7,19 @@ import (
 
 func run(i int) {
 	fmt.Println("running thread", i)
-	time.Sleep(1000)
 	fmt.Println("done", i)
 }
 
 func main() {
-	fmt.Println("starting")
-	for i := 0; i < 10; i++ {
-		data := i // golang reuses iterators, copy
-		go run(data)
+	fmt.Println("======== start\t", time.Now())
+
+	for i := 0; i < 5; i++ {
+		d := i
+		go run(d)
 	}
-	time.Sleep(20000)
-	fmt.Println("End")
+
+	time.Sleep(5*1000*1000*1000)
+
+	fmt.Println("========= End\t",  time.Now())
 }
 
