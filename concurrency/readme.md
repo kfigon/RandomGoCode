@@ -76,8 +76,40 @@ introduce a global event that is viewed by all tasks at the same time and run sp
 
 `synch package` - functions to sync between go routines
 `Sync waitGroup` - force goroutine to wait for others. **BLOCKS current**
+equivalent of java thread.join()
 
 contains internal counter until all goroutines completed
 * Add() - increment counter - number of threads to wait
 * Done() - decrement counter
 * Wait() - wait (blocks!) until counter == 0
+
+### komunikacja miedzy watkami w GO - channel
+bez channels trzeba uzyc pol w obiektach i wyciagac
+
+```
+c := make(chan int)
+// send to channel in goroutine:
+c <- 3
+// receive from the channel:
+x := <- c
+```
+* order not quaranteed
+* thread will block until we take something from channel `<- c`, so we can use that to wait without group
+* allows sending/receiving data and syncs threads
+
+
+### blocking on channels
+**by default** - channel is unbuffered - it can't hold data in transit
+* sending blocks data intil it's received by consumer thread
+* receiving thread will block until the data is available
+* channel communication is synchronous it's like a wg.Wait()
+
+|task1                                      |task2     |
+|:-:                                        |:-:       |
+|  c <- 3                                   |          | 
+|  task1 will wait till task 2 receives     |          |
+|                                           | x := <- 3|
+|  task1 resumes                            |          |
+
+
+
