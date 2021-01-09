@@ -28,7 +28,7 @@ typowe dla GO. To jest "watek", ale w GO. Jest lzejsze niz thread. Gorutyny moga
 `logical processor` zmapowany do OSowego watku.
 
 ## interleaving
-watki sie przeplataja, wiec w przypadku crashu ciezej dojsc do przyczyny crashu - reszta watkow ma inny stan. Ciezej deterministycznie przesledzic przebieg programu
+watki sie przeplataja, wiec w przypadku crashu ciezej dojsc do przyczyny crashu - reszta watkow ma inny stan. Ciezej deterministycznie przesledzic przebieg programu. Moze przeplecione byc na poziomie kodu albo instrukcji maszynowych
 
 * order of execution within tasks is known
 * order of execution between concurrent tasks is unknown
@@ -36,3 +36,48 @@ watki sie przeplataja, wiec w przypadku crashu ciezej dojsc do przyczyny crashu 
     * moze byc instrukcja z tasku 1 przepleciona z taskiem 2
     * moze byc najpierw 3 instrukcje z task 1, potem 3 z task 2 itd.
 
+
+## Race condition
+problem zalezacy od interleavingu. Inny przebieg programu - niedeterministyczny. Zdazaja sie przez komunikacje (wspoldzielenie zasobow) pomiedzy taskami 
+
+|task1    |task2    |
+|:-:      |:-:      |
+|  x = 1  |         |
+|         | print x |
+|  x++    |         |
+
+vs
+
+|task1    |task2    |
+|:-:      |:-:      |
+|  x = 1  |         |
+|  x++    |         |
+|         | print x |
+
+# Goroutines
+* gorutyna konczy sie gdy skonczy sie kod jej funkcji
+* gdy `main` skonczy - wszystkie inne tez koncza, nawet w srodku przetwarzania
+
+## Synchronisation
+**WE CAN'T RELY ON TIMING**
+
+enforcing order of execution with synchronisation methods. Blocking some interleavings. 
+
+reduce some concurrency and performance!
+
+introduce a global event that is viewed by all tasks at the same time and run specific actions only when global event occured
+
+|task1                |task2            |
+|:-:                  |:-:              |
+|  x = 1              |                 |
+|  x++                |                 |
+| global event        | if global event |
+|                     |     print x     |
+
+`synch package` - functions to sync between go routines
+`Sync waitGroup` - force goroutine to wait for others. **BLOCKS current**
+
+contains internal counter until all goroutines completed
+* Add() - increment counter - number of threads to wait
+* Done() - decrement counter
+* Wait() - wait (blocks!) until counter == 0
