@@ -8,11 +8,12 @@ import (
 func main() {
 	fmt.Println("Main start")
 	
+	// usually wrapping function with closure and calling done will be better
 	foo := func (i int, wg *sync.WaitGroup)  {
 		fmt.Println("\thello from",i)
 		fmt.Println("\tgoodbye from",i)
 		wg.Done() // defer wg.Done() can be used
-		// wg.Done() panic: sync: negative WaitGroup counter
+		// wg.Done() // panic: sync: negative WaitGroup counter
 	}
 
 	var wg sync.WaitGroup
