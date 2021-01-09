@@ -15,7 +15,7 @@ func unbufferedChannel()  {
 	go multiply(1,3,c)
 
 	// order not quaranteed
-	fmt.Println(<- c)
+	fmt.Println(<- c) // thread blocks here, waiting for data from goroutine
 	fmt.Println(<- c)
 	// fmt.Println(<- c) fatal error: all goroutines are asleep - deadlock!
 }
