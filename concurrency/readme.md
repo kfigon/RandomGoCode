@@ -99,7 +99,6 @@ x := <- c
 
 
 ### blocking on channels
-**by default** - channel is unbuffered - it can't hold data in transit
 * sending blocks data intil it's received by consumer thread
 * receiving thread will block until the data is available
 * channel communication is synchronous it's like a wg.Wait()
@@ -111,5 +110,17 @@ x := <- c
 |                                           | x := <- 3|
 |  task1 resumes                            |          |
 
+**by default** - channel is unbuffered - it can't hold data in transit. It's used only to receive data
 
+**buffered** - adding channel capacity with 
+```
+c := make(chan int, 2) - 2 ints to input
+```
+now:
+* sending only blocks if the buffer is full
+* receiving only blocks if the buffer is empty
 
+when to use?
+* sender and receiver needs to be in locked state
+* producer is faster than consumer
+* consuming too fast
