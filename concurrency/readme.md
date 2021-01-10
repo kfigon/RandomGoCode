@@ -61,9 +61,8 @@ vs
 ## Synchronisation
 **WE CAN'T RELY ON TIMING**
 
-enforcing order of execution with synchronisation methods. Blocking some interleavings. 
-
-reduce some concurrency and performance!
+* enforcing order of execution with synchronisation methods. Not allowing some interleavings. 
+* reduce some concurrency and performance!
 
 introduce a global event that is viewed by all tasks at the same time and run specific actions only when global event occured
 
@@ -75,13 +74,13 @@ introduce a global event that is viewed by all tasks at the same time and run sp
 |                     |     print x     |
 
 `synch package` - functions to sync between go routines
-`Sync waitGroup` - force goroutine to wait for others. **BLOCKS current**
+`Sync waitGroup` - calling goroutine wait for others to complete.
 equivalent of java thread.join()
 
 contains internal counter until all goroutines completed
 * Add() - increment counter - number of threads to wait
 * Done() - decrement counter
-* Wait() - wait (blocks!) until counter == 0
+* Wait() - wait until counter == 0
 
 ### komunikacja miedzy watkami w GO - channel
 bez channels trzeba uzyc pol w obiektach i wyciagac

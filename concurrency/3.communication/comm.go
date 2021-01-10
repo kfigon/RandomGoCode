@@ -40,6 +40,17 @@ func bufferedChannel() {
 	c <- 2 // send the data
 	// c <- 0 // now we are blocking!
 
+
+	// every time when data is available
+	// it'll continue to read
+	// unless some producer calls close(c)
+	// normally not need to close (like a file)
+	// but when range is used - we have to
+
+	// for i := range c {
+	// 	fmt.Println(i)
+	// }
+
 	fmt.Println(<- c)
 }
 
