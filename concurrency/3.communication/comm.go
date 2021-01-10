@@ -5,12 +5,18 @@ import (
 	"fmt"
 )
 
-func multiply(a, b int, c chan int)  {
-	c <- a*b
+func main() {
+	// unbufferedChannel()
+	// bufferedChannel()
+	selectStatement()
 }
 
 func unbufferedChannel()  {
 	c := make(chan int)
+	multiply := func (a, b int, x chan int)  {
+		x <- a*b
+	}
+
 	go multiply(1,2,c)
 	go multiply(1,3,c)
 
@@ -18,11 +24,6 @@ func unbufferedChannel()  {
 	fmt.Println(<- c) // thread blocks here, waiting for data from goroutine
 	fmt.Println(<- c)
 	// fmt.Println(<- c) fatal error: all goroutines are asleep - deadlock!
-}
-
-func main() {
-	// unbufferedChannel()
-	bufferedChannel()
 }
 
 func bufferedChannel() {
@@ -54,3 +55,26 @@ func bufferedChannel() {
 	fmt.Println(<- c)
 }
 
+// when want first available data from any channel
+func selectStatement() {
+	c1 := make(chan int)
+	c2 := make(chan int)
+
+	foo := func (a int, x chan int)  {
+		x <-a*2
+	}
+
+	go foo(1, c1)
+	go foo(2, c2)
+
+	select {
+	case a := <- c1:
+		 fmt.Println("chan1", a)
+	case b := <- c2:
+		 fmt.Println("chan2", b)
+		 
+	//  we can even block on sending in select
+	// select will execute first available
+	// case outChan <- 213: fmt.Println("sending data")
+	}
+}
