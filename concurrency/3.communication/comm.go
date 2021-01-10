@@ -72,9 +72,19 @@ func selectStatement() {
 		 fmt.Println("chan1", a)
 	case b := <- c2:
 		 fmt.Println("chan2", b)
-		 
+	
 	//  we can even block on sending in select
 	// select will execute first available
 	// case outChan <- 213: fmt.Println("sending data")
 	}
+	
+	// sometimes we do additional channel to abort the proces
+	// or a default to not block
+	// for {
+	// 	select {
+	// 	case <- myAbortChannel:return
+	// 	default: fmt.Println("nop")
+	// 	}
+	// }
+	
 }

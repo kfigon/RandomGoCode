@@ -123,3 +123,9 @@ when to use?
 * sender and receiver needs to be in locked state
 * producer is faster than consumer
 * consuming too fast
+
+### sharing variables - MUTEX
+concurrency is at the machine code level - i++ contains 3 operations. It's not atomic, so we need to sync that - make it serializable.
+**Shared variables can't be accessed at the same time**
+
+`mutex` - mutual exclusion - uses a binary semaphore (flag is used or not)
