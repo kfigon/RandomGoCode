@@ -129,3 +129,25 @@ concurrency is at the machine code level - i++ contains 3 operations. It's not a
 **Shared variables can't be accessed at the same time**
 
 `mutex` - mutual exclusion - uses a binary semaphore (flag is used or not)
+if lock is acquired - other threads that wants to acquire it must block
+
+some fun things from sync package:
+* `sync.Once -> once.Do(f)` - execute only once across all goroutines, other calls blocks. Used for initializing some things before actual run
+
+## deadlock
+when 2 threads have synchronization dependencies and these are circular - one depends on two and two depends on one
+
+### classic - dinning philosophers issue
+classic story to talk about deadlock.
+round table, 5 philos, 5 bowls of rice. Between each philo is one chopstick to eat the rice (one on the left, one on the right).
+
+When each grabbs left and try to grab right chopstick - deadlock, all are locked!
+
+Chopstick = mutex
+philo - thread
+
+## starve
+one thread is not executed enough times - not fair.
+
+## livelock
+when threads are not acquiring locks even if they can. Too defensive approach
