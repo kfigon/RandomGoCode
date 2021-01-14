@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+	"strings"
 	"fmt"
 	"regexp"
 )
@@ -66,12 +68,41 @@ func parseLine(input string) (operation, error) {
 	if len(input) == 0 {
 		return operation{}, fmt.Errorf("Empty input provided")
 	}
-	reg := regexp.MustCompile(`(\d+) -> (\w+)`)
-	loadPattern := reg.FindAllString(input, -1)
-	if loadPattern != nil && len(loadPattern) == 0 {
-		return operation{operation: load, arg1: 0, destinationReg: "a"}, nil
+	parts := strings.Split(input, " -> ")
+	if parts == nil || len(parts) != 2 {
+		return operation{}, fmt.Errorf("Invalid input provided, no -> separator in %q", input)
 	}
+
+	targetRegister := parts[1]
+	firstPart := parts[0]
+
+	op := operation{}
+	if strings.Contains(" AND ", firstPart) {
+		op.operation = and
+	} else if strings.Contains(" OR ", firstPart) {
+		op.operation = or
+	} else if strings.Contains(" LSHIFT ", firstPart) {
+		op.operation = lshift
+	} else if strings.Contains(" RSHIFT ", firstPart) {
+		op.operation = rshift
+	} else if strings.Contains("NOT ", firstPart) {
+		op.operation = not
+	} else if arg, ok := isLoadOperation(firstPart); ok {
+		op.operation = load
+		op.arg1 = arg
+	} else {
+		return operation{}, fmt.Errorf("Invalid operation in %q", input)
+	}
+
 	return operation{}, nil
+}
+
+func isLoadOperation(input string) (uint16, bool) {
+	v, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, false
+	}
+	return uint16(v), true
 }
 
 func asd()  {

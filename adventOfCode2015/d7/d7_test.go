@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"testing"
+	"regexp"
 )
 
 func TestEmpty(t *testing.T) {
@@ -96,4 +97,12 @@ func TestParser(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestReg(t *testing.T) {
+	input := "123 -> x"
+	reg := regexp.MustCompile(`(\d+) -> (\w+)`)
+	loadPattern := reg.FindAllStringSubmatch(input, -1)
+	if
+	fmt.Println(loadPattern)
 }
