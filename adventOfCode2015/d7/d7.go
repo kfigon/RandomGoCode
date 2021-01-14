@@ -68,41 +68,26 @@ func parseLine(input string) (operation, error) {
 	if len(input) == 0 {
 		return operation{}, fmt.Errorf("Empty input provided")
 	}
-	parts := strings.Split(input, " -> ")
-	if parts == nil || len(parts) != 2 {
-		return operation{}, fmt.Errorf("Invalid input provided, no -> separator in %q", input)
+
+	twoArgOperation := parsePattern(input, `(\w+)?(\d+)? (\w+) (\w+)?(\d+)? -> (\w+)`)
+	if len(twoArgOperation) != 0 {
+		
 	}
 
-	targetRegister := parts[1]
-	firstPart := parts[0]
-
-	op := operation{}
-	if strings.Contains(" AND ", firstPart) {
-		op.operation = and
-	} else if strings.Contains(" OR ", firstPart) {
-		op.operation = or
-	} else if strings.Contains(" LSHIFT ", firstPart) {
-		op.operation = lshift
-	} else if strings.Contains(" RSHIFT ", firstPart) {
-		op.operation = rshift
-	} else if strings.Contains("NOT ", firstPart) {
-		op.operation = not
-	} else if arg, ok := isLoadOperation(firstPart); ok {
-		op.operation = load
-		op.arg1 = arg
-	} else {
-		return operation{}, fmt.Errorf("Invalid operation in %q", input)
-	}
+	// targetRegister := parts[1]
+	// firstPart := parts[0]
+	
 
 	return operation{}, nil
 }
 
-func isLoadOperation(input string) (uint16, bool) {
-	v, err := strconv.Atoi(input)
-	if err != nil {
-		return 0, false
+func parsePattern(input string, pattern string) ([]string) {
+	reg := regexp.MustCompile(pattern)
+	result := reg.FindAllStringSubmatch(input, -1)
+	if result == nil || len(result) == 0 {
+		return []string{}
 	}
-	return uint16(v), true
+	return result[0]
 }
 
 func asd()  {

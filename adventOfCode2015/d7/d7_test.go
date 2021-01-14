@@ -100,9 +100,10 @@ func TestParser(t *testing.T) {
 }
 
 func TestReg(t *testing.T) {
-	input := "123 -> x"
-	reg := regexp.MustCompile(`(\d+) -> (\w+)`)
+	// input := "x LSHIFT 2 -> f"
+	input := "x OR y -> e"
+	reg := regexp.MustCompile(`(\w+)?(\d+)? (\w+) (\w+)?(\d+)? -> (\w+)`)
 	loadPattern := reg.FindAllStringSubmatch(input, -1)
-	if
-	fmt.Println(loadPattern)
+
+	fmt.Println(loadPattern[0][1:])
 }
