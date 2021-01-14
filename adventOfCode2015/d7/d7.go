@@ -80,7 +80,7 @@ func parseLine(input string) (operation, error) {
 }
 
 func parseTwoArgCommand(input string) (operation, bool) {
-	twoArgOperation := parsePattern(input, `(\w+)?(\d+)? (\w+) (\w+)?(\d+)? -> (\w+)`)
+	twoArgOperation := parsePattern(input, `(\d+)?(\w+)? (\w+) (\d+)?(\w+)? -> (\w+)`)
 	if twoArgOperation == nil || len(twoArgOperation) != 6 {
 		return operation{}, false
 	}
@@ -100,10 +100,10 @@ func parseTwoArgCommand(input string) (operation, bool) {
 		return operation{}, false
 	}
 
-	arg1 := parseInt(twoArgOperation[1])
-	arg2 := parseInt(twoArgOperation[4])
-	sourceReg1 := twoArgOperation[0]
-	sourceReg2 := twoArgOperation[3]
+	arg1 := parseInt(twoArgOperation[0])
+	arg2 := parseInt(twoArgOperation[3])
+	sourceReg1 := twoArgOperation[1]
+	sourceReg2 := twoArgOperation[4]
 	destReg := twoArgOperation[5]
 
 	return operation{
@@ -131,7 +131,7 @@ func parseLoad(input string) (operation, bool) {
 	}
 
 	return operation{
-		operation: not,
+		operation: load,
 		arg1: parseInt(loadOperation[0]),
 		destinationReg: loadOperation[1],
 	}, true
@@ -144,6 +144,7 @@ func parseNot(input string) (operation, bool) {
 	}
 
 	return operation{
+		operation: not,
 		sourceReg1: notOperation[0],
 		destinationReg: notOperation[1],
 	}, true
@@ -155,9 +156,9 @@ func parsePattern(input string, pattern string) ([]string) {
 	if result == nil || len(result) == 0 {
 		return []string{}
 	}
-	return result[0]
+	return result[0][1:]
 }
 
-func asd()  {
+func main()  {
 	fmt.Println("asd")
 }

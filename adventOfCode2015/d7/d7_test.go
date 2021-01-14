@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"testing"
-	"regexp"
 )
 
 func TestEmpty(t *testing.T) {
@@ -71,11 +70,11 @@ func TestParser(t *testing.T) {
 		{ input: "NOT y -> i", 	expOp: operation{ operation: not, sourceReg1: "y", destinationReg: "i" } },
 	}
 	for _, tC := range testCases {
-		t.Run(tC.input, func(t *testing.T) {
-			res, err := parseLine(fmt.Sprintf("%q",tC.input))
+		t.Run(fmt.Sprintf("%q",tC.input), func(t *testing.T) {
+			res, err := parseLine(tC.input)
 			exp := tC.expOp
 			if err != nil {
-				t.Error("Got error, not expected", err)
+				t.Error("Got error, not expected:", err)
 			}
 			if res.operation != exp.operation {
 				t.Errorf("invalid operation exp %v got %v", exp.operation, res.operation)
@@ -87,23 +86,23 @@ func TestParser(t *testing.T) {
 				t.Errorf("invalid arg2 exp %v got %v", exp.arg2, res.arg2)
 			}
 			if res.sourceReg1 != exp.sourceReg1 {
-				t.Errorf("invalid sourceReg1 exp %v got %v", exp.sourceReg1, res.sourceReg1)
+				t.Errorf("invalid sourceReg1 exp %q got %q", exp.sourceReg1, res.sourceReg1)
 			}
 			if res.sourceReg2 != exp.sourceReg2 {
-				t.Errorf("invalid sourceReg2 exp %v got %v", exp.sourceReg2, res.sourceReg2)
+				t.Errorf("invalid sourceReg2 exp %q got %q", exp.sourceReg2, res.sourceReg2)
 			}
 			if res.destinationReg != exp.destinationReg {
-				t.Errorf("invalid operation exp %v got %v", exp.destinationReg, res.destinationReg)
+				t.Errorf("invalid operation exp %q got %q", exp.destinationReg, res.destinationReg)
 			}
 		})
 	}
 }
 
-func TestReg(t *testing.T) {
-	// input := "x LSHIFT 2 -> f"
-	input := "x OR y -> e"
-	reg := regexp.MustCompile(`(\w+)?(\d+)? (\w+) (\w+)?(\d+)? -> (\w+)`)
-	loadPattern := reg.FindAllStringSubmatch(input, -1)
+// func TestReg(t *testing.T) {
+// 	// input := "x LSHIFT 2 -> f"
+// 	input := "x OR y -> e"
+// 	reg := regexp.MustCompile(`(\w+)?(\d+)? (\w+) (\w+)?(\d+)? -> (\w+)`)
+// 	loadPattern := reg.FindAllStringSubmatch(input, -1)
 
-	fmt.Println(loadPattern[0][1:])
-}
+// 	fmt.Println(loadPattern[0][1:])
+// }
