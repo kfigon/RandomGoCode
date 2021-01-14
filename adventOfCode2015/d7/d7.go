@@ -98,11 +98,11 @@ func parseLine(input string) (operation, error) {
 
 	if op, isOk := parseTwoArgCommand(input); isOk {
 		return op, nil
-	} else if op, isOk := parseLoad(input); isOk {
-		return op, nil
 	} else if op, isOk := parseNot(input); isOk {
 		return op, nil
-	}
+	} else if op, isOk := parseLoad(input); isOk {
+		return op, nil
+	} 
 
 	return operation{}, fmt.Errorf("invalid input %q", input)
 }
@@ -206,6 +206,9 @@ func main()  {
 		  fmt.Printf("got error %q when processing %q, proceeding", err, line)
 	  }
 	  p.doOperation(op)
+	}
+	for k := range p.regs {
+		fmt.Printf("%q -> %v\n", k, p.regs[k])
 	}
 	fmt.Println("Result of p1", p.readRegistry("a"))
 }

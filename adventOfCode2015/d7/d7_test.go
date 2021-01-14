@@ -61,7 +61,6 @@ func TestProcessExample(t *testing.T)  {
 		"x OR y -> e",
 		"x LSHIFT 2 -> f",
 		"y RSHIFT 2 -> g",
-		"y RSHIFT x -> g",
 		"NOT x -> h",
 		"NOT y -> i",
 	}
