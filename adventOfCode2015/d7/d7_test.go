@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestEmpty(t *testing.T) {
 	p := newProcessor()
@@ -17,10 +20,6 @@ func TestLoad(t *testing.T) {
 		t.Errorf("Expected %v, got %v", 123, v)
 	}
 }
-// x LSHIFT 2 -> f
-// y RSHIFT 2 -> g
-// NOT x -> h
-// NOT y -> i
 
 func TestExample(t *testing.T) {
 	p := newProcessor()
@@ -52,5 +51,49 @@ func TestExample(t *testing.T) {
 
 	for key := range expected {
 		cmp(key, expected[key])
+	}
+}
+
+func TestParser(t *testing.T) {
+	testCases := []struct {
+		input 	string
+		expOp	operation
+	}{
+		{ input: "123 -> x", 	expOp: operation{ operation: load, arg1: 123,destinationReg: "x" } },
+		{ input: "456 -> y", 	expOp: operation{ operation: load, arg1: 456, destinationReg: "y" } },
+		{ input: "x AND y -> d",expOp: operation{ operation: and, sourceReg1:"x", sourceReg2:"y", destinationReg: "d" } },
+		{ input: "x OR y -> e", expOp: operation{ operation: or, sourceReg1:"x", sourceReg2:"y", destinationReg: "e" } },
+		{ input: "x LSHIFT 2 -> f", expOp: operation{ operation: lshift, sourceReg1:"x", arg2:2, destinationReg: "f" } },
+		{ input: "y RSHIFT 2 -> g", expOp: operation{ operation: rshift, sourceReg1:"y", arg2:2, destinationReg: "g" } },
+		{ input: "y RSHIFT x -> g", expOp: operation{ operation: rshift, sourceReg1:"y", sourceReg2:"x", destinationReg: "g" } },
+		{ input: "NOT x -> h", 	expOp: operation{ operation: not, sourceReg1: "x", destinationReg: "h" } },
+		{ input: "NOT y -> i", 	expOp: operation{ operation: not, sourceReg1: "y", destinationReg: "i" } },
+	}
+	for _, tC := range testCases {
+		t.Run(tC.input, func(t *testing.T) {
+			res, err := parseLine(fmt.Sprintf("%q",tC.input))
+			exp := tC.expOp
+			if err != nil {
+				t.Error("Got error, not expected", err)
+			}
+			if res.operation != exp.operation {
+				t.Errorf("invalid operation exp %v got %v", exp.operation, res.operation)
+			}
+			if res.arg1 != exp.arg1 {
+				t.Errorf("invalid arg1 exp %v got %v", exp.arg1, res.arg1)
+			}
+			if res.arg2 != exp.arg2 {
+				t.Errorf("invalid arg2 exp %v got %v", exp.arg2, res.arg2)
+			}
+			if res.sourceReg1 != exp.sourceReg1 {
+				t.Errorf("invalid sourceReg1 exp %v got %v", exp.sourceReg1, res.sourceReg1)
+			}
+			if res.sourceReg2 != exp.sourceReg2 {
+				t.Errorf("invalid sourceReg2 exp %v got %v", exp.sourceReg2, res.sourceReg2)
+			}
+			if res.destinationReg != exp.destinationReg {
+				t.Errorf("invalid operation exp %v got %v", exp.destinationReg, res.destinationReg)
+			}
+		})
 	}
 }
