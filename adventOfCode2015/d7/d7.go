@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"os"
 	"strconv"
 	"fmt"
 	"regexp"
@@ -25,23 +27,49 @@ func (p *processor) load(val uint16, reg string)  {
 }
 
 func (p *processor) and(arg1, arg2 uint16, destinationReg string) {
-	p.regs[destinationReg] = arg1 & arg2
+	p.load(arg1 & arg2, destinationReg)
 }
 
 func (p *processor) or(arg1, arg2 uint16, destinationReg string) {
-	p.regs[destinationReg] = arg1 | arg2
+	p.load(arg1 | arg2, destinationReg)
 }
 
 func (p *processor) lshift(arg1, arg2 uint16, destinationReg string) {
-	p.regs[destinationReg] = arg1 << arg2
+	p.load(arg1 << arg2, destinationReg)
 }
 
 func (p *processor) rshift(arg1, arg2 uint16, destinationReg string) {
-	p.regs[destinationReg] = arg1 >> arg2
+	p.load(arg1 >> arg2, destinationReg)
 }
 
 func (p *processor) not(arg uint16, destinationReg string) {
-	p.regs[destinationReg] = ^arg
+	p.load(^arg, destinationReg)
+}
+
+func (p *processor) doOperation(op operation) {
+	getVal1 := func () uint16 {
+		if op.sourceReg1 == "" {
+			return op.arg1
+		}
+		return p.readRegistry(op.sourceReg1)
+	}
+
+	getVal2 := func () uint16 {
+		if op.sourceReg2 == "" {
+			return op.arg2
+		}
+		return p.readRegistry(op.sourceReg2)
+	}
+
+	switch op.operation {
+	case and: p.and(getVal1(), getVal2(), op.destinationReg)
+	case or: p.or(getVal1(), getVal2(), op.destinationReg)
+	case rshift: p.rshift(getVal1(), getVal2(), op.destinationReg)
+	case lshift: p.lshift(getVal1(), getVal2(), op.destinationReg)
+	case load: p.load(getVal1(), op.destinationReg)
+	case not: p.not(getVal1(), op.destinationReg)
+	default: fmt.Println("INVALID OPERATION", op.operation)
+	}
 }
 
 const (
@@ -125,15 +153,16 @@ func parseInt(x string) uint16 {
 }
 
 func parseLoad(input string) (operation, bool) {
-	loadOperation := parsePattern(input, `(\d+) -> (\w+)`)
-	if loadOperation == nil || len(loadOperation) != 2 {
+	loadOperation := parsePattern(input, `(\d+)?(\w+)? -> (\w+)`)
+	if loadOperation == nil || len(loadOperation) != 3 {
 		return operation{}, false
 	}
 
 	return operation{
 		operation: load,
 		arg1: parseInt(loadOperation[0]),
-		destinationReg: loadOperation[1],
+		sourceReg1: loadOperation[1],
+		destinationReg: loadOperation[2],
 	}, true
 }
 
@@ -160,5 +189,23 @@ func parsePattern(input string, pattern string) ([]string) {
 }
 
 func main()  {
-	fmt.Println("asd")
+	p := newProcessor()
+
+	f, err := os.Open("input.txt")
+	if err != nil {
+		fmt.Println("Error when opening file", err)
+		return
+	}
+	defer f.Close()
+
+    scanner := bufio.NewScanner(f)
+    for scanner.Scan() {
+      line := scanner.Text()
+	  op, err := parseLine(line)
+	  if err != nil {
+		  fmt.Printf("got error %q when processing %q, proceeding", err, line)
+	  }
+	  p.doOperation(op)
+	}
+	fmt.Println("Result of p1", p.readRegistry("a"))
 }

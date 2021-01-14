@@ -21,6 +21,12 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func cmp(t *testing.T, p *processor, reg string, exp uint16) {
+	v := p.readRegistry(reg)
+	if v != exp {
+		t.Errorf("Expected %v, got %v in register %q", exp, v, reg)
+	}
+}
 func TestExample(t *testing.T) {
 	p := newProcessor()
 	p.load(123, "x")
@@ -32,11 +38,41 @@ func TestExample(t *testing.T) {
 	p.not(p.readRegistry("x"), "h")
 	p.not(p.readRegistry("y"), "i")
 
-	cmp := func (reg string, exp uint16) {
-		v := p.readRegistry(reg)
-		if v != exp {
-			t.Errorf("Expected %v, got %v in register %q", exp, v, reg)
+	expected := make(map[string]uint16)
+	expected["d"] = 72
+	expected["e"] = 507
+	expected["f"] = 492
+	expected["g"] = 114
+	expected["h"] = 65412
+	expected["i"] = 65079
+	expected["x"] = 123
+	expected["y"] = 456
+
+	for key := range expected {
+		cmp(t, p, key, expected[key])
+	}
+}
+
+func TestProcessExample(t *testing.T)  {
+	lines := []string{
+		"123 -> x",
+		"456 -> y",
+		"x AND y -> d",
+		"x OR y -> e",
+		"x LSHIFT 2 -> f",
+		"y RSHIFT 2 -> g",
+		"y RSHIFT x -> g",
+		"NOT x -> h",
+		"NOT y -> i",
+	}
+	p := newProcessor()
+
+	for _,line := range lines {
+		op, err := parseLine(line)
+		if err != nil {
+			t.Error("Got error during processing", err)
 		}
+		p.doOperation(op)
 	}
 
 	expected := make(map[string]uint16)
@@ -50,7 +86,7 @@ func TestExample(t *testing.T) {
 	expected["y"] = 456
 
 	for key := range expected {
-		cmp(key, expected[key])
+		cmp(t, p, key, expected[key])
 	}
 }
 
