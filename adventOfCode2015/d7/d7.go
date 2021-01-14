@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"bufio"
 	"os"
 	"strconv"
@@ -200,15 +201,17 @@ func main()  {
 
     scanner := bufio.NewScanner(f)
     for scanner.Scan() {
-      line := scanner.Text()
+	  line := strings.Trim(scanner.Text(),"")
+	  
 	  op, err := parseLine(line)
 	  if err != nil {
 		  fmt.Printf("got error %q when processing %q, proceeding", err, line)
 	  }
 	  p.doOperation(op)
 	}
-	for k := range p.regs {
-		fmt.Printf("%q -> %v\n", k, p.regs[k])
-	}
+	// for k := range p.regs {
+	// 	fmt.Printf("%q -> %v\n", k, p.regs[k])
+	// }
 	fmt.Println("Result of p1", p.readRegistry("a"))
 }
+// todo: A gate provides no signal until all of its inputs have a signal.
