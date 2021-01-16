@@ -29,6 +29,14 @@
 	* caching in case of error
 * evolutionary design - moving from monolith to microservices should be slow and gradual. Not possible to rewrite everything
 
+## when NOT to use microservices
+**ALWAYS START WITH MONOLITH**
+* small systems
+* intermingled functionality or data - can't split app to autonomous parts
+* performance sensitive systems
+* quick and dirty systems/PoC
+* no planned updates systems - write and release (embedded system)
+
 ## probles solved by microservices
 * single technology platform
 * inflexible deployment
@@ -92,5 +100,20 @@ Examples: Istio, Linkerd, maesh, dds
 ## service mesh architecture:
 
 ![mesh](serviceMesh.png)
+
+# logging and monitoring
+very important in microservices, as flow goes though multiple processes.
+* `logging` - recording system's activity. Audit, document errors.
+	* allows tracing end to end flow
+	* log everything, timestamp, thread, module, user, entry and exit from the system, severity, service. MDC is very helpful. stack trace if error. log correlationID
+	* `Correlation/transaction ID` - flow identifier between services
+	* need filtering
+	* should be aggregadted, analyzed and unified - specialized logging aggregation framework - elk stack, splunk, graylog
+	* for logging transport we can use files+collectorD, kafka, or some queueing product
+* `monitoring` - based on system's metrics, alerts when needed. infrastructure or application monitoring
+	* example: kibana, elk stack, nagios, graylog
+
+
+
 
 
