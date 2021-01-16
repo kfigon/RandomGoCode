@@ -42,6 +42,7 @@ func TestAnagram(t *testing.T) {
 		{ in1: "anagram", in2: "nagaram", exp: true },
 		{ in1: "cinema", in2: "iceman", exp: true },
 		{ in1: "abce", in2: "abcea", exp: false },
+		{ in1: "abcea", in2: "abce", exp: true },
 		{ in1: "cat", in2: "cat", exp: true },
 		{ in1: "rat", in2: "car", exp: false },
 		{ in1: "awesome", in2: "awesom", exp: true },
