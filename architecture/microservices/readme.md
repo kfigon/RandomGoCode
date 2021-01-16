@@ -30,3 +30,34 @@
 * evolutionary design - moving from monolith to microservices should be slow and gradual. Not possible to rewrite everything
 
 ## probles solved by microservices
+* single technology platform
+* inflexible deployment
+* inefficient compute resources
+* large and complex
+* no esb - no mediator is needed
+* lack of tooling - jenkins, kubernetes
+
+# designing microservices architecture
+after understaning of requirements...
+
+## mapping the components
+* not easy to change when it's set
+* components = services
+* services serve business functionalities
+* functionalities should by autonomous and with strict boundaries. If something is out of scope - it should be done by other services. It's difficult to design isolated services, lot of gray areas
+* services should be designed around autonomous DB entities
+	* if there're relations - **store only foreign ID**, not whole entity
+	* if it's possible - we should not depend on data from other services. We can duplicate data sometimes
+
+![mapping](mappingComponents.png)
+
+if data is spread through 2 services
+* `data duplication`
+* `service query` - services talk with eachother
+* `aggregation service` - add new service to query both services and expose data
+
+`cross-cutting services` - system-wide utilities:
+* authentication
+* caching
+* user management
+

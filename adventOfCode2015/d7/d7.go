@@ -215,3 +215,4 @@ func main()  {
 	fmt.Println("Result of p1", p.readRegistry("a"))
 }
 // todo: A gate provides no signal until all of its inputs have a signal.
+// I need to build a graph
