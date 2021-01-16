@@ -113,7 +113,16 @@ very important in microservices, as flow goes though multiple processes.
 * `monitoring` - based on system's metrics, alerts when needed. infrastructure or application monitoring
 	* example: kibana, elk stack, nagios, graylog
 
+# antipatterns
+* micro monolith - not well defined boundaries, lots of features. do not  expand service boundaries
+* no well defined API
+	* consistend, versioned, platform agnostic
+* implement cross cutting last - that should be done in the beginning, because everyone will need to adjust to changes. This must be done first
 
-
-
-
+# breakinng the monolith
+* do the plan!
+* evolution - break in parts
+* strategies:
+	* rewrite :(
+	* new modules as services
+	* separate existing modules to services
