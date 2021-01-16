@@ -80,4 +80,17 @@ if data is spread through 2 services
 jenkins, azure devops, travisCI, gitlab, 
 
 # service mesh
-* manages 
+solves communication problems in microservices - timeouts, security, retries, monitoring. Can be part of microservice product or outside.
+
+Examples: Istio, Linkerd, maesh, dds
+
+* `service mesh` - components near each microservices and manages service-to-service communication. Original service uses only mesh
+* protocol conversion, security, authentication, reliability (timeouts, retries, healthchecks), monitoring, service discovering, testing (A/B, traffic split), load balancing
+* `circuit break` - prevents cascading failure when a service fails. Intermediate service to cut out failing service.
+* when to use: when lots of services and lots of communications or complex communication requirements - many protocols
+
+## service mesh architecture:
+
+![mesh](serviceMesh.png)
+
+
