@@ -61,3 +61,23 @@ if data is spread through 2 services
 * caching
 * user management
 
+## defining communication patterns
+* 1 to 1 sync - REST. Easy but slow and may be fragile. Spider web many to many. 2 approaches:
+	* `gateway` - gateway routes to specific address
+	* `service discovery` - another service that you can ask for URL/adress of some service. Example: Consul
+* 1 to 1 async - MQ. Fire and forget, no waiting. Error may be difficult handling. Example: RabbitMQ
+* pub-sub/event driven - might be broadcast. Example: RabbitMQ
+
+# deployment
+* automate everything! Stuff must be fast and simple
+* containers are very helpful
+* container orchestration is VERY helpful
+
+## CI/CD
+* integration - common code base, integration of change when tests are passing
+* delivery/deployment - after we are sure about the change - we can simply deploy things to prod. Fast release cycles
+
+jenkins, azure devops, travisCI, gitlab, 
+
+# service mesh
+* manages 
