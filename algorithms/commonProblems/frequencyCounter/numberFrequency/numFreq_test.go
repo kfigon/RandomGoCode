@@ -94,6 +94,8 @@ func TestNumberFreq(t *testing.T) {
 		{in1: 222, in2: 22, exp: false},
 		{in1: 22, in2: 221, exp: false},
 		{in1: 221, in2: 22, exp: false},
+		{in1: 123, in2: 134, exp: false},
+		{in1: 134, in2: 123, exp: false},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v-%v",tc.in1, tc.in2), func(t *testing.T) {
