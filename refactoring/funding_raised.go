@@ -47,7 +47,7 @@ func newReader(opts map[string]string) (*Reader, [][]string) {
 	}, readFile("startup_funding.csv")
 }
 
-func (reader *Reader) findRows(key string, rows [][]string) [][]string {
+func (reader *Reader) filterRows(key string, rows [][]string) [][]string {
 	value, ok := reader.options[key]
 	if ok != true {
 		return nil
@@ -63,12 +63,13 @@ func (reader *Reader) findRows(key string, rows [][]string) [][]string {
 	return results
 }
 
+// Where - searches though csv and finds all lines with given params
 func Where(options map[string]string) []map[string]string {
 	reader, rows := newReader(options)
 	
-	allowedColumns := []string{"company_name", "city", "state", "round"}
-	for _, col := range allowedColumns {
-		if res := reader.findRows(col, rows); res != nil {
+	allowedColumnsForFiltering := []string{"company_name", "city", "state", "round"}
+	for _, col := range allowedColumnsForFiltering {
+		if res := reader.filterRows(col, rows); res != nil {
 			rows = res
 		}
 	}
@@ -114,12 +115,13 @@ func (reader *Reader) readSingleProperty(mapped map[string] string, keyName stri
 	return false
 }
 
+// FindBy - searches though csv and finds first line with given params
 func FindBy(options map[string]string) (map[string]string, error) {
 	reader, rows := newReader(options)
 
 	for _,row := range rows {
 		mapped := make(map[string]string)
-		
+
 		if !reader.readSingleProperty(mapped, "company_name", row) &&
 			!reader.readSingleProperty(mapped, "city", row) &&
 			!reader.readSingleProperty(mapped, "state", row) && 
