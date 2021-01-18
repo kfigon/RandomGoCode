@@ -38,10 +38,9 @@ func readOption(options map[string]string, keyName string, id int, csv_data [][]
 	return nil
 }
 
-
-
 func Where(options map[string]string) []map[string]string {
 	csv_data := readFile("startup_funding.csv")
+	
 	if res := readOption(options, "company_name", 1, csv_data); res != nil {
 		csv_data = res
 	}
@@ -55,40 +54,31 @@ func Where(options map[string]string) []map[string]string {
 		csv_data = res
 	}
 
-
 	output := []map[string]string{}
 	for i := 0; i < len(csv_data); i++ {
 		mapped := make(map[string]string)
-		mapped["permalink"] = csv_data[i][0]
-		mapped["company_name"] = csv_data[i][1]
-		mapped["number_employees"] = csv_data[i][2]
-		mapped["category"] = csv_data[i][3]
-		mapped["city"] = csv_data[i][4]
-		mapped["state"] = csv_data[i][5]
-		mapped["funded_date"] = csv_data[i][6]
-		mapped["raised_amount"] = csv_data[i][7]
-		mapped["raised_currency"] = csv_data[i][8]
-		mapped["round"] = csv_data[i][9]
+		readProperties(mapped, csv_data, i)
 		output = append(output, mapped)
 	}
 
 	return output
 }
 
+func readProperties(mapped map[string]string, csv_data [][]string, i int) {
+	mapped["permalink"] = csv_data[i][0]
+	mapped["company_name"] = csv_data[i][1]
+	mapped["number_employees"] = csv_data[i][2]
+	mapped["category"] = csv_data[i][3]
+	mapped["city"] = csv_data[i][4]
+	mapped["state"] = csv_data[i][5]
+	mapped["funded_date"] = csv_data[i][6]
+	mapped["raised_amount"] = csv_data[i][7]
+	mapped["raised_currency"] = csv_data[i][8]
+	mapped["round"] = csv_data[i][9]
+}
+
 func FindBy(options map[string]string) (map[string]string, error) {
-	f, _ := os.Open("startup_funding.csv")
-	reader := csv.NewReader(bufio.NewReader(f))
-	csv_data := [][]string{}
-
-	for {
-		row, err := reader.Read()
-
-		if err == io.EOF {
-			break
-		}
-
-		csv_data = append(csv_data, row)
-	}
+	csv_data := readFile("startup_funding.csv")
 
 	for i := 0; i < len(csv_data); i++ {
 		var ok bool
@@ -97,16 +87,7 @@ func FindBy(options map[string]string) (map[string]string, error) {
 		_, ok = options["company_name"]
 		if ok == true {
 			if csv_data[i][1] == options["company_name"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
+				readProperties(mapped, csv_data, i)
 			} else {
 				continue
 			}
@@ -115,16 +96,7 @@ func FindBy(options map[string]string) (map[string]string, error) {
 		_, ok = options["city"]
 		if ok == true {
 			if csv_data[i][4] == options["city"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
+				readProperties(mapped, csv_data, i)
 			} else {
 				continue
 			}
@@ -133,16 +105,7 @@ func FindBy(options map[string]string) (map[string]string, error) {
 		_, ok = options["state"]
 		if ok == true {
 			if csv_data[i][5] == options["state"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
+				readProperties(mapped, csv_data, i)
 			} else {
 				continue
 			}
@@ -151,16 +114,7 @@ func FindBy(options map[string]string) (map[string]string, error) {
 		_, ok = options["round"]
 		if ok == true {
 			if csv_data[i][9] == options["round"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
+				readProperties(mapped, csv_data, i)
 			} else {
 				continue
 			}
