@@ -84,40 +84,37 @@ func Where(options map[string]string) []map[string]string {
 	output := []map[string]string{}
 	for i := 0; i < len(reader.csv_data); i++ {
 		mapped := make(map[string]string)
-		readProperties(mapped, reader.csv_data, i)
+		readProperties(mapped, reader.csv_data[i])
 		output = append(output, mapped)
 	}
 
 	return output
 }
 
-func readProperties(mapped map[string]string, csv_data [][]string, i int) {
-	mapped["permalink"] = csv_data[i][0]
-	mapped["company_name"] = csv_data[i][1]
-	mapped["number_employees"] = csv_data[i][2]
-	mapped["category"] = csv_data[i][3]
-	mapped["city"] = csv_data[i][4]
-	mapped["state"] = csv_data[i][5]
-	mapped["funded_date"] = csv_data[i][6]
-	mapped["raised_amount"] = csv_data[i][7]
-	mapped["raised_currency"] = csv_data[i][8]
-	mapped["round"] = csv_data[i][9]
+func readProperties(mapped map[string]string, csv_data []string) {
+	mapped["permalink"] = csv_data[0]
+	mapped["company_name"] = csv_data[1]
+	mapped["number_employees"] = csv_data[2]
+	mapped["category"] = csv_data[3]
+	mapped["city"] = csv_data[4]
+	mapped["state"] = csv_data[5]
+	mapped["funded_date"] = csv_data[6]
+	mapped["raised_amount"] = csv_data[7]
+	mapped["raised_currency"] = csv_data[8]
+	mapped["round"] = csv_data[9]
 }
 
 func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName string, i int) bool {
-	readProperty := func(keyName string, id int) bool {
-		_, ok := reader.options[keyName]
-		if ok == true {
-			if reader.csv_data[i][id] == reader.options[keyName] {
-				readProperties(mapped, reader.csv_data, i)
-			} else {
-				return true
-			}
+	id := reader.columnIndexMapping[keyName]
+	_, ok := reader.options[keyName]
+	if ok == true {
+		if reader.csv_data[i][id] == reader.options[keyName] {
+			readProperties(mapped, reader.csv_data[i])
+		} else {
+			return true
 		}
-		return false
 	}
-
-	return readProperty(keyName, reader.columnIndexMapping[keyName])
+	return false
 }
 
 func FindBy(options map[string]string) (map[string]string, error) {
@@ -129,9 +126,10 @@ func FindBy(options map[string]string) (map[string]string, error) {
 		if reader.readPropertyInLoop(mapped, "company_name", i) || 
 			reader.readPropertyInLoop(mapped, "city", i) ||
 			reader.readPropertyInLoop(mapped, "state", i) || 
-			reader.readPropertyInLoop(mapped, "round", i){
+			reader.readPropertyInLoop(mapped, "round", i) {
 			continue
 		}
+
 		return mapped, nil
 	}
 
