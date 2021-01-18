@@ -30,7 +30,7 @@ type Reader struct {
 	columnIndexMapping map[string]int
 }
 
-func newReader(path string, opts map[string]string) *Reader {
+func newReader(opts map[string]string) *Reader {
 	colIdxMap := make(map[string]int)
 	colIdxMap["permalink"] = 0
 	colIdxMap["company_name"] = 1
@@ -45,34 +45,33 @@ func newReader(path string, opts map[string]string) *Reader {
 
 	return &Reader{
 		options: opts,
-		csv_data: readFile(path),
+		csv_data: readFile("startup_funding.csv"),
 		columnIndexMapping: colIdxMap,
 	}
 }
 
-func (reader *Reader) readOption(columnName string) [][]string {
+func (reader *Reader) readAndReplaceOption(columnName string) {
 	_, ok := reader.options[columnName]
-	if ok == true {
-		id := reader.columnIndexMapping[columnName]
-		results := [][]string{}
-		for i := 0; i < len(reader.csv_data); i++ {
-			if reader.csv_data[i][id] == reader.options[columnName] {
-				results = append(results, reader.csv_data[i])
-			}
-		}
-		return results
+	if ok != true {
+		return
 	}
-	return nil
+	
+	id := reader.columnIndexMapping[columnName]
+	results := [][]string{}
+	for i := 0; i < len(reader.csv_data); i++ {
+		if reader.csv_data[i][id] == reader.options[columnName] {
+			results = append(results, reader.csv_data[i])
+		}
+	}
+	reader.csv_data = results
 }
 
 func Where(options map[string]string) []map[string]string {
-	reader := newReader("startup_funding.csv", options)
+	reader := newReader(options)
 	
 	allowedColumns := []string{"company_name", "city", "state", "round"}
 	for _, col := range allowedColumns {
-		if res := reader.readOption(col); res != nil {
-			reader.csv_data = res
-		}
+		reader.readAndReplaceOption(col)
 	}
 
 	output := []map[string]string{}
@@ -102,7 +101,7 @@ func (reader *Reader) readProperties(mapped map[string]string, i int) {
 	writeToMap("round")
 }
 
-func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName string, i int) bool {
+func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, i int) bool {
 	id := reader.columnIndexMapping[keyName]
 	_, ok := reader.options[keyName]
 	if ok == true {
@@ -116,15 +115,15 @@ func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName stri
 }
 
 func FindBy(options map[string]string) (map[string]string, error) {
-	reader := newReader("startup_funding.csv", options)
+	reader := newReader(options)
 
 	for i := 0; i < len(reader.csv_data); i++ {
 		mapped := make(map[string]string)
 		
-		if reader.readPropertyInLoop(mapped, "company_name", i) || 
-			reader.readPropertyInLoop(mapped, "city", i) ||
-			reader.readPropertyInLoop(mapped, "state", i) || 
-			reader.readPropertyInLoop(mapped, "round", i) {
+		if reader.readSingleProperty(mapped, "company_name", i) || 
+			reader.readSingleProperty(mapped, "city", i) ||
+			reader.readSingleProperty(mapped, "state", i) || 
+			reader.readSingleProperty(mapped, "round", i) {
 			continue
 		}
 
