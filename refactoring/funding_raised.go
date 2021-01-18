@@ -47,14 +47,14 @@ func newReader(opts map[string]string) (*Reader, [][]string) {
 	}, readFile("startup_funding.csv")
 }
 
-func (reader *Reader) readOptionAndReplaceCsvData(columnName string, rows [][]string) [][]string {
-	value, ok := reader.options[columnName]
+func (reader *Reader) findRows(key string, rows [][]string) [][]string {
+	value, ok := reader.options[key]
 	if ok != true {
 		return nil
 	}
 
 	results := [][]string{}
-	id := reader.columnIndexMapping[columnName]
+	id := reader.columnIndexMapping[key]
 	for _, row := range rows {
 		if row[id] == value {
 			results = append(results, row)
@@ -68,7 +68,7 @@ func Where(options map[string]string) []map[string]string {
 	
 	allowedColumns := []string{"company_name", "city", "state", "round"}
 	for _, col := range allowedColumns {
-		if res := reader.readOptionAndReplaceCsvData(col, rows); res != nil {
+		if res := reader.findRows(col, rows); res != nil {
 			rows = res
 		}
 	}
