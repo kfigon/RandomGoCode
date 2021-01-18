@@ -24,13 +24,40 @@ func readFile(path string)[][]string {
 	return csvData
 }
 
-func readOption(options map[string]string, keyName string, id int, csv_data [][]string) [][]string {
-	_, ok := options[keyName]
+type Reader struct {
+	options map[string]string
+	csv_data [][]string
+	columnIndexMapping map[string]int
+}
+
+func newReader(path string, opts map[string]string) *Reader {
+	colIdxMap := make(map[string]int)
+	colIdxMap["permalink"] = 0
+	colIdxMap["company_name"] = 1
+	colIdxMap["number_employees"] = 2
+	colIdxMap["category"] = 3
+	colIdxMap["city"] = 4
+	colIdxMap["state"] = 5
+	colIdxMap["funded_date"] = 6
+	colIdxMap["raised_amount"] = 7
+	colIdxMap["raised_currency"] = 8
+	colIdxMap["round"] = 9
+
+	return &Reader{
+		options: opts,
+		csv_data: readFile(path),
+		columnIndexMapping: colIdxMap,
+	}
+}
+
+func (reader *Reader) readOption(columnName string) [][]string {
+	_, ok := reader.options[columnName]
 	if ok == true {
+		id := reader.columnIndexMapping[columnName]
 		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][id] == options[keyName] {
-				results = append(results, csv_data[i])
+		for i := 0; i < len(reader.csv_data); i++ {
+			if reader.csv_data[i][id] == reader.options[columnName] {
+				results = append(results, reader.csv_data[i])
 			}
 		}
 		return results
@@ -39,25 +66,25 @@ func readOption(options map[string]string, keyName string, id int, csv_data [][]
 }
 
 func Where(options map[string]string) []map[string]string {
-	csv_data := readFile("startup_funding.csv")
+	reader := newReader("startup_funding.csv", options)
 	
-	if res := readOption(options, "company_name", 1, csv_data); res != nil {
-		csv_data = res
+	if res := reader.readOption("company_name"); res != nil {
+		reader.csv_data = res
 	}
-	if res := readOption(options, "city", 4, csv_data); res != nil {
-		csv_data = res
+	if res := reader.readOption("city"); res != nil {
+		reader.csv_data = res
 	}
-	if res := readOption(options, "state", 5, csv_data); res != nil {
-		csv_data = res
+	if res := reader.readOption("state"); res != nil {
+		reader.csv_data = res
 	}
-	if res := readOption(options, "round", 9, csv_data); res != nil {
-		csv_data = res
+	if res := reader.readOption("round"); res != nil {
+		reader.csv_data = res
 	}
 
 	output := []map[string]string{}
-	for i := 0; i < len(csv_data); i++ {
+	for i := 0; i < len(reader.csv_data); i++ {
 		mapped := make(map[string]string)
-		readProperties(mapped, csv_data, i)
+		readProperties(mapped, reader.csv_data, i)
 		output = append(output, mapped)
 	}
 
