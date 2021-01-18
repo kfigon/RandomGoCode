@@ -18,7 +18,6 @@ func readFile(path string)[][]string {
 		if err == io.EOF {
 			break
 		}
-
 		csvData = append(csvData, row)
 	}
 	return csvData
@@ -51,7 +50,7 @@ func newReader(opts map[string]string) *Reader {
 }
 
 func (reader *Reader) readOptionAndReplaceCsvData(columnName string) {
-	_, ok := reader.options[columnName]
+	value, ok := reader.options[columnName]
 	if ok != true {
 		return
 	}
@@ -59,7 +58,7 @@ func (reader *Reader) readOptionAndReplaceCsvData(columnName string) {
 	id := reader.columnIndexMapping[columnName]
 	results := [][]string{}
 	for i := 0; i < len(reader.csvData); i++ {
-		if reader.csvData[i][id] == reader.options[columnName] {
+		if reader.csvData[i][id] == value {
 			results = append(results, reader.csvData[i])
 		}
 	}
@@ -103,12 +102,12 @@ func (reader *Reader) readProperties(mapped map[string]string, i int) {
 
 // returns - should skip to next iteration
 func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, i int) bool {
-	_, ok := reader.options[keyName]
+	value, ok := reader.options[keyName]
 	if ok != true {
 		return false
 	}
 	id := reader.columnIndexMapping[keyName]
-	if reader.csvData[i][id] != reader.options[keyName] {
+	if reader.csvData[i][id] != value {
 		return true
 	} 
 	reader.readProperties(mapped, i)
