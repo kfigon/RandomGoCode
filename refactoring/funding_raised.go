@@ -83,43 +83,32 @@ func FindBy(options map[string]string) (map[string]string, error) {
 	for i := 0; i < len(csv_data); i++ {
 		var ok bool
 		mapped := make(map[string]string)
-
-		_, ok = options["company_name"]
-		if ok == true {
-			if csv_data[i][1] == options["company_name"] {
-				readProperties(mapped, csv_data, i)
-			} else {
-				continue
+		
+		readProperty := func(keyName string, id int) bool {
+			_, ok = options[keyName]
+			if ok == true {
+				if csv_data[i][id] == options[keyName] {
+					readProperties(mapped, csv_data, i)
+				} else {
+					return true
+				}
 			}
+			return false
 		}
-
-		_, ok = options["city"]
-		if ok == true {
-			if csv_data[i][4] == options["city"] {
-				readProperties(mapped, csv_data, i)
-			} else {
-				continue
-			}
+		
+		if res := readProperty("company_name", 1); res {
+			continue
 		}
-
-		_, ok = options["state"]
-		if ok == true {
-			if csv_data[i][5] == options["state"] {
-				readProperties(mapped, csv_data, i)
-			} else {
-				continue
-			}
+		if res := readProperty("city", 4); res {
+			continue
 		}
-
-		_, ok = options["round"]
-		if ok == true {
-			if csv_data[i][9] == options["round"] {
-				readProperties(mapped, csv_data, i)
-			} else {
-				continue
-			}
+		if res := readProperty("state", 5); res {
+			continue
 		}
-
+		if res := readProperty("round", 9); res {
+			continue
+		}
+		
 		return mapped, nil
 	}
 
