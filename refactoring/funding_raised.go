@@ -25,11 +25,10 @@ func readFile(path string)[][]string {
 
 type Reader struct {
 	options map[string]string
-	csvData [][]string
 	columnIndexMapping map[string]int
 }
 
-func newReader(opts map[string]string) *Reader {
+func newReader(opts map[string]string) (*Reader, [][]string) {
 	colIdxMap := make(map[string]int)
 	colIdxMap["permalink"] = 0
 	colIdxMap["company_name"] = 1
@@ -44,12 +43,11 @@ func newReader(opts map[string]string) *Reader {
 
 	return &Reader {
 		options: opts,
-		csvData: readFile("startup_funding.csv"),
 		columnIndexMapping: colIdxMap,
-	}
+	}, readFile("startup_funding.csv")
 }
 
-func (reader *Reader) readOptionAndReplaceCsvData(columnName string) {
+func (reader *Reader) readOptionAndReplaceCsvData(columnName string, rows *[][]string) {
 	value, ok := reader.options[columnName]
 	if ok != true {
 		return
@@ -57,36 +55,36 @@ func (reader *Reader) readOptionAndReplaceCsvData(columnName string) {
 
 	id := reader.columnIndexMapping[columnName]
 	results := [][]string{}
-	for i := 0; i < len(reader.csvData); i++ {
-		if reader.csvData[i][id] == value {
-			results = append(results, reader.csvData[i])
+	for _, row := range *rows {
+		if row[id] == value {
+			results = append(results, row)
 		}
 	}
-	reader.csvData = results
+	*rows = results
 }
 
 func Where(options map[string]string) []map[string]string {
-	reader := newReader(options)
+	reader, rows := newReader(options)
 	
 	allowedColumns := []string{"company_name", "city", "state", "round"}
 	for _, col := range allowedColumns {
-		reader.readOptionAndReplaceCsvData(col)
+		reader.readOptionAndReplaceCsvData(col, &rows)
 	}
 
 	output := []map[string]string{}
-	for i := 0; i < len(reader.csvData); i++ {
+	for _, row := range rows {
 		mapped := make(map[string]string)
-		reader.readProperties(mapped, i)
+		reader.readProperties(mapped, row)
 		output = append(output, mapped)
 	}
 
 	return output
 }
 
-func (reader *Reader) readProperties(mapped map[string]string, i int) {
+func (reader *Reader) readProperties(mapped map[string]string, row []string) {
 	writeToMap := func(colName string) {
 		id := reader.columnIndexMapping[colName]
-		mapped[colName] = reader.csvData[i][id]
+		mapped[colName] = row[id]
 	}
 	writeToMap("permalink")
 	writeToMap("company_name")
@@ -101,29 +99,29 @@ func (reader *Reader) readProperties(mapped map[string]string, i int) {
 }
 
 // returns - should skip to next iteration
-func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, i int) bool {
+func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, row []string) bool {
 	value, ok := reader.options[keyName]
 	if ok != true {
 		return false
 	}
 	id := reader.columnIndexMapping[keyName]
-	if reader.csvData[i][id] != value {
+	if row[id] != value {
 		return true
 	} 
-	reader.readProperties(mapped, i)
+	reader.readProperties(mapped, row)
 	return false
 }
 
 func FindBy(options map[string]string) (map[string]string, error) {
-	reader := newReader(options)
+	reader, rows := newReader(options)
 
-	for i := 0; i < len(reader.csvData); i++ {
+	for _,row := range rows {
 		mapped := make(map[string]string)
 		
-		if !reader.readSingleProperty(mapped, "company_name", i) &&
-			!reader.readSingleProperty(mapped, "city", i) &&
-			!reader.readSingleProperty(mapped, "state", i) && 
-			!reader.readSingleProperty(mapped, "round", i) {
+		if !reader.readSingleProperty(mapped, "company_name", row) &&
+			!reader.readSingleProperty(mapped, "city", row) &&
+			!reader.readSingleProperty(mapped, "state", row) && 
+			!reader.readSingleProperty(mapped, "round", row) {
 			return mapped, nil
 		}
 	}
