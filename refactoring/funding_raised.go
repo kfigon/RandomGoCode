@@ -101,6 +101,7 @@ func (reader *Reader) readProperties(mapped map[string]string, i int) {
 	writeToMap("round")
 }
 
+// returns - should skip to next iteration
 func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, i int) bool {
 	_, ok := reader.options[keyName]
 	if ok != true {
@@ -110,7 +111,6 @@ func (reader *Reader) readSingleProperty(mapped map[string] string, keyName stri
 	if reader.csv_data[i][id] != reader.options[keyName] {
 		return true
 	} 
-
 	reader.readProperties(mapped, i)
 	return false
 }
@@ -127,7 +127,7 @@ func FindBy(options map[string]string) (map[string]string, error) {
 			reader.readSingleProperty(mapped, "round", i) {
 			continue
 		}
-
+		
 		return mapped, nil
 	}
 
