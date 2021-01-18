@@ -68,40 +68,38 @@ func (reader *Reader) readOption(columnName string) [][]string {
 func Where(options map[string]string) []map[string]string {
 	reader := newReader("startup_funding.csv", options)
 	
-	if res := reader.readOption("company_name"); res != nil {
-		reader.csv_data = res
-	}
-	if res := reader.readOption("city"); res != nil {
-		reader.csv_data = res
-	}
-	if res := reader.readOption("state"); res != nil {
-		reader.csv_data = res
-	}
-	if res := reader.readOption("round"); res != nil {
-		reader.csv_data = res
+	allowedColumns := []string{"company_name", "city", "state", "round"}
+	for _, col := range allowedColumns {
+		if res := reader.readOption(col); res != nil {
+			reader.csv_data = res
+		}
 	}
 
 	output := []map[string]string{}
 	for i := 0; i < len(reader.csv_data); i++ {
 		mapped := make(map[string]string)
-		readProperties(mapped, reader.csv_data[i])
+		reader.readProperties(mapped, i)
 		output = append(output, mapped)
 	}
 
 	return output
 }
 
-func readProperties(mapped map[string]string, csv_data []string) {
-	mapped["permalink"] = csv_data[0]
-	mapped["company_name"] = csv_data[1]
-	mapped["number_employees"] = csv_data[2]
-	mapped["category"] = csv_data[3]
-	mapped["city"] = csv_data[4]
-	mapped["state"] = csv_data[5]
-	mapped["funded_date"] = csv_data[6]
-	mapped["raised_amount"] = csv_data[7]
-	mapped["raised_currency"] = csv_data[8]
-	mapped["round"] = csv_data[9]
+func (reader *Reader) readProperties(mapped map[string]string, i int) {
+	writeToMap := func(colName string) {
+		id := reader.columnIndexMapping[colName]
+		mapped[colName] = reader.csv_data[i][id]
+	}
+	writeToMap("permalink")
+	writeToMap("company_name")
+	writeToMap("number_employees")
+	writeToMap("category")
+	writeToMap("city")
+	writeToMap("state")
+	writeToMap("funded_date")
+	writeToMap("raised_amount")
+	writeToMap("raised_currency")
+	writeToMap("round")
 }
 
 func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName string, i int) bool {
@@ -109,7 +107,7 @@ func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName stri
 	_, ok := reader.options[keyName]
 	if ok == true {
 		if reader.csv_data[i][id] == reader.options[keyName] {
-			readProperties(mapped, reader.csv_data[i])
+			reader.readProperties(mapped, i)
 		} else {
 			return true
 		}
