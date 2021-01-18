@@ -7,21 +7,25 @@ import (
 	"io"
 	"os"
 )
-
-func Where(options map[string]string) []map[string]string {
-	f, _ := os.Open("startup_funding.csv")
+func readFile(path string)[][]string {
+	f, _ := os.Open(path)
+	defer f.Close()
 	reader := csv.NewReader(bufio.NewReader(f))
-	csv_data := [][]string{}
+	csvData := [][]string{}
 
 	for {
 		row, err := reader.Read()
-
 		if err == io.EOF {
 			break
 		}
 
-		csv_data = append(csv_data, row)
+		csvData = append(csvData, row)
 	}
+	return csvData
+}
+
+func Where(options map[string]string) []map[string]string {
+	csv_data := readFile("startup_funding.csv")
 
 	_, ok := options["company_name"]
 	if ok == true {
