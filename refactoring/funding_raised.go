@@ -104,38 +104,34 @@ func readProperties(mapped map[string]string, csv_data [][]string, i int) {
 	mapped["round"] = csv_data[i][9]
 }
 
-func FindBy(options map[string]string) (map[string]string, error) {
-	csv_data := readFile("startup_funding.csv")
+func (reader *Reader) readPropertyInLoop(mapped map[string] string, keyName string, i int) bool {
+	readProperty := func(keyName string, id int) bool {
+		_, ok := reader.options[keyName]
+		if ok == true {
+			if reader.csv_data[i][id] == reader.options[keyName] {
+				readProperties(mapped, reader.csv_data, i)
+			} else {
+				return true
+			}
+		}
+		return false
+	}
 
-	for i := 0; i < len(csv_data); i++ {
-		var ok bool
+	return readProperty(keyName, reader.columnIndexMapping[keyName])
+}
+
+func FindBy(options map[string]string) (map[string]string, error) {
+	reader := newReader("startup_funding.csv", options)
+
+	for i := 0; i < len(reader.csv_data); i++ {
 		mapped := make(map[string]string)
 		
-		readProperty := func(keyName string, id int) bool {
-			_, ok = options[keyName]
-			if ok == true {
-				if csv_data[i][id] == options[keyName] {
-					readProperties(mapped, csv_data, i)
-				} else {
-					return true
-				}
-			}
-			return false
-		}
-		
-		if res := readProperty("company_name", 1); res {
+		if reader.readPropertyInLoop(mapped, "company_name", i) || 
+			reader.readPropertyInLoop(mapped, "city", i) ||
+			reader.readPropertyInLoop(mapped, "state", i) || 
+			reader.readPropertyInLoop(mapped, "round", i){
 			continue
 		}
-		if res := readProperty("city", 4); res {
-			continue
-		}
-		if res := readProperty("state", 5); res {
-			continue
-		}
-		if res := readProperty("round", 9); res {
-			continue
-		}
-		
 		return mapped, nil
 	}
 
