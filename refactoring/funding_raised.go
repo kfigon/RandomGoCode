@@ -50,12 +50,12 @@ func newReader(opts map[string]string) *Reader {
 	}
 }
 
-func (reader *Reader) readAndReplaceOption(columnName string) {
+func (reader *Reader) readOptionAndReplaceCsvData(columnName string) {
 	_, ok := reader.options[columnName]
 	if ok != true {
 		return
 	}
-	
+
 	id := reader.columnIndexMapping[columnName]
 	results := [][]string{}
 	for i := 0; i < len(reader.csv_data); i++ {
@@ -71,7 +71,7 @@ func Where(options map[string]string) []map[string]string {
 	
 	allowedColumns := []string{"company_name", "city", "state", "round"}
 	for _, col := range allowedColumns {
-		reader.readAndReplaceOption(col)
+		reader.readOptionAndReplaceCsvData(col)
 	}
 
 	output := []map[string]string{}
@@ -102,15 +102,16 @@ func (reader *Reader) readProperties(mapped map[string]string, i int) {
 }
 
 func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, i int) bool {
-	id := reader.columnIndexMapping[keyName]
 	_, ok := reader.options[keyName]
-	if ok == true {
-		if reader.csv_data[i][id] == reader.options[keyName] {
-			reader.readProperties(mapped, i)
-		} else {
-			return true
-		}
+	if ok != true {
+		return false
 	}
+	id := reader.columnIndexMapping[keyName]
+	if reader.csv_data[i][id] != reader.options[keyName] {
+		return true
+	} 
+
+	reader.readProperties(mapped, i)
 	return false
 }
 
