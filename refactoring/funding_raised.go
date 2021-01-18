@@ -24,52 +24,37 @@ func readFile(path string)[][]string {
 	return csvData
 }
 
+func readOption(options map[string]string, keyName string, id int, csv_data [][]string) [][]string {
+	_, ok := options[keyName]
+	if ok == true {
+		results := [][]string{}
+		for i := 0; i < len(csv_data); i++ {
+			if csv_data[i][id] == options[keyName] {
+				results = append(results, csv_data[i])
+			}
+		}
+		return results
+	}
+	return nil
+}
+
+
+
 func Where(options map[string]string) []map[string]string {
 	csv_data := readFile("startup_funding.csv")
-
-	_, ok := options["company_name"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][1] == options["company_name"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
+	if res := readOption(options, "company_name", 1, csv_data); res != nil {
+		csv_data = res
+	}
+	if res := readOption(options, "city", 4, csv_data); res != nil {
+		csv_data = res
+	}
+	if res := readOption(options, "state", 5, csv_data); res != nil {
+		csv_data = res
+	}
+	if res := readOption(options, "round", 9, csv_data); res != nil {
+		csv_data = res
 	}
 
-	_, ok = options["city"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][4] == options["city"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
-	}
-
-	_, ok = options["state"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][5] == options["state"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
-	}
-
-	_, ok = options["round"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][9] == options["round"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
-	}
 
 	output := []map[string]string{}
 	for i := 0; i < len(csv_data); i++ {
