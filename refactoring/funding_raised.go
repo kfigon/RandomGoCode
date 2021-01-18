@@ -9,7 +9,7 @@ import (
 )
 
 func Where(options map[string]string) []map[string]string {
-	f, _ := os.Open("../startup_funding.csv")
+	f, _ := os.Open("startup_funding.csv")
 	reader := csv.NewReader(bufio.NewReader(f))
 	csv_data := [][]string{}
 
@@ -87,7 +87,7 @@ func Where(options map[string]string) []map[string]string {
 }
 
 func FindBy(options map[string]string) (map[string]string, error) {
-	f, _ := os.Open("../startup_funding.csv")
+	f, _ := os.Open("startup_funding.csv")
 	reader := csv.NewReader(bufio.NewReader(f))
 	csv_data := [][]string{}
 
