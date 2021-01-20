@@ -131,3 +131,59 @@ func TestCollectOdd(t *testing.T) {
 		})
 	}
 }
+
+func reverse(in string) string {
+	if len(in) == 0{
+		return ""
+	}
+	return string(in[len(in)-1]) + reverse(in[:(len(in)-1)])
+}
+
+func TestReverseString(t *testing.T) {
+	testCases := []struct {
+		in	string
+		exp	string
+	}{
+		{in: "awesome", exp: "emosewa"},
+		{in: "abcde", exp: "edcba"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.in, func(t *testing.T) {
+			if res := reverse(tc.in); res != tc.exp {
+				t.Errorf("Exp %q, got %q", tc.exp, res)
+			}
+		})
+	}
+}
+
+// # string read the same forward and backward
+func isPalindrome(in string) bool {
+	if len(in) <= 1 {
+		return true
+	}
+	return in[0] == in[len(in)-1] && isPalindrome(in[1:len(in)-1])
+}
+
+
+func TestPalindrom(t *testing.T) {
+	testCases := []struct {
+		in string
+		exp bool
+	}{
+		{ in: "awesome", exp: false},
+		{ in: "foobar", exp: false},
+		{ in: "amanaplanacanalpandemonium", exp: false},
+		{ in: "tacocat", exp: true},
+		{ in: "abba", exp: true},
+		{ in: "abcba", exp: true},
+		{ in: "amanaplanacanalpanama", exp: true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.in, func(t *testing.T) {
+			if isPalindrome(tc.in) != tc.exp {
+				t.Error("got wrong:", tc.exp)
+			}
+		})
+	}
+}
