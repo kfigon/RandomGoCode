@@ -34,3 +34,7 @@ func TestGenerateAndShuffle(t *testing.T)  {
 		}
 	}
 }
+
+func TestDoMove(t *testing.T)  {
+	t.FailNow()
+}
