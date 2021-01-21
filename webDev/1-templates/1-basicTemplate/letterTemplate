@@ -1,0 +1,6 @@
+{{$imie := .}}
+Hello {{$imie}}!
+Have a nice day.
+
+Sinc
+K
