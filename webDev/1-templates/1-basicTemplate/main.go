@@ -24,16 +24,21 @@ func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
 	parseFile("listTemplate", []string{"Gandi","Gates","Kacyznski"})
+	parseFile("mapTempl", map[string]int{
+		"first":1,
+		"second":2,
+		"third":3,
+	})
 
-	// myStruct := struct {
-	// 	imie string
-	// 	nazwisko string
-	// 	wiek int
-	// }{
-	// 	"Jan", "Kowalski", 15,
-	// }
-	// parseFile("complexTemplate", myStruct)
+	myStruct := struct {
+		Imie string
+		Nazwisko string
+		Wiek int
+	}{
+		"Jan", "Kowalski", 15,
+	}
+	parseFile("complexTemplate", myStruct)
 
 
-	log.Println("\ndone")
+	log.Println("done")
 }
