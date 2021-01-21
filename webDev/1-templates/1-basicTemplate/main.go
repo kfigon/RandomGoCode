@@ -20,6 +20,8 @@ func parseFile(path string, data interface{})  {
 
 // {{.}} - any data at the point of execution
 // {{$imie := .}} - assignment to variable in a template
+// {{range .}} {{.}} {{end}}
+// {{.NazwaPolaWStrukturze}}
 func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
