@@ -4,7 +4,6 @@ import (
 	"log"
 	"text/template"
 	"os"
-	"time"
 )
 
 func parseFile(path string, data interface{})  {
@@ -29,6 +28,8 @@ func processAdHocTemplate(data interface{}, templateString string)  {
 // {{range .}} {{.}} {{end}}
 // {{.NazwaPolaWStrukturze}}
 // {{funkcja .}} - wola func z argumentem
+// {{funkcja}} - wola func bezz argumentu
+// {{. | foo1 | foo2}} - pipeline - wez wartosc, zawolaj foo1, wynik do foo2
 func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
@@ -59,10 +60,17 @@ func main() {
 `))
 	must(tmpl.ExecuteTemplate(os.Stdout, "", "my input data"))
 
-	processAdHocTemplate(time.Now(),
-	`passed date {{.}}`)
+	// using predefined funs
+	processAdHocTemplate([]int{1,2},
+`passed 2 values, are they equal? {{index . 0}} and {{index . 1}} ?
+{{$first := index . 0}} {{$second := index . 1}}-> {{eq $first $second}}
+{{$res := eq $first $second}}
+{{if $res}} yes, equal!
+{{else }} no, not equal
+{{end}}
+`)
 
-	log.Println("done")
+	log.Printf("done")
 }
 
 func must(e error) {
