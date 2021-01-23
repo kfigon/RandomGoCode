@@ -20,7 +20,10 @@ func parseFile(path string, data interface{})  {
 
 func processAdHocTemplate(data interface{}, templateString string)  {
 	tmpl := template.Must(template.New("").Parse(templateString))
-	must(tmpl.ExecuteTemplate(os.Stdout, "", data))
+	e := tmpl.ExecuteTemplate(os.Stdout, "", data)
+	if e != nil {
+		log.Fatal("Error: ", e)
+	}
 }
 
 // {{.}} - any data at the point of execution
@@ -30,6 +33,9 @@ func processAdHocTemplate(data interface{}, templateString string)  {
 // {{funkcja .}} - wola func z argumentem
 // {{funkcja}} - wola func bezz argumentu
 // {{. | foo1 | foo2}} - pipeline - wez wartosc, zawolaj foo1, wynik do foo2
+// {{.mojaMetoda}} metody tez mozna wolac
+// {{.mojaMetoda | .metodaPrzyjmujacaArg}} 
+
 func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
@@ -73,7 +79,7 @@ Wiek: {{.Wiek}}
 	}
 	tmpl := template.Must(template.New("").Funcs(funcs).Parse(`this is template with function: {{foo .}}, second: {{fooNoArg}}
 `))
-	must(tmpl.ExecuteTemplate(os.Stdout, "", "my input data"))
+	tmpl.ExecuteTemplate(os.Stdout, "", "my input data")
 
 	// using predefined funs
 	processAdHocTemplate([]int{1,2},
@@ -101,10 +107,4 @@ Nested template usage:
 `)
 
 	log.Printf("done")
-}
-
-func must(e error) {
-	if e != nil {
-		log.Fatal("Error: ", e)
-	}
 }
