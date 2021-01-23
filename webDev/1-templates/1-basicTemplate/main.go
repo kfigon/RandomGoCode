@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"text/template"
+	"text/template" // html/template will save us from XSS (cross site scripting - injecting <script> tags) and html char escaping
 	"os"
 )
 
