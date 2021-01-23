@@ -106,5 +106,34 @@ Nested template usage:
 {{template "myEmptyTemplate"}}
 `)
 
+	type Address struct {
+		City string
+		Street string
+	}
+	type Asd struct{
+		Review string
+	}
+	hotelData := []struct {
+		Name string
+		Age int
+		Address
+		Note Asd
+	} {
+		{"First hotel", 10, Address{"Zgierz", "asd"}, Asd{"Smierdzi"}},
+		{"Second hotel", 20, Address{"Krakow", "bar"}, Asd{"Piekny"}},
+		{"Third hotel", 30, Address{"Pcim", "foo"}, Asd{"Stary"}},
+	}
+	hotelTemplate := `============
+List of hotels:
+{{range .}}
+-----------
+{{.Name}}, age: {{.Age}}
+{{.City}}, {{.Street}}
+Customer notes: {{.Note.Review}}
+----------
+{{end}}
+`
+	processAdHocTemplate(hotelData, hotelTemplate)
+
 	log.Printf("done")
 }
