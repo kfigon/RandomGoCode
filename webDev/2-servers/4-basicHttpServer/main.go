@@ -74,9 +74,10 @@ func parse(line string, lineNum int, r *req)  {
 
 func response(conn net.Conn, r *req)  {
 	log.Println(r)
-	switch r.url {
-	case "/": handleIndex(conn)
-	default: handleUnknown(conn)
+	if r.url == "/" && r.method == "GET" {
+		handleIndex(conn)
+	} else {
+		 handleUnknown(conn)
 	}
 	
 }
