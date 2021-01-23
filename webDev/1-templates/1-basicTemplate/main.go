@@ -74,9 +74,13 @@ func main() {
 
 	processAdHocTemplate([]string{"Adam", "Pawel"},
 `{{define "myTemplate"}} Hello {{.}} from custom template {{end}}
+{{define "myEmptyTemplate"}} This is empty template {{end}}
+
 Nested template usage:
 {{range .}}
 {{template "myTemplate" .}} {{end}}
+
+{{template "myEmptyTemplate"}}
 `)
 
 	log.Printf("done")
