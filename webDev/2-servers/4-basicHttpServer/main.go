@@ -9,21 +9,38 @@ import (
 )
 
 func main() {
+	startServer(endlessRun{})
+}
+
+type endlessRun struct{}
+func (e endlessRun) run() bool {
+	return true
+}
+
+type loopStrategy interface {
+	run() bool
+}
+
+func startServer(strategy loopStrategy) {
+	log.Println("Starting server")
 	li,_ := net.Listen("tcp", ":8080")
 	defer li.Close()
-	for {
+	for strategy.run() {
 		conn, err := li.Accept()
 		if err != nil {
 			log.Println("Error during accept: ", err)
 		}
 		go handle(conn)
 	}
+	log.Printf("stopping server")
 }
 
 func handle(conn net.Conn)  {
+	log.Println("Serving request...")
 	req := parseReq(conn)
 	response(conn, req)
 	conn.Close()
+	log.Println("Request served")
 }
 
 type req struct {
