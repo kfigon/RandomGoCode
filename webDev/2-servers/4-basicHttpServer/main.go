@@ -78,8 +78,7 @@ func response(conn net.Conn, r *req)  {
 		handleIndex(conn)
 	} else {
 		 handleUnknown(conn)
-	}
-	
+	}	
 }
 
 func handleIndex(conn net.Conn)  {
