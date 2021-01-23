@@ -36,10 +36,21 @@ func main() {
 		Imie string
 		Nazwisko string
 		Wiek int
-	}{
-		"Jan", "Kowalski", 15,
-	}
+	}{ "Jan", "Kowalski", 15 }
 	parseFile("complexTemplate", myStruct)
+	
+
+	funcs := template.FuncMap{
+		"foo": func(input string) string {
+			return input + " AAAAAAAAAAAAAAAA!"
+		},
+	}
+	tmpl := template.Must(template.New("t1").Funcs(funcs).Parse(`this is template with function: {{foo .}}
+`))
+	err := tmpl.ExecuteTemplate(os.Stdout, "t1", "my input data")
+	if err != nil {
+		log.Fatal("Template processing failed: ", err)
+	}
 
 
 	log.Println("done")
