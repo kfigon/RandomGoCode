@@ -4,6 +4,7 @@ import (
 	"log"
 	"text/template"
 	"os"
+	"time"
 )
 
 func parseFile(path string, data interface{})  {
@@ -16,6 +17,11 @@ func parseFile(path string, data interface{})  {
 	if err != nil {
 		log.Fatal("Template processing failed: ", err)
 	}
+}
+
+func processAdHocTemplate(data interface{}, templateString string)  {
+	tmpl := template.Must(template.New("").Parse(templateString))
+	must(tmpl.ExecuteTemplate(os.Stdout, "", data))
 }
 
 // {{.}} - any data at the point of execution
@@ -53,6 +59,8 @@ func main() {
 `))
 	must(tmpl.ExecuteTemplate(os.Stdout, "", "my input data"))
 
+	processAdHocTemplate(time.Now(),
+	`passed date {{.}}`)
 
 	log.Println("done")
 }
