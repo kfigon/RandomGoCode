@@ -70,6 +70,15 @@ func main() {
 {{end}}
 `)
 
+	// nested template
+
+	processAdHocTemplate([]string{"Adam", "Pawel"},
+`{{define "myTemplate"}} Hello {{.}} from custom template {{end}}
+Nested template usage:
+{{range .}}
+{{template "myTemplate" .}} {{end}}
+`)
+
 	log.Printf("done")
 }
 
