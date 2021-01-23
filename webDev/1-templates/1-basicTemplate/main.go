@@ -33,19 +33,34 @@ func processAdHocTemplate(data interface{}, templateString string)  {
 func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
-	parseFile("listTemplate", []string{"Gandi","Gates","Kacyznski"})
-	parseFile("mapTempl", map[string]int{
+	
+	processAdHocTemplate([]string{"Gandi","Gates","Kacyznski"},
+`===================
+Moje ziomki:
+{{range .}}
+* {{.}} 
+{{end}}`)
+	processAdHocTemplate(map[string]int{
 		"first":1,
 		"second":2,
 		"third":3,
-	})
+	},
+`=================
+takie typy:
+{{range $key, $value := .}}
+{{$key}} -> {{$value}} 
+{{end}}`)
 
 	myStruct := struct {
 		Imie string
 		Nazwisko string
 		Wiek int
 	}{ "Jan", "Kowalski", 15 }
-	parseFile("complexTemplate", myStruct)
+	processAdHocTemplate(myStruct,
+`=============
+Dane: {{.Imie}} {{.Nazwisko}}
+Wiek: {{.Wiek}}
+`)
 	
 
 	funcs := template.FuncMap{
@@ -62,7 +77,8 @@ func main() {
 
 	// using predefined funs
 	processAdHocTemplate([]int{1,2},
-`passed 2 values, are they equal? {{index . 0}} and {{index . 1}} ?
+`============
+passed 2 values, are they equal? {{index . 0}} and {{index . 1}} ?
 {{$first := index . 0}} {{$second := index . 1}}-> {{eq $first $second}}
 {{$res := eq $first $second}}
 {{if $res}} yes, equal!
@@ -73,7 +89,8 @@ func main() {
 	// nested template
 
 	processAdHocTemplate([]string{"Adam", "Pawel"},
-`{{define "myTemplate"}} Hello {{.}} from custom template {{end}}
+`=============
+{{define "myTemplate"}} Hello {{.}} from custom template {{end}}
 {{define "myEmptyTemplate"}} This is empty template {{end}}
 
 Nested template usage:

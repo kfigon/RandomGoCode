@@ -1,5 +1,0 @@
-Moje ziomki:
-{{range .}}
-* {{.}} {{end}}
-
-i tak to jest!

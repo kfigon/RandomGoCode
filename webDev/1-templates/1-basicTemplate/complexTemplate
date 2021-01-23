@@ -1,2 +1,0 @@
-Dane: {{.Imie}} {{.Nazwisko}}
-Wiek: {{.Wiek}}

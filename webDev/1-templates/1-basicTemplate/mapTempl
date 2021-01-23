@@ -1,5 +1,0 @@
-
-takie typy:
-{{range $key, $value := .}}
-{{$key}} -> {{$value}} {{end}}
-
