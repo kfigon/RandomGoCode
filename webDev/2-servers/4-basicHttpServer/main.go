@@ -74,11 +74,25 @@ func parse(line string, lineNum int, r *req)  {
 
 func response(conn net.Conn, r *req)  {
 	log.Println(r)
+	switch r.url {
+	case "/": handleIndex(conn)
+	default: handleUnknown(conn)
+	}
+	
+}
 
+func handleIndex(conn net.Conn)  {
 	responseBody := `<html>hi!</html>`
 	fmt.Fprintf(conn, "HTTP/1.1 200 OK\r\n")
 	fmt.Fprintf(conn, "Content-Length: %v\r\n", len(responseBody))
 	fmt.Fprintf(conn, "Content-Type: text/html\r\n")
 	fmt.Fprintf(conn, "\r\n")
 	fmt.Fprintf(conn, "%v", responseBody)
+}
+
+func handleUnknown(conn net.Conn)  {
+	fmt.Fprintf(conn, "HTTP/1.1 404 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %v\r\n", 0)
+	fmt.Fprintf(conn, "Content-Type: text/html\r\n")
+	fmt.Fprintf(conn, "\r\n")
 }
