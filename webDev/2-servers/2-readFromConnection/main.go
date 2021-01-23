@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// call through telnet or browser
 func main() {
 	li, _ := net.Listen("tcp", ":8080")
 	defer li.Close()
@@ -29,5 +30,5 @@ func handle(conn net.Conn) {
 			break
 		}
 	}
-	defer conn.Close()
+	conn.Close()
 }
