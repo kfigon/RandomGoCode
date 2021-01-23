@@ -22,6 +22,7 @@ func parseFile(path string, data interface{})  {
 // {{$imie := .}} - assignment to variable in a template
 // {{range .}} {{.}} {{end}}
 // {{.NazwaPolaWStrukturze}}
+// {{funkcja .}} - wola func z argumentem
 func main() {
 	parseFile("basicTemplate.gohtml", map[string]string {"userName": "Jacek"})
 	parseFile("letterTemplate", "Asd")
@@ -44,14 +45,20 @@ func main() {
 		"foo": func(input string) string {
 			return input + " AAAAAAAAAAAAAAAA!"
 		},
+		"fooNoArg": func() string {
+			return "func output!"
+		},
 	}
-	tmpl := template.Must(template.New("t1").Funcs(funcs).Parse(`this is template with function: {{foo .}}
+	tmpl := template.Must(template.New("").Funcs(funcs).Parse(`this is template with function: {{foo .}}, second: {{fooNoArg}}
 `))
-	err := tmpl.ExecuteTemplate(os.Stdout, "t1", "my input data")
-	if err != nil {
-		log.Fatal("Template processing failed: ", err)
-	}
+	must(tmpl.ExecuteTemplate(os.Stdout, "", "my input data"))
 
 
 	log.Println("done")
+}
+
+func must(e error) {
+	if e != nil {
+		log.Fatal("Error: ", e)
+	}
 }
