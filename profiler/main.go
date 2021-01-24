@@ -23,12 +23,11 @@ func (b *betterFib) calc(n uint64) uint64 {
 		} else if n <= 1 {
 			return n
 		}
-		return fibBetter(n-1) + fibBetter(n-2)
+		res := fibBetter(n-1) + fibBetter(n-2)
+		b.d[n] = res
+		return res
 	}
-
-	res := fibBetter(n)
-	b.d[n] = res
-	return res
+	return fibBetter(n)
 }
 
 type poor struct{}
