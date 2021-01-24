@@ -19,13 +19,21 @@ func assertStatus200(t *testing.T, w *httptest.ResponseRecorder) {
 	if receivedStatus != 200 {
 		t.Error("Invalid status code received: ", receivedStatus)
 	}
+	headers := w.Result().Header
+	if content := headers.Get("Content-Type"); content != "text/html; charset=utf-8" {
+		t.Error("Invalid contentType: ", content)
+	}
+}
+
+func readAllBody(w *httptest.ResponseRecorder) string {
+	body, _ := ioutil.ReadAll(w.Result().Body)
+	return string(body)
 }
 func TestGet(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080", nil))
 
 	assertStatus200(t, w)
-	body,_ := ioutil.ReadAll(w.Result().Body)
-	if strings.Contains(string(body), "You have filled this thing") {
+	if strings.Contains(readAllBody(w), "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
 }
@@ -34,8 +42,7 @@ func TestGetWithInvalidQuery(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080?asd=foo", nil))
 
 	assertStatus200(t, w)
-	body,_ := ioutil.ReadAll(w.Result().Body)
-	if strings.Contains(string(body), "You have filled this thing") {
+	if strings.Contains(readAllBody(w), "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
 }
@@ -44,8 +51,7 @@ func TestGetWithRightQuery(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080?myName=foo", nil))
 
 	assertStatus200(t, w)
-	body,_ := ioutil.ReadAll(w.Result().Body)
-	if !strings.Contains(string(body), "You have filled this thing: foo") {
+	if !strings.Contains(readAllBody(w), "You have filled this thing: foo") {
 		t.Error("Expected string not found")
 	}
 }
@@ -58,8 +64,7 @@ func TestPost(t *testing.T) {
 	w := serve(req)
 
 	assertStatus200(t, w)
-	body,_ := ioutil.ReadAll(w.Result().Body)
-	if !strings.Contains(string(body), "You have filled this thing: abc") {
+	if !strings.Contains(readAllBody(w), "You have filled this thing: abc") {
 		t.Error("Expected string not found")
 	}
 }

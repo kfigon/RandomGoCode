@@ -15,6 +15,7 @@ func (h hotdog) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
 	values := r.Form // map[string][]string
 	providedData := values.Get("myName")
 	getHelloTemplate(w, providedData)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8") // optional, go can fill it
 }
 
 func getHelloTemplate(w io.Writer, data interface{}){
