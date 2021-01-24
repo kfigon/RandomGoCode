@@ -29,31 +29,47 @@ func readAllBody(response *httptest.ResponseRecorder) string {
 	body, _ := ioutil.ReadAll(response.Result().Body)
 	return string(body)
 }
+
+func assertCommonHTMLBody(t *testing.T, responseBody string) {
+	if !strings.Contains(responseBody, "Base Header") {
+		t.Error("Common header html not present")
+	}
+	if !strings.Contains(responseBody, "Base Footer") {
+		t.Error("Common footer html not present")
+	}
+}
+
 func TestGet(t *testing.T) {
 	response := serve(httptest.NewRequest("GET", "http://localhost:8080", nil))
 
 	assertStatus200AndContentType(t, response)
-	if strings.Contains(readAllBody(response), "You have filled this thing") {
+	responseBody := readAllBody(response)
+	if strings.Contains(responseBody, "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
+	assertCommonHTMLBody(t, responseBody)
 }
 
 func TestGetWithInvalidQuery(t *testing.T) {
 	response := serve(httptest.NewRequest("GET", "http://localhost:8080?asd=foo", nil))
 
 	assertStatus200AndContentType(t, response)
-	if strings.Contains(readAllBody(response), "You have filled this thing") {
+	responseBody := readAllBody(response)
+	if strings.Contains(responseBody, "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
+	assertCommonHTMLBody(t, responseBody)
 }
 
 func TestGetWithRightQuery(t *testing.T) {
 	response := serve(httptest.NewRequest("GET", "http://localhost:8080?myName=foo", nil))
 
 	assertStatus200AndContentType(t, response)
-	if !strings.Contains(readAllBody(response), "You have filled this thing: foo") {
+	responseBody := readAllBody(response)
+	if !strings.Contains(responseBody, "You have filled this thing: foo") {
 		t.Error("Expected string not found")
 	}
+	assertCommonHTMLBody(t, responseBody)
 }
 
 func TestPost(t *testing.T) {
@@ -64,7 +80,9 @@ func TestPost(t *testing.T) {
 	response := serve(req)
 
 	assertStatus200AndContentType(t, response)
-	if !strings.Contains(readAllBody(response), "You have filled this thing: abc") {
+	responseBody := readAllBody(response)
+	if !strings.Contains(responseBody, "You have filled this thing: abc") {
 		t.Error("Expected string not found")
 	}
+	assertCommonHTMLBody(t, responseBody)
 }
