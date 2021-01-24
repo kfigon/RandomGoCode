@@ -8,19 +8,19 @@ import (
 )
 
 type hotdog int
-func (h hotdog) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
-	// providedData := r.FormValue("myName")
+func (h hotdog) ServeHTTP(response http.ResponseWriter, request *http.Request)  {
+	// providedData := request.FormValue("myName")
 
-	r.ParseForm() // data in query na in form (request data)
-	values := r.Form // map[string][]string
+	request.ParseForm() // data in query na in form (request data)
+	values := request.Form // map[string][]string
 	providedData := values.Get("myName")
-	getHelloTemplate(w, providedData)
-	w.Header().Set("Content-Type", "text/html; charset=utf-8") // optional, go can fill it
+	getHelloTemplate(response, providedData)
+	response.Header().Set("Content-Type", "text/html; charset=utf-8") // optional, go can fill it
 }
 
-func getHelloTemplate(w io.Writer, data interface{}){
+func getHelloTemplate(response io.Writer, data interface{}){
 	tp := template.Must(template.ParseFiles("baseTemplate.html", "template.html"))
-	tp.Execute(w, data)
+	tp.Execute(response, data)
 }
 
 func main() {
