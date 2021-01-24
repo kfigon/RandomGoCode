@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Hello my friend</h1>
+{{define "content"}}
     <p>fill some data</p>
 
     <form action="/" method="POST">
@@ -18,5 +10,4 @@
         <h2>You have filled this thing: {{.}}</h2>
     {{end}}
 
-</body>
-</html>
+{{end}}
