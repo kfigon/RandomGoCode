@@ -9,12 +9,10 @@ import (
 
 type hotdog int
 func (h hotdog) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
-	fmt.Println("Got method", r.Method)
 	// providedData := r.FormValue("myName")
 
 	r.ParseForm() // data in query na in form (request data)
 	values := r.Form // map[string][]string
-	fmt.Println("Provided data:", values)
 	providedData := values.Get("myName")
 	getHelloTemplate(w, providedData)
 }

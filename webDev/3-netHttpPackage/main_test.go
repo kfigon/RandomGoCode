@@ -30,7 +30,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-func TestGetWithQuery(t *testing.T) {
+func TestGetWithInvalidQuery(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080?asd=foo", nil))
 
 	assertStatus200(t, w)
@@ -51,7 +51,7 @@ func TestGetWithRightQuery(t *testing.T) {
 }
 
 func TestPost(t *testing.T) {
-	reader := strings.NewReader("myName=2")
+	reader := strings.NewReader("myName=abc")
 	req := httptest.NewRequest("POST", "http://localhost:8080", reader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -59,7 +59,7 @@ func TestPost(t *testing.T) {
 
 	assertStatus200(t, w)
 	body,_ := ioutil.ReadAll(w.Result().Body)
-	if !strings.Contains(string(body), "You have filled this thing: 2") {
+	if !strings.Contains(string(body), "You have filled this thing: abc") {
 		t.Error("Expected string not found")
 	}
 }
