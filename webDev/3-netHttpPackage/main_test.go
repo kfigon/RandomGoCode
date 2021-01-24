@@ -14,7 +14,7 @@ func serve(inputRequest *http.Request) *httptest.ResponseRecorder {
 	d.ServeHTTP(w, inputRequest)
 	return w
 }
-func assertStatus200(t *testing.T, w *httptest.ResponseRecorder) {
+func assertStatus200AndContentType(t *testing.T, w *httptest.ResponseRecorder) {
 	receivedStatus := w.Result().StatusCode
 	if receivedStatus != 200 {
 		t.Error("Invalid status code received: ", receivedStatus)
@@ -32,7 +32,7 @@ func readAllBody(w *httptest.ResponseRecorder) string {
 func TestGet(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080", nil))
 
-	assertStatus200(t, w)
+	assertStatus200AndContentType(t, w)
 	if strings.Contains(readAllBody(w), "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
@@ -41,7 +41,7 @@ func TestGet(t *testing.T) {
 func TestGetWithInvalidQuery(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080?asd=foo", nil))
 
-	assertStatus200(t, w)
+	assertStatus200AndContentType(t, w)
 	if strings.Contains(readAllBody(w), "You have filled this thing") {
 		t.Error("Non expected string received")
 	}
@@ -50,7 +50,7 @@ func TestGetWithInvalidQuery(t *testing.T) {
 func TestGetWithRightQuery(t *testing.T) {
 	w := serve(httptest.NewRequest("GET", "http://localhost:8080?myName=foo", nil))
 
-	assertStatus200(t, w)
+	assertStatus200AndContentType(t, w)
 	if !strings.Contains(readAllBody(w), "You have filled this thing: foo") {
 		t.Error("Expected string not found")
 	}
@@ -63,7 +63,7 @@ func TestPost(t *testing.T) {
 
 	w := serve(req)
 
-	assertStatus200(t, w)
+	assertStatus200AndContentType(t, w)
 	if !strings.Contains(readAllBody(w), "You have filled this thing: abc") {
 		t.Error("Expected string not found")
 	}
