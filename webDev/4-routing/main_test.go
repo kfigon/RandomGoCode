@@ -42,3 +42,13 @@ func TestCat(t *testing.T) {
 		t.Error("Invalid body: ", strBody)
 	}
 }
+
+func TestUnknown(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	strBody := doGet(t, server.URL+"/cat/foo", http.StatusOK)
+	if strBody != "Hello World!" {
+		t.Error("Invalid body: ", strBody)
+	}
+}
