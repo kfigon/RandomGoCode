@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"io"
 	"net/http"
 )
@@ -27,12 +28,19 @@ func queried(response http.ResponseWriter, req* http.Request) {
 	io.WriteString(response, responseString)
 }
 
+// need to parse manually :(
+func parametered(response http.ResponseWriter, req *http.Request) {
+	id := strings.TrimPrefix(req.URL.Path, "/foo/")
+	io.WriteString(response, "Id: " + id)
+}
+
 // mux == multiplexer == "server" (dispatch servlet z javy)
 func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", helloFunc)
 	mux.HandleFunc("/cat", cat) // /cat/ - match everything after cat
 	mux.HandleFunc("/queried", queried)
+	mux.HandleFunc("/foo/", parametered)
 
 	return mux
 }

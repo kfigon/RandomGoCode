@@ -62,3 +62,13 @@ func TestQueried(t *testing.T) {
 		t.Error("Invalid body: ", strBody)
 	}
 }
+
+func TestPathParam(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	strBody := doGet(t, server.URL+"/foo/123", http.StatusOK)
+	if strBody != "Id: 123" {
+		t.Error("Invalid body: ", strBody)
+	}
+}
