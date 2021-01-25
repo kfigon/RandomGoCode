@@ -77,8 +77,13 @@ func TestPathParamNotFound(t *testing.T) {
 	server := httptest.NewServer(createMux())
 	defer server.Close()
 
-	strBody := doGet(t, server.URL+"/foo/", http.StatusNotFound)
-	if strBody != "" {
-		t.Error("Invalid body: ", strBody)
+	tt := []string {"/foo/foo/foo", "/foo/", "/foo/bar"}
+	for _,tc := range tt {
+		t.Run(tc, func(t *testing.T) {
+			strBody := doGet(t, server.URL+tc, http.StatusNotFound)
+			if strBody != "" {
+				t.Error("Invalid body: ", strBody)
+			}
+		})
 	}
 }

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func helloFunc(response http.ResponseWriter, req* http.Request) {
@@ -35,7 +37,13 @@ func parametered(response http.ResponseWriter, req *http.Request) {
 		response.WriteHeader(http.StatusNotFound)
 		return
 	}
-	io.WriteString(response, "Id: " + id)
+	parsed, err := strconv.Atoi(id)
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
+	
+	io.WriteString(response, fmt.Sprintf("Id: %d", parsed))
 }
 
 // mux == multiplexer == "server" (dispatch servlet z javy)
