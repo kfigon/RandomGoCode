@@ -5,16 +5,14 @@ import (
 	"net/http"
 )
 
-type hotdog int
-func (h hotdog) ServeHTTP (response http.ResponseWriter, req* http.Request) {
+func helloFunc (response http.ResponseWriter, req* http.Request) {
 	io.WriteString(response, "Hello World!")
 }
 
 // mux == server
 func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
-	var h hotdog
-	mux.Handle("/", h)
+	mux.HandleFunc("/", helloFunc)
 
 	return mux
 }
