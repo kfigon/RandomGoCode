@@ -1,31 +1,30 @@
 package main
 
 import (
-	"net/http"
-	"testing"
-	"net/http/httptest"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
-func assertStatusGetBody(t *testing.T, expStatus int, response *httptest.ResponseRecorder) string {
-	status := response.Result().StatusCode
-	if status != expStatus {
-		t.Errorf("Wanted %v, got %v", expStatus, status)
+func TestRoot(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	response, err := http.Get(server.URL+"/")
+	if err != nil {
+		t.Errorf("Unexpected error during request: %q", err)
 	}
-	body, err := ioutil.ReadAll(response.Result().Body)
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Wanted %v, got %v", http.StatusOK, response.StatusCode)
+	}
+	
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		t.Error("Unexpected error", err)
 	}
-	return string(body)
-}
-
-func TestRoot(t *testing.T) {
-	request := httptest.NewRequest("GET", "http://localhost:8080/", nil)
-	response := httptest.NewRecorder()
-
-
-	strBody := assertStatusGetBody(t, http.StatusOK, response)
-	if strBody != "Hello World" {
-		t.Error("Invalid body", strBody)
+	strBody := string(body)	
+	if strBody != "Hello World!" {
+		t.Error("Invalid body: ", strBody)
 	}
 }

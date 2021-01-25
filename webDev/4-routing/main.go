@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func helloFunc (response http.ResponseWriter, req* http.Request) {
+func helloFunc(response http.ResponseWriter, req* http.Request) {
 	io.WriteString(response, "Hello World!")
 }
 
