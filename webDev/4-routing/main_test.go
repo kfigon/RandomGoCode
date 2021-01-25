@@ -52,3 +52,13 @@ func TestUnknown(t *testing.T) {
 		t.Error("Invalid body: ", strBody)
 	}
 }
+
+func TestQueried(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	strBody := doGet(t, server.URL+"/queried?foo=bar&asd=123", http.StatusOK)
+	if strBody != "Got foo=bar and asd=123" && strBody != "Got asd=123 and foo=bar" {
+		t.Error("Invalid body: ", strBody)
+	}
+}
