@@ -1,15 +1,24 @@
 package main
 
 import (
-	"fmt"
+	"io"
 	"net/http"
 )
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
+type hotdog int
+func (h hotdog) ServeHTTP (response http.ResponseWriter, req* http.Request) {
+	io.WriteString(response, "Hello World!")
+}
+
+// mux == server
+func createMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	var h hotdog
+	mux.Handle("/", h)
+
+	return mux
 }
 
 func main() {
-	http.HandleFunc("/", greet)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", createMux())
 }

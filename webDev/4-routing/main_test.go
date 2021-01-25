@@ -20,8 +20,9 @@ func assertStatusGetBody(t *testing.T, expStatus int, response *httptest.Respons
 }
 
 func TestRoot(t *testing.T) {
-	// request := httptest.NewRequest("GET", "http://localhost:8080/", nil)
+	request := httptest.NewRequest("GET", "http://localhost:8080/", nil)
 	response := httptest.NewRecorder()
+
 
 	strBody := assertStatusGetBody(t, http.StatusOK, response)
 	if strBody != "Hello World" {
