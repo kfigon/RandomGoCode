@@ -31,6 +31,10 @@ func queried(response http.ResponseWriter, req* http.Request) {
 // need to parse manually :(
 func parametered(response http.ResponseWriter, req *http.Request) {
 	id := strings.TrimPrefix(req.URL.Path, "/foo/")
+	if len(id) == 0 {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
 	io.WriteString(response, "Id: " + id)
 }
 

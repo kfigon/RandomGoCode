@@ -12,8 +12,8 @@ func doGet(t *testing.T, url string, expStatus int) string {
 	if err != nil {
 		t.Errorf("Unexpected error during request: %q", err)
 	}
-	if response.StatusCode != http.StatusOK {
-		t.Errorf("Wanted %v, got %v", http.StatusOK, response.StatusCode)
+	if response.StatusCode != expStatus {
+		t.Errorf("Wanted %v, got %v", expStatus, response.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
@@ -69,6 +69,16 @@ func TestPathParam(t *testing.T) {
 
 	strBody := doGet(t, server.URL+"/foo/123", http.StatusOK)
 	if strBody != "Id: 123" {
+		t.Error("Invalid body: ", strBody)
+	}
+}
+
+func TestPathParamNotFound(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	strBody := doGet(t, server.URL+"/foo/", http.StatusNotFound)
+	if strBody != "" {
 		t.Error("Invalid body: ", strBody)
 	}
 }
