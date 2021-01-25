@@ -50,7 +50,7 @@ func createMux() *http.ServeMux {
 }
 
 func main() {
-	// if nil - we can use:
+	// if nil in ListenAndServe(port, nil) - we can use:
 	// http.Handle("/", cat). This will add to DefaultServeMux
 	http.ListenAndServe(":8080", createMux())
 }
