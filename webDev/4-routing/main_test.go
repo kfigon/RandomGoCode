@@ -28,7 +28,7 @@ func TestRoot(t *testing.T) {
 	defer server.Close()
 
 	strBody := doGet(t, server.URL+"/", http.StatusOK)
-	if strBody != "Hello World!" {
+	if strBody != "Hi!" {
 		t.Error("Invalid body: ", strBody)
 	}
 }
@@ -48,7 +48,7 @@ func TestUnknown(t *testing.T) {
 	defer server.Close()
 
 	strBody := doGet(t, server.URL+"/cat/foo", http.StatusOK)
-	if strBody != "Hello World!" {
+	if strBody != "Hi!" {
 		t.Error("Invalid body: ", strBody)
 	}
 }
