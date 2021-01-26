@@ -45,6 +45,8 @@ func createMux() *http.ServeMux {
 	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource not working without it!
 	mux.HandleFunc("/downloadFile", downloadFile)
 	
+	// serve files without exposing our file system
+	// http.Handle("/resources/", http.StripPrefix("/resources", http.FileServer(http.Dir("./assets"))))
 
 	return mux
 }
