@@ -11,7 +11,7 @@ func greet(w http.ResponseWriter, r *http.Request) {
 
 func servePicture(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	io.WriteString(w, `<!DOCTYPE html><html><body><img src="pic.jpg"></body></html>`)
+	io.WriteString(w, `<img src="/pic.jpg">`)
 }
 
 func createMux() *http.ServeMux {
