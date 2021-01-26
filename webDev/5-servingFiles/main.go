@@ -11,6 +11,7 @@ func greet(w http.ResponseWriter, r *http.Request) {
 
 func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/", greet)
 	return mux
 }
 

@@ -21,7 +21,7 @@ func TestHello(t *testing.T) {
 		t.Fatal("Got error when reading response: ", err)
 	}
 	strBody := string(body)
-	if strBody != "asd" {
-		t.Errorf("Invalid body. Wanted %q, got %q", "asd", strBody)
+	if strBody != "Hi!" {
+		t.Errorf("Invalid body. Wanted %q, got %q", "Hi!", strBody)
 	}
 }
