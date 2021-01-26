@@ -16,6 +16,7 @@ func getPicture(w http.ResponseWriter, req *http.Request) {
 }
 
 func servePicture(w http.ResponseWriter, req *http.Request) {
+	// manual work
 	// f, err := os.Open("pic.jpg")
 	// if err != nil {
 	// 	http.Error(w, "file not found", http.StatusNotFound)
