@@ -72,3 +72,23 @@ func TestImage(t *testing.T) {
 		t.Error("Data not found len: ", len(data))
 	}
 }
+
+func TestDownloadFile(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	response, err := http.Get(server.URL+"/downloadFile")
+	if err != nil {
+		t.Fatal("Got error during request: ", err)
+	}
+
+	header := response.Header.Get("Content-Type")
+	if header != "application/octet-stream" {
+		t.Fatal("Got invalid header: ", header)
+	}
+	data := readBodyAsString(t, response)
+	if !strings.HasPrefix(data, "asdbar") {
+		t.Error("Invalid beginning of data: ", data[:100])
+	}
+
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func greet(w http.ResponseWriter, r *http.Request) {
@@ -26,14 +27,23 @@ func servePicture(w http.ResponseWriter, req *http.Request) {
 	// io.Copy(w, f)
 
 	http.ServeFile(w, req, "pic.jpg")
+
+	// http.FileServer() - we can serve whole directories
 }
 
+func downloadFile(w http.ResponseWriter, request *http.Request) {
+	fileName := "aFile.txt"
+	w.Header().Set("Content-Disposition", "attachment; filename="+strconv.Quote(fileName))
+	w.Header().Set("Content-Type", "application/octet-stream")
+	http.ServeFile(w, request, fileName)
+}
 
 func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", greet)
 	mux.HandleFunc("/picture", getPicture)
 	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource not working without it!
+	mux.HandleFunc("/downloadFile", downloadFile)
 	
 
 	return mux
