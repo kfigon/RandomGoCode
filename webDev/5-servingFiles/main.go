@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"log"
 )
 
 func greet(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +45,7 @@ func createMux() *http.ServeMux {
 	mux.HandleFunc("/picture", getPicture)
 	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource not working without it!
 	mux.HandleFunc("/downloadFile", downloadFile)
-	
+
 	// serve files without exposing our file system
 	// http.Handle("/resources/", http.StripPrefix("/resources", http.FileServer(http.Dir("./assets"))))
 
@@ -52,5 +53,10 @@ func createMux() *http.ServeMux {
 }
 
 func main() {
-	http.ListenAndServe(":8080", createMux())
+	err := http.ListenAndServe(":8080", createMux())
+	log.Fatal(err)
+	
+	// we can serve static webpages with go server:
+	// http.ListenAndServe(":8080", http.FileServer(http.Dir(".")))
+	
 }
