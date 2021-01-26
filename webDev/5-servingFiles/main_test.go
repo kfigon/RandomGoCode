@@ -90,5 +90,17 @@ func TestDownloadFile(t *testing.T) {
 	if !strings.HasPrefix(data, "asdbar") {
 		t.Error("Invalid beginning of data: ", data[:100])
 	}
+}
 
+func TestNotFound(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	response, err := http.Get(server.URL+"/dupa")
+	if err != nil {
+		t.Fatal("Got error during request: ", err)
+	}
+	if response.StatusCode != http.StatusNotFound {
+		t.Fatal("Invalid status, expected 404, got:", response.StatusCode)
+	}
 }

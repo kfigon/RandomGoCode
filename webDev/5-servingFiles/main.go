@@ -45,6 +45,7 @@ func createMux() *http.ServeMux {
 	mux.HandleFunc("/picture", getPicture)
 	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource not working without it!
 	mux.HandleFunc("/downloadFile", downloadFile)
+	mux.HandleFunc("/dupa", http.NotFound) // common pattern for /favicon.ico
 
 	// serve files without exposing our file system
 	// http.Handle("/resources/", http.StripPrefix("/resources", http.FileServer(http.Dir("./assets"))))
