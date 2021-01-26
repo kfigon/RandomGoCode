@@ -3,7 +3,6 @@ package main
 import (
 	"io"
 	"net/http"
-	"os"
 )
 
 func greet(w http.ResponseWriter, r *http.Request) {
@@ -17,13 +16,15 @@ func getPicture(w http.ResponseWriter, req *http.Request) {
 }
 
 func servePicture(w http.ResponseWriter, req *http.Request) {
-	f, err := os.Open("pic.jpg")
-	if err != nil {
-		http.Error(w, "file not found", http.StatusNotFound)
-		return
-	}
-	defer f.Close()
-	io.Copy(w, f)
+	// f, err := os.Open("pic.jpg")
+	// if err != nil {
+	// 	http.Error(w, "file not found", http.StatusNotFound)
+	// 	return
+	// }
+	// defer f.Close()
+	// io.Copy(w, f)
+
+	http.ServeFile(w, req, "pic.jpg")
 }
 
 
@@ -31,7 +32,9 @@ func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", greet)
 	mux.HandleFunc("/picture", getPicture)
-	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource
+	mux.HandleFunc("/pic.jpg", servePicture) // serve picture by exposing resource not working without it!
+	
+
 	return mux
 }
 
