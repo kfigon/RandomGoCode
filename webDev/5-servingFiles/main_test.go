@@ -31,7 +31,7 @@ func readBodyAsString(t *testing.T, response *http.Response) string{
 	return string(body)
 }
 
-func TestImage(t *testing.T) {
+func TestImageHtml(t *testing.T) {
 	server := httptest.NewServer(createMux())
 	defer server.Close()
 
@@ -46,7 +46,29 @@ func TestImage(t *testing.T) {
 	}
 
 	responseString := readBodyAsString(t, response)
-	if !strings.Contains(responseString, `<img src="pic.jpg">`) {
+	if !strings.Contains(responseString, `<img src="/pic.jpg">`) {
 		t.Error("not contains img tag: ", responseString)
+	}
+}
+
+func TestImage(t *testing.T) {
+	server := httptest.NewServer(createMux())
+	defer server.Close()
+
+	response, err := http.Get(server.URL+"/pic.jpg")
+	if err != nil {
+		t.Fatal("Got error during request: ", err)
+	}
+
+	header := response.Header.Get("Content-Type")
+	if header != "image/jpeg" {
+		t.Error("Got invalid header: ", header)
+	}
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Error("Got error during file read:", err)
+	}
+	if len(data) < 10000 {
+		t.Error("Data not found len: ", len(data))
 	}
 }
