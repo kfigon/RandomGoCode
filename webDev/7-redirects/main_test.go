@@ -38,7 +38,7 @@ func TestRedirect(t *testing.T) {
 	resp, _ := http.Get(srv.URL+"/redirect")
 	// 301 - moved permanently - browser will always use new address
 	// 302 - found - just redirect to other URL, preserves method. "Legacy"
-	// 303 - see other - like 302, but always will be GET
+	// 303 - see other - like 302, but always will be GET. Nice for redirect to status page after POST
 	// 307 - temporary redirected - preserves method
 
 	// will redirect and return 200

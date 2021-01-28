@@ -11,6 +11,10 @@ func greet(w http.ResponseWriter, r *http.Request) {
 
 func redirect(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w,r, "/resource", http.StatusSeeOther)
+	
+	// equivalent
+	// w.Header().Set("Location", "/resource")
+	// w.WriteHeader(http.StatusSeeOther)
 }
 
 func createMux() *http.ServeMux {
