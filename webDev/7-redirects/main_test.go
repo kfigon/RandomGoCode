@@ -36,8 +36,14 @@ func TestRedirect(t *testing.T) {
 	defer srv.Close()
 
 	resp, _ := http.Get(srv.URL+"/redirect")
-	if resp.StatusCode != http.StatusFound { // 302
-		t.Error("Invalid status. Exp 302, Got: ", resp.StatusCode)
+	// 301 - moved permanently - browser will always use new address
+	// 302 - found - just redirect to other URL, preserves method. "Legacy"
+	// 303 - see other - like 302, but always will be GET
+	// 307 - temporary redirected - preserves method
+
+	// will redirect and return 200
+	if resp.StatusCode != http.StatusOK {
+		t.Error("Invalid status. Exp 200, Got: ", resp.StatusCode)
 	}
 	r, _ := ioutil.ReadAll(resp.Body)
 	if string(r) != "Hi" {
