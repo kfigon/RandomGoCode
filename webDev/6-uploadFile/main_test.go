@@ -1,13 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
 	"testing"
 	"net/http/httptest"
 	"net/http"
 	"strings"
 	"io"
-	"mime/multipart"
 )
 
 func createServer() (string, func()) {
@@ -61,36 +59,5 @@ func TestGetForm(t *testing.T) {
 	resp := getAndAssertStatus(t, baseURL+"/form", http.StatusOK)	
 	if head := resp.Header.Get("Content-Type"); head != "text/html" {
 		t.Error("invalid content header :" + head)
-	}
-}
-
-func TestPostFileThroughForm(t *testing.T) {
-	baseURL, closeFun := createServer()
-	defer closeFun()
-
-	fileContent := "this is my file asd"
-	f, _ := ioutil.TempFile("", "")
-	defer f.Close()
-	
-	io.WriteString(f, fileContent)
-	w := multipart.NewWriter(f)
-	w.CreateFormFile("usersFile", f.Name())
-	defer w.Close()
-
-	body := 
-	resp, _ := http.Post(baseURL+"/form", "multipart/form-data", body)
-	if resp.StatusCode != http.StatusOK {
-		t.Error("Invalid status received: ", resp.StatusCode)
-	}
-	if head := resp.Header.Get("Content-Type"); head != "text/html" {
-		t.Error("invalid content header :" + head)
-	}
-	responseBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Error("got error during reading response: ", err)
-	}
-	responseString := string(responseBody)
-	if !strings.Contains(responseString, fileContent) {
-		t.Error("Output does not contain uploaded file: ", responseString)
 	}
 }
