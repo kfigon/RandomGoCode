@@ -30,3 +30,17 @@ func TestResource(t *testing.T) {
 		t.Error("invalid body received")
 	}
 }
+
+func TestRedirect(t *testing.T) {
+	srv := httptest.NewServer(createMux())
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL+"/redirect")
+	if resp.StatusCode != http.StatusFound { // 302
+		t.Error("Invalid status. Exp 302, Got: ", resp.StatusCode)
+	}
+	r, _ := ioutil.ReadAll(resp.Body)
+	if string(r) != "Hi" {
+		t.Error("invalid body received")
+	}
+}
