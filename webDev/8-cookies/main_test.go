@@ -56,15 +56,16 @@ func TestLoginWithoutCookie(t *testing.T) {
 func TestLoginWithCookie(t *testing.T) {
 	srv := httptest.NewServer(createMux())
 	defer srv.Close()
-	client := srv.Client()
-	client.Jar, _ = cookiejar.New(nil)
 
 	url, _ := url.Parse(srv.URL+"/")
+
+	client := srv.Client()
+	client.Jar, _ = cookiejar.New(nil)
 	myCookie := http.Cookie{Name:"ziomCookie", Value: "asdVal"}
 	cookies := make([]*http.Cookie,0)
 	cookies = append(cookies, &myCookie)
-
 	client.Jar.SetCookies(url, cookies)
+
 	resp, _ := client.Get(srv.URL +"/")
 	expStatus := http.StatusOK
 	if gotStatus := resp.StatusCode; gotStatus != expStatus {
