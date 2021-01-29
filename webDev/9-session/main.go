@@ -8,6 +8,9 @@ import (
 )
 // sessions are just cookies with unique values to have state
 // cookie value is stored in DB/memory and stores user context
+
+// expire session - on every request set cookies MaxAge, cookie will be invalid (but will be present in our map)
+// periodically go through sessions and clean old. Need lastActivity field
 func greet(w http.ResponseWriter, r *http.Request) {
 	session, err := getSession(r)
 	if err != nil {
