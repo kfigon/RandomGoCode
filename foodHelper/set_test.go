@@ -188,5 +188,7 @@ func TestImmutabilityOfIntersectionWhenModifyingBoth(t *testing.T) {
 
 	expectedResult := []int{5,6,7,8,9,2}
 	assertContainsAll(t, intersection, expectedResult)
+	assertContainsAll(t, set1, []int{5,6,7,100})
+	assertContainsAll(t, set2, []int{8,9,2,102})
 }
 
