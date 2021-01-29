@@ -163,3 +163,30 @@ func TestIntersection(t *testing.T) {
 	}
 }
 
+func TestImmutabilityOfIntersection(t *testing.T) {
+	firstSetData := []int{5,6,7}
+	secondSetData := []int{8,9,2}
+	set1 := newSet(firstSetData...)
+	set2 := newSet(secondSetData...)
+
+	set1.intersection(set2)
+	assertContainsAll(t, set1, firstSetData)
+	assertContainsAll(t, set2, secondSetData)
+}
+
+func TestImmutabilityOfIntersectionWhenModifyingBoth(t *testing.T) {
+	firstSetData := []int{5,6,7}
+	secondSetData := []int{8,9,2}
+	set1 := newSet(firstSetData...)
+	set2 := newSet(secondSetData...)
+
+	intersection := set1.intersection(set2)
+	assertContainsAll(t, set1, firstSetData)
+	assertContainsAll(t, set2, secondSetData)
+	set1.add(100)
+	set2.add(102)
+
+	expectedResult := []int{5,6,7,8,9,2}
+	assertContainsAll(t, intersection, expectedResult)
+}
+
