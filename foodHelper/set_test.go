@@ -4,6 +4,21 @@ import (
 	"testing"
 )
 
+func assertSize(t *testing.T, s *set, expectedSize int) {
+	if le := s.size(); le != expectedSize {
+		t.Errorf("Length should be: %v, got: %v", expectedSize, le)
+	}
+}
+
+func assertContainsAll(t *testing.T, s *set, expected []int) {
+	assertSize(t, s, len(expected))
+	for _, v := range expected {
+		if !s.has(v) {
+			t.Errorf("%v not found in set", v)
+		}
+	}
+}
+
 func TestCreateEmptySet(t *testing.T) {
 	set := newSet()
 	assertSize(t, set, 0)
@@ -22,19 +37,6 @@ func TestInitWithDuplicates(t *testing.T) {
 	assertContainsAll(t, set, []int{1,2,3})
 	if set.has(4) {
 		t.Error("4 shouldnt be in set")
-	}
-}
-func assertSize(t *testing.T, s *set, expectedSize int) {
-	if le := s.size(); le != expectedSize {
-		t.Errorf("Length should be: %v, got: %v", expectedSize, le)
-	}
-}
-func assertContainsAll(t *testing.T, s *set, expected []int) {
-	assertSize(t, s, len(expected))
-	for _, v := range expected {
-		if !s.has(v) {
-			t.Errorf("%v not found in set", v)
-		}
 	}
 }
 
@@ -148,6 +150,12 @@ func TestIntersection(t *testing.T) {
 		{
 			desc: "withDuplicates",
 			first: []int{8,9},
+			second: []int{8,9,1},
+			exp: []int{8,9,1},
+		},
+		{
+			desc: "theSame",
+			first: []int{8,9,1},
 			second: []int{8,9,1},
 			exp: []int{8,9,1},
 		},
