@@ -24,8 +24,8 @@ func getSession(r *http.Request) (*userContext, error) {
 		return nil, err
 	}
 	sessionData, ok := sessions[c.Value]
-	if !ok {
-		return nil, err
+	if !ok || sessionData == nil {
+		return nil, fmt.Errorf("Invalid session")
 	}
 	return sessionData, nil
 }
@@ -33,8 +33,10 @@ func getSession(r *http.Request) (*userContext, error) {
 type userContext struct {
 	numberOfEntrance int
 }
-
-var sessions map[string]*userContext
+// usually this should be separate space:
+// dbSessions map[sessionId]userId
+// users map[userId]userData
+var sessions = map[string]*userContext{}
 
 func login(w http.ResponseWriter, r *http.Request) {
 	sessionID := uuid.Must(uuid.NewV4()).String()
@@ -51,7 +53,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	sessions = make(map[string]*userContext)
 	http.HandleFunc("/", greet)
 	http.HandleFunc("/login", login)
 	http.ListenAndServe(":8080", nil)
