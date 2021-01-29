@@ -109,6 +109,39 @@ func TestIterateNotEmpty(t *testing.T) {
 }
 
 func TestIntersection(t *testing.T) {
-	t.Fail()
+	testCases := []struct {
+		desc	string
+		first  []int	
+		second []int
+		exp []int
+	}{
+		{
+			desc: "bothEmpty",
+			first: []int{},
+			second: []int{},
+			exp: []int{},
+		},
+		{
+			desc: "firstEmpty_secondNot",
+			first: []int{},
+			second: []int{5,6,7},
+			exp: []int{5,6,7},
+		},
+		{
+			desc: "firstNotEmpty_secondEmpty",
+			first: []int{5,6,7},
+			second: []int{},
+			exp: []int{5,6,7},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			set1 := newSet(tc.first...)
+			set2 := newSet(tc.second...)
+
+			result := set1.intersection(set2)
+			assertContainsAll(t, result, tc.exp)
+		})
+	}
 }
 

@@ -41,3 +41,7 @@ func (s *set) els() []int {
 	}
 	return result
 }
+
+func (s *set) intersection(other *set) *set {
+	return newSet(other.els()...)
+}
