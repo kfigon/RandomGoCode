@@ -29,17 +29,18 @@ import (
 func login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:"ziomCookie",
-		Value:"asd",
+		Value:"asdVal",
 	})
 	io.WriteString(w, "Hi!")
 }
 
 func check(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("ziomCookie")
-	if err != nil {
+	c, err := r.Cookie("ziomCookie")
+	if err != nil || c.Value != "asdVal" {
 		http.Error(w, "", http.StatusForbidden)
 		return
 	}
+	io.WriteString(w, "This is secret data")
 }
 
 func createMux() *http.ServeMux {
