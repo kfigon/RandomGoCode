@@ -43,5 +43,9 @@ func (s *set) els() []int {
 }
 
 func (s *set) intersection(other *set) *set {
-	return newSet(other.els()...)
+	resultSet := newSet(s.els()...)
+	for v := range other.elements {
+		resultSet.add(v)
+	}
+	return resultSet
 }
