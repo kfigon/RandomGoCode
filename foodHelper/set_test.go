@@ -133,6 +133,24 @@ func TestIntersection(t *testing.T) {
 			second: []int{},
 			exp: []int{5,6,7},
 		},
+		{
+			desc: "firstNotEmpty_secondNotEmpty",
+			first: []int{5,6,7},
+			second: []int{8,9},
+			exp: []int{5,6,7,8,9},
+		},
+		{
+			desc: "firstNotEmpty_secondNotEmpty2",
+			first: []int{8,9},
+			second: []int{5,6,7},
+			exp: []int{5,6,7,8,9},
+		},
+		{
+			desc: "withDuplicates",
+			first: []int{8,9},
+			second: []int{8,9,1},
+			exp: []int{8,9,1},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
