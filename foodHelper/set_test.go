@@ -47,7 +47,7 @@ func TestAddWhenEmpty(t *testing.T) {
 	set.add(4)
 	set.add(3)
 	set.add(3)
-	
+
 	assertContainsAll(t, set, []int{4,3})
 	if set.has(1) {
 		t.Error("4 shouldnt be in set")
@@ -61,21 +61,51 @@ func TestAddWithElements(t *testing.T) {
 	set.add(4)
 	set.add(3)
 	set.add(3)
-	if !set.has(3) || !set.has(4) || !set.has(12) || !set.has(10) {
-		t.Error("Element should be present")
-	}
+	set.add(10)
+
+	assertContainsAll(t, set, []int{3,4,12,10})
 	if set.has(1) {
 		t.Error("4 shouldnt be in set")
 	}
-	assertSize(t, set, 4)
 }
 
 func TestRemove(t *testing.T) {
-	t.Fail()
+	set := newSet(5,6,7)
+	set.remove(5)
+	assertContainsAll(t, set, []int{6,7})
 }
 
 func TestRemoveNotExisting(t *testing.T) {
-	t.Fail()
+	set := newSet(5,6,7)
+	set.remove(18)
+	assertContainsAll(t, set, []int{6,7,5})
+}
+
+func TestIterateEmpty(t *testing.T) {
+	set := newSet()
+	elements := set.els()
+	if gotElements := len(elements); gotElements != 0 {
+		t.Errorf("Expected empty set, got: %v", gotElements)
+	}
+}
+func TestIterateNotEmpty(t *testing.T) {
+	set := newSet(5,6,7)
+	elements := set.els()
+	expLen := 3
+	if gotElements := len(elements); gotElements != expLen {
+		t.Errorf("Expected empty set, got: %v, exp :%v", gotElements, expLen)
+	}
+	contains := func(el int) bool {
+		for _, v := range elements {
+			if v == el{
+				return true
+			}
+		}
+		return false
+	}
+	if !contains(5) || !contains(6) || !contains(7) {
+		t.Error("Required elements not contained")
+	}
 }
 
 func TestIntersection(t *testing.T) {

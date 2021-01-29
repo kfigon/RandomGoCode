@@ -27,3 +27,17 @@ func (s *set) has(val int) bool {
 func (s *set) add(val int) {
 	s.elements[val] = true
 }
+
+func (s *set) remove(val int)  {
+	delete(s.elements, val)
+}
+
+func (s *set) els() []int {
+	result := make([]int, s.size())
+	i := 0
+	for key := range s.elements {
+		result[i] = key
+		i++
+	}
+	return result
+}
