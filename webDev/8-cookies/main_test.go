@@ -12,7 +12,7 @@ func TestHello(t *testing.T) {
 	srv := httptest.NewServer(createMux())
 	defer srv.Close()
 
-	resp, _ := http.Get(srv.URL +"/")
+	resp, _ := http.Get(srv.URL +"/login")
 	expStatus := http.StatusOK
 	if gotStatus := resp.StatusCode; gotStatus != expStatus {
 		t.Errorf("Wrong status, got %v, exp %v", gotStatus, expStatus)
@@ -37,5 +37,33 @@ func TestHello(t *testing.T) {
 	if len(cookies[0].Name) == 0 {
 		t.Error("Empty cookie received")
 	}
+}
 
+func TestLoginWithoutCookie(t *testing.T) {
+	srv := httptest.NewServer(createMux())
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL +"/")
+	expStatus := http.StatusForbidden
+	if gotStatus := resp.StatusCode; gotStatus != expStatus {
+		t.Errorf("Wrong status, got %v, exp %v", gotStatus, expStatus)
+	}
+}
+
+
+func TestLoginWithCookie(t *testing.T) {
+	srv := httptest.NewServer(createMux())
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL +"/")
+	expStatus := http.StatusOK
+	if gotStatus := resp.StatusCode; gotStatus != expStatus {
+		t.Errorf("Wrong status, got %v, exp %v", gotStatus, expStatus)
+	}
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	strBody := string(body)
+	if !strings.Contains(strBody, "This is secret data") {
+		t.Errorf("Invalid body received: %q", strBody)
+	}
 }

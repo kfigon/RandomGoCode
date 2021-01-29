@@ -25,8 +25,8 @@ import (
 	// SameSite SameSite
 	// Raw      string
 	// Unparsed []string // Raw text of unparsed attribute-value pairs
-	
-func greet(w http.ResponseWriter, r *http.Request) {
+
+func login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:"ziomCookie",
 		Value:"asd",
@@ -34,9 +34,18 @@ func greet(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hi!")
 }
 
+func check(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("ziomCookie")
+	if err != nil {
+		http.Error(w, "", http.StatusForbidden)
+		return
+	}
+}
+
 func createMux() *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", greet)
+	mux.HandleFunc("/login", login)
+	mux.HandleFunc("/", check)
 	return mux
 }
 
