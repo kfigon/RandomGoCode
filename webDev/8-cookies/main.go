@@ -31,6 +31,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Name:"ziomCookie",
 		Value:"asdVal",
 	})
+	// equivalent
+	// w.Header().Set("Set-Cookie","ziomCookie=asdVal")
 	io.WriteString(w, "Hi!")
 }
 
