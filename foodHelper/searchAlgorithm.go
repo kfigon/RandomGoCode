@@ -1,12 +1,17 @@
 package main
 
-type productDb interface{}
+type productDb interface {
+	findFoods() []food
+}
 
-type searchService struct{
+type searchService struct {
 	db *productDb
 }
 
-type food struct{}
+type food struct {
+	name string
+	requiredIngredients *set
+}
 
 func newSearch(db productDb) *searchService {
 	return &searchService{&db}
