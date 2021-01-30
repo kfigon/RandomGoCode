@@ -110,7 +110,7 @@ func TestIterateNotEmpty(t *testing.T) {
 	}
 }
 
-func TestIntersection(t *testing.T) {
+func TestSum(t *testing.T) {
 	testCases := []struct {
 		desc	string
 		first  []int	
@@ -165,37 +165,105 @@ func TestIntersection(t *testing.T) {
 			set1 := newSet(tc.first...)
 			set2 := newSet(tc.second...)
 
+			result := set1.sum(set2)
+			assertContainsAll(t, result, tc.exp)
+		})
+	}
+}
+
+func TestIntersection(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		first  []int	
+		second []int
+		exp []int
+	}{
+		{
+			desc: "bothEmpty",
+			first: []int{},
+			second: []int{},
+			exp: []int{},
+		},
+		{
+			desc: "firstEmpty_secondNot",
+			first: []int{},
+			second: []int{5,6,7},
+			exp: []int{},
+		},
+		{
+			desc: "firstNotEmpty_secondEmpty",
+			first: []int{5,6,7},
+			second: []int{},
+			exp: []int{},
+		},
+		{
+			desc: "firstNotEmpty_secondNotEmpty",
+			first: []int{5,6,7},
+			second: []int{8,9},
+			exp: []int{},
+		},
+		{
+			desc: "firstNotEmpty_secondNotEmpty2",
+			first: []int{7,9},
+			second: []int{5,6,7},
+			exp: []int{7},
+		},
+		{
+			desc: "firstNotEmpty_secondNotEmpty2",
+			first: []int{5,6,7},
+			second: []int{7,9},
+			exp: []int{7},
+		},
+		{
+			desc: "withDuplicates",
+			first: []int{8,9},
+			second: []int{8,9,1},
+			exp: []int{8,9},
+		},
+		{
+			desc: "theSame",
+			first: []int{8,9,1},
+			second: []int{8,9,1},
+			exp: []int{8,9,1},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			set1 := newSet(tc.first...)
+			set2 := newSet(tc.second...)
+
 			result := set1.intersection(set2)
 			assertContainsAll(t, result, tc.exp)
 		})
 	}
 }
 
-func TestImmutabilityOfIntersection(t *testing.T) {
+
+func TestImmutabilityOfSummed(t *testing.T) {
 	firstSetData := []int{5,6,7}
 	secondSetData := []int{8,9,2}
 	set1 := newSet(firstSetData...)
 	set2 := newSet(secondSetData...)
 
-	set1.intersection(set2)
+	set1.sum(set2)
 	assertContainsAll(t, set1, firstSetData)
 	assertContainsAll(t, set2, secondSetData)
 }
 
-func TestImmutabilityOfIntersectionWhenModifyingBoth(t *testing.T) {
+func TestImmutabilityOfSummedWhenModifyingBoth(t *testing.T) {
 	firstSetData := []int{5,6,7}
 	secondSetData := []int{8,9,2}
 	set1 := newSet(firstSetData...)
 	set2 := newSet(secondSetData...)
 
-	intersection := set1.intersection(set2)
+	sum := set1.sum(set2)
 	assertContainsAll(t, set1, firstSetData)
 	assertContainsAll(t, set2, secondSetData)
 	set1.add(100)
 	set2.add(102)
 
 	expectedResult := []int{5,6,7,8,9,2}
-	assertContainsAll(t, intersection, expectedResult)
+	assertContainsAll(t, sum, expectedResult)
 	assertContainsAll(t, set1, []int{5,6,7,100})
 	assertContainsAll(t, set2, []int{8,9,2,102})
 }

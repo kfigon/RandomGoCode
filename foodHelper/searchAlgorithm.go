@@ -5,7 +5,7 @@ type productDb interface {
 }
 
 type searchService struct {
-	db *productDb
+	db productDb
 }
 
 type food struct {
@@ -14,11 +14,22 @@ type food struct {
 }
 
 func newSearch(db productDb) *searchService {
-	return &searchService{&db}
+	return &searchService{db}
 }
 
 func (s *searchService) findFoods(ingredients *set) []food {
-	return nil
+	result := make([]food,0)
+	allFoods := s.db.findFoods()
+
+	for _, v := range allFoods {
+		commonIngredients := ingredients.intersection(v.requiredIngredients)
+		if commonIngredients.size() != 0 {
+			f := v
+			result = append(result, f)
+		}
+	}
+
+	return result
 }
 
 

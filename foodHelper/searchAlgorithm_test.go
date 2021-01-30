@@ -49,6 +49,7 @@ func TestIngredients(t *testing.T) {
 		{ "InvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
 		{ "IdealHit", newSet(int(salad),int(cheese),int(apple)), []food{mockedFoods[2]}},
 		{ "IdealHit_differentOrder", newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
+		{ "multipleFoundings-todo", newSet(), []food{mockedFoods[2]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {

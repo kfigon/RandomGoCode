@@ -42,10 +42,25 @@ func (s *set) els() []int {
 	return result
 }
 
-func (s *set) intersection(other *set) *set {
+func (s *set) sum(other *set) *set {
 	resultSet := newSet(s.els()...)
 	for v := range other.elements {
 		resultSet.add(v)
 	}
 	return resultSet
+}
+
+func (s *set) intersection(other *set) *set {
+	resultSet := newSet()
+	for v := range other.elements {
+		if s.has(v) {
+			resultSet.add(v)
+		}
+	}
+	for v := range s.elements {
+		if other.has(v) {
+			resultSet.add(v)
+		}
+	}
+	return newSet()
 }
