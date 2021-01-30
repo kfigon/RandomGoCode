@@ -1,5 +1,9 @@
 package main
 
+import (
+	// "log"
+)
+
 type productDb interface {
 	findFoods() []food
 }
@@ -23,6 +27,9 @@ func (s *searchService) findFoods(ingredients *set) []food {
 
 	for _, v := range allFoods {
 		commonIngredients := ingredients.intersection(v.requiredIngredients)
+
+		// log.Printf("Intesection of %v with %v, got: %v\n", ingredients.els(), v.requiredIngredients.els(), commonIngredients.els())
+
 		if commonIngredients.size() != 0 {
 			f := v
 			result = append(result, f)
