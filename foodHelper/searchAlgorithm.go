@@ -26,13 +26,13 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 	result := make([]foodRecommendation,0)
 	allFoods := s.db.findFoods()
 
-	strategyFunction := getStrategy(includeStategyType)
+	includeFunction := getStrategy(includeStategyType)
 
-	for _, v := range allFoods {		
+	for _, v := range allFoods {
 		commonIngredients := ingredients.intersection(v.requiredIngredients)
 		fitness := calcFitness(commonIngredients, v.requiredIngredients)
 		
-		if strategyFunction(fitness) {
+		if includeFunction(fitness) {
 			f := v // go :(
 			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
@@ -43,8 +43,9 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 }
 
 func getStrategy(strat includeStrategy) strategyFun {
-	if strat == defaultStrategy {
-		return defaultIncludeStrategy
+	switch strat {
+	case defaultStrategy: return defaultIncludeStrategy
+	case eightyPercent: return includeEightyPercent
 	}
 	return defaultIncludeStrategy
 }
@@ -52,13 +53,18 @@ func getStrategy(strat includeStrategy) strategyFun {
 type includeStrategy string
 const (
 	defaultStrategy includeStrategy = "DEFAULT"
+	eightyPercent = "80_PERCENT"
 )
 
 type strategyFun func(fitnessLevel int) bool
 
 // all required provided
-func defaultIncludeStrategy(fitnessLevel int) bool{
-	return fitnessLevel == 100
+func defaultIncludeStrategy(fitnessLevel int) bool {
+	return fitnessLevel >= 100
+}
+
+func includeEightyPercent(fitnessLevel int) bool {
+	return fitnessLevel >= 80
 }
 
 func calcFitness(commonIngredients *set, required *set) int {
