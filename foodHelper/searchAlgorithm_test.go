@@ -25,7 +25,7 @@ const (
 	bread = 90
 )
 
-var mockedFoods = []food{
+var mockedFoods = []food {
 	food{"first", newSet(int(egg),int(chicken),int(salmon))},
 	food{"second", newSet(int(egg),int(chicken),int(salad))},
 	food{"third", newSet(int(salad),int(cheese),int(apple))},
@@ -79,6 +79,6 @@ func TestIngredients(t *testing.T) {
 	}
 }
 
-func TestbetterTestcasesForAlgorithm(t *testing.T) {
+func TestBetterTestcasesForAlgorithm(t *testing.T) {
 	t.Fail()
 }
