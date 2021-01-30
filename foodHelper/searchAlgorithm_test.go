@@ -63,8 +63,8 @@ func TestIngredientsDefaultStrategy(t *testing.T) {
 			for i := range results {
 				got := results[i]
 				exp := tc.expected[i]
-				if exp.name != got.f.name {
-					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.f.name, exp.name)
+				if exp.name != got.name {
+					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.name, exp.name)
 				}
 				if got.fitnessLevel != 100 {
 					t.Errorf("Default strategy requires perfect fitness, got: %v", got.fitnessLevel)

@@ -14,7 +14,7 @@ type food struct {
 }
 
 type foodRecommendation struct {
-	f food
+	food
 	fitnessLevel int
 }
 
@@ -34,7 +34,7 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 		if shouldAdd(ingredients, v.requiredIngredients, commonIngredients, strategyFunction) {
 			fitness := calcFitness(ingredients, v.requiredIngredients, commonIngredients)
 			f := v // go :(
-			candidate := foodRecommendation{ f:f, fitnessLevel:fitness, }
+			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
 		}
 	}
