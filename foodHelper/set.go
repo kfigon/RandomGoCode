@@ -57,10 +57,6 @@ func (s *set) intersection(other *set) *set {
 			resultSet.add(v)
 		}
 	}
-	for v := range s.elements {
-		if other.has(v) {
-			resultSet.add(v)
-		}
-	}
-	return newSet()
+
+	return resultSet
 }
