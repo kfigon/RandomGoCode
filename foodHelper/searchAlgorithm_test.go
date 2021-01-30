@@ -25,14 +25,16 @@ const (
 	bread = 90
 )
 
+var mockedFoods = []food{
+	food{"first", newSet(int(egg),int(chicken),int(salmon))},
+	food{"second", newSet(int(egg),int(chicken),int(salad))},
+	food{"third", newSet(int(salad),int(cheese),int(apple))},
+}
+
 func createMockDb() mockDb {
 	return mockDb{
 		findFoodFun: func() []food {
-			return []food{
-				food{"first", newSet(int(egg),int(chicken),int(salmon))},
-				food{"second", newSet(int(egg),int(chicken),int(salad))},
-				food{"third", newSet(int(salad),int(cheese),int(apple))},
-			}
+			return mockedFoods
 		},
 	}
 }
@@ -43,8 +45,10 @@ func TestIngredients(t *testing.T) {
 		ingredients *set
 		expected []food
 	}{
-		{ "WhenEmptyIngredients_thenEmptyResult", newSet(), []food{}},
-		{ "WhenInvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
+		{ "EmptyIngredients_thenEmptyResult", newSet(), []food{}},
+		{ "InvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
+		{ "IdealHit", newSet(int(egg),int(chicken),int(salmon)), []food{mockedFoods[0]}},
+		{ "IdealHit_differentOrder", newSet(int(chicken),int(egg),int(salmon)), []food{mockedFoods[0]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -52,7 +56,7 @@ func TestIngredients(t *testing.T) {
 		
 			results := alg.findFoods(tc.ingredients)
 
-			if ln := len(results); ln != 0 {
+			if ln := len(results); ln != len(tc.expected) {
 				t.Fatalf("Invalid len got: %v, exp %v", ln, len(tc.expected))
 			}
 
