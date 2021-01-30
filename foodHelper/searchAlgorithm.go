@@ -32,7 +32,7 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 		commonIngredients := ingredients.intersection(v.requiredIngredients)
 		
 		if shouldAdd(ingredients, v.requiredIngredients, commonIngredients, strategyFunction) {
-			fitness := calcFitness(ingredients, v.requiredIngredients, commonIngredients)
+			fitness := calcFitness(ingredients, v.requiredIngredients)
 			f := v // go :(
 			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
@@ -64,6 +64,6 @@ func shouldAdd(ingredients *set, required *set, commonIngredients *set, includeS
 	return includeStrategy(ingredients.size(), required.size(), commonIngredients.size())
 }
 
-func calcFitness(ingredients *set, required *set, commonIngredients *set) int {
-	return commonIngredients.size()/required.size() * 100
+func calcFitness(ingredients *set, required *set) int {
+	return ingredients.size()/required.size() * 100
 }
