@@ -42,6 +42,10 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 	return result
 }
 
+func calcFitness(commonIngredients *set, required *set) int {
+	return commonIngredients.size()/required.size() * 100
+}
+
 func getStrategy(strat includeStrategy) strategyFun {
 	switch strat {
 	case defaultStrategy: return defaultIncludeStrategy
@@ -65,8 +69,4 @@ func defaultIncludeStrategy(fitnessLevel int) bool {
 
 func includeEightyPercent(fitnessLevel int) bool {
 	return fitnessLevel >= 80
-}
-
-func calcFitness(commonIngredients *set, required *set) int {
-	return commonIngredients.size()/required.size() * 100
 }

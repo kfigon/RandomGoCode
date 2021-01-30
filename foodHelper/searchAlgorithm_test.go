@@ -49,7 +49,7 @@ func TestIngredients(t *testing.T) {
 		{ "default_EmptyIngredients_thenEmptyResult", defaultStrategy, newSet(), []food{}},
 		{ "default_InvalidIngredients_thenEmptyResult", defaultStrategy, newSet(noodle,bread), []food{}},
 		{ "default_IdealHit", defaultStrategy, newSet(int(salad),int(cheese),int(apple)), []food{mockedFoods[2]}},
-		{ "default_IdealHit_differentOrder", defaultStrategy,newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
+		{ "default_IdealHit_differentOrder", defaultStrategy, newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
 
 		{ "80_EmptyIngredients_thenEmptyResult", eightyPercent, newSet(), []food{}},
 		{ "80_InvalidIngredients_thenEmptyResult", eightyPercent, newSet(noodle,bread), []food{}},
@@ -74,6 +74,11 @@ func TestIngredients(t *testing.T) {
 					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.name, exp.name)
 				}
 			}
+			
 		})
 	}
+}
+
+func TestbetterTestcasesForAlgorithm(t *testing.T) {
+	t.Fail()
 }
