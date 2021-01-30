@@ -1,3 +1,4 @@
+# DB
 run:
 ```
 docker run --rm --name pg-docker -e POSTGRES_PASSWORD=mypass -e POSTGRES_USER=myuser -d -p 5432:5432 postgres
@@ -25,3 +26,12 @@ connect in intelliJ:
 ```
 jdbc:postgresql://localhost:5432/postgres
 ```
+
+
+# GO
+```
+go mod init hello
+go get github.com/jackc/pgx/v4
+```
+connection string:
+` postgresql://localhost:5432/mydb?user=myuser&password=mypass`
