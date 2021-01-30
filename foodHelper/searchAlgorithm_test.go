@@ -37,24 +37,33 @@ func createMockDb() mockDb {
 	}
 }
 
-func TestWhenEmptyIngredients_thenEmptyResult(t *testing.T) {
-	ingredients := newSet()
-	alg := newSearch(createMockDb())
+func TestIngredients(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		ingredients *set
+		expected []food
+	}{
+		{ "WhenEmptyIngredients_thenEmptyResult", newSet(), []food{}},
+		{ "WhenInvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			alg := newSearch(createMockDb())
+		
+			results := alg.findFoods(tc.ingredients)
 
-	results := alg.findFoods(ingredients)
+			if ln := len(results); ln != 0 {
+				t.Fatalf("Invalid len got: %v, exp %v", ln, len(tc.expected))
+			}
 
-	if ln := len(results); ln != 0 {
-		t.Error("Expected empty result, got: ", ln)
+			for i := range results {
+				got := results[i]
+				exp := tc.expected[i]
+				if exp.name != got.name {
+					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.name, exp.name)
+				}
+			}
+		})
 	}
 }
 
-func TestWhenInvalidIngredients_thenEmptyResult(t *testing.T) {
-	ingredients := newSet(noodle,bread)
-	alg := newSearch(createMockDb())
-
-	results := alg.findFoods(ingredients)
-
-	if ln := len(results); ln != 0 {
-		t.Error("Expected empty result, got: ", ln)
-	}
-}
