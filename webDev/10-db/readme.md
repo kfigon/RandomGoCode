@@ -32,7 +32,9 @@ jdbc:postgresql://localhost:5432/postgres
 ```
 go mod init hello
 go get github.com/jackc/pgx/v4
-go get github.com/lib/pq
 ```
 connection string:
 ` postgresql://localhost:5432/mydb?user=myuser&password=mypass`
+
+for standard lib:
+`postgresql://myuser:mypass@localhost:5432/mydb`
