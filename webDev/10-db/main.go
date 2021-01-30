@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -11,17 +10,20 @@ import (
 func main() {
 	conn, err := pgx.Connect(context.Background(), "postgresql://localhost:5432/mydb?user=myuser&password=mypass")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
 	defer conn.Close(context.Background())
 
+	readGreeting(conn)
+}
+
+func readGreeting(conn *pgx.Conn) {
 	var greeting string
-	err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
+	err := conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("QueryRow failed: %v\n", err)
+		return
 	}
 
-	fmt.Println(greeting)
+	log.Println(greeting)
 }
