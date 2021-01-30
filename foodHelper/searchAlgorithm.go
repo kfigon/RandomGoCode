@@ -13,20 +13,29 @@ type food struct {
 	requiredIngredients *set
 }
 
+type foodRecommendation struct {
+	f food
+	fitnessLevel int
+}
+
 func newSearch(db productDb) *searchService {
 	return &searchService{db}
 }
 
-func (s *searchService) findFoods(ingredients *set, includeStategyType includeStrategy) []food {
-	result := make([]food,0)
+func (s *searchService) findFoods(ingredients *set, includeStategyType includeStrategy) []foodRecommendation {
+	result := make([]foodRecommendation,0)
 	allFoods := s.db.findFoods()
 
 	strategyFunction := getStrategy(includeStategyType)
 
 	for _, v := range allFoods {		
-		if shouldAdd(ingredients, v.requiredIngredients, strategyFunction) {
+		commonIngredients := ingredients.intersection(v.requiredIngredients)
+		
+		if shouldAdd(ingredients, v.requiredIngredients, commonIngredients, strategyFunction) {
+			fitness := calcFitness(ingredients, v.requiredIngredients, commonIngredients)
 			f := v // go :(
-			result = append(result, f)
+			candidate := foodRecommendation{ f:f, fitnessLevel:fitness, }
+			result = append(result, candidate)
 		}
 	}
 
@@ -51,7 +60,10 @@ type strategyFun func(ingredientSize, requiredSize, commonIngredientSize int) bo
 func defaultIncludeStrategy(ingredientSize, requiredSize, commonIngredientSize int) bool{
 	return requiredSize == commonIngredientSize
 }
-func shouldAdd(ingredients *set, required *set, includeStrategy strategyFun) bool {
-	commonIngredients := ingredients.intersection(required)
+func shouldAdd(ingredients *set, required *set, commonIngredients *set, includeStrategy strategyFun) bool {
 	return includeStrategy(ingredients.size(), required.size(), commonIngredients.size())
+}
+
+func calcFitness(ingredients *set, required *set, commonIngredients *set) int {
+	return commonIngredients.size()/required.size() * 100
 }
