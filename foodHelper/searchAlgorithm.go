@@ -30,9 +30,9 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 
 	for _, v := range allFoods {		
 		commonIngredients := ingredients.intersection(v.requiredIngredients)
+		fitness := calcFitness(commonIngredients, v.requiredIngredients)
 		
-		if shouldAdd(ingredients, v.requiredIngredients, commonIngredients, strategyFunction) {
-			fitness := calcFitness(ingredients, v.requiredIngredients)
+		if strategyFunction(fitness) {
 			f := v // go :(
 			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
@@ -54,16 +54,13 @@ const (
 	defaultStrategy includeStrategy = "DEFAULT"
 )
 
-type strategyFun func(ingredientSize, requiredSize, commonIngredientSize int) bool
+type strategyFun func(fitnessLevel int) bool
 
 // all required provided
-func defaultIncludeStrategy(ingredientSize, requiredSize, commonIngredientSize int) bool{
-	return requiredSize == commonIngredientSize
-}
-func shouldAdd(ingredients *set, required *set, commonIngredients *set, includeStrategy strategyFun) bool {
-	return includeStrategy(ingredients.size(), required.size(), commonIngredients.size())
+func defaultIncludeStrategy(fitnessLevel int) bool{
+	return fitnessLevel == 100
 }
 
-func calcFitness(ingredients *set, required *set) int {
-	return ingredients.size()/required.size() * 100
+func calcFitness(commonIngredients *set, required *set) int {
+	return commonIngredients.size()/required.size() * 100
 }
