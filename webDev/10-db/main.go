@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"fmt"
 	_ "github.com/jackc/pgx/stdlib"
 )
 
@@ -10,6 +11,9 @@ type person struct {
 	id int
 	creationDate string
 	name string
+}
+func (p person) String() string {
+	return fmt.Sprintf("id: %v, name: %v, date: %v", p.id, p.name, p.creationDate)
 }
 
 func main() {
@@ -37,7 +41,10 @@ func main() {
 
 		people = append(people, p)
 	}
-	log.Println("all gut, got", people)
+	log.Println("all gut, got")
+	for _, v := range people {
+		log.Println(v)
+	}
 }
 
 func check(err error) {
