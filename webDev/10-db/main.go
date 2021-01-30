@@ -7,6 +7,12 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+type person struct {
+	id int
+	creationDate string
+	name string
+}
+
 func main() {
 	conn, err := pgx.Connect(context.Background(), "postgresql://localhost:5432/mydb?user=myuser&password=mypass")
 	if err != nil {
@@ -15,6 +21,21 @@ func main() {
 	defer conn.Close(context.Background())
 
 	readGreeting(conn)
+
+
+	rows, err := conn.Query(context.Background(), "select * from person")
+	if err != nil {
+		log.Fatal("got error during query: ", err)
+	}
+	defer rows.Close()
+
+	persons := make([]person,0)
+	for rows.Next() {
+		p := person{}
+		rows.Scan(&p)
+		persons = append(persons, p)
+	}
+	log.Println(persons)
 }
 
 func readGreeting(conn *pgx.Conn) {
