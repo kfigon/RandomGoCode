@@ -17,12 +17,14 @@ func newSearch(db productDb) *searchService {
 	return &searchService{db}
 }
 
-func (s *searchService) findFoods(ingredients *set) []food {
+func (s *searchService) findFoods(ingredients *set, includeStategyType includeStrategy) []food {
 	result := make([]food,0)
 	allFoods := s.db.findFoods()
 
+	strategyFunction := getStrategy(includeStategyType)
+
 	for _, v := range allFoods {		
-		if shouldAdd(ingredients, v.requiredIngredients, defaultIncludeStrategy) {
+		if shouldAdd(ingredients, v.requiredIngredients, strategyFunction) {
 			f := v // go :(
 			result = append(result, f)
 		}
@@ -30,6 +32,18 @@ func (s *searchService) findFoods(ingredients *set) []food {
 
 	return result
 }
+
+func getStrategy(strat includeStrategy) strategyFun {
+	if strat == defaultStrategy {
+		return defaultIncludeStrategy
+	}
+	return defaultIncludeStrategy
+}
+
+type includeStrategy string
+const (
+	defaultStrategy includeStrategy = "DEFAULT"
+)
 
 type strategyFun func(ingredientSize, requiredSize, commonIngredientSize int) bool
 

@@ -39,7 +39,7 @@ func createMockDb() mockDb {
 	}
 }
 
-func TestIngredients(t *testing.T) {
+func TestIngredientsDefaultStrategy(t *testing.T) {
 	testCases := []struct {
 		desc	string
 		ingredients *set
@@ -49,13 +49,12 @@ func TestIngredients(t *testing.T) {
 		{ "InvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
 		{ "IdealHit", newSet(int(salad),int(cheese),int(apple)), []food{mockedFoods[2]}},
 		{ "IdealHit_differentOrder", newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
-		{ "multipleFoundings-todo", newSet(), []food{mockedFoods[2]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			alg := newSearch(createMockDb())
 		
-			results := alg.findFoods(tc.ingredients)
+			results := alg.findFoods(tc.ingredients, defaultStrategy)
 
 			if ln := len(results); ln != len(tc.expected) {
 				t.Fatalf("Invalid len got: %v, exp %v", ln, len(tc.expected))
@@ -72,3 +71,6 @@ func TestIngredients(t *testing.T) {
 	}
 }
 
+func TestRankingStrategy(t *testing.T) {
+	t.Fail()
+}
