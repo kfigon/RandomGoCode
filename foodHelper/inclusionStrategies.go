@@ -21,5 +21,8 @@ func (f fitnessInclusionStrategy) calcFitness(usersIngredients *set, requiredIng
 }
 
 func calcFitnessFun(commonIngredients *set, required *set) int {
-	return commonIngredients.size()/required.size() * 100
+	licznik := float64((commonIngredients.size()))
+	mianownik := float64((required.size()))
+	res := licznik/mianownik
+	return int(res*100)
 }
