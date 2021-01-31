@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var foodJSON string = `[
+var inputJson string = `[
     {
         "name": "spaghetti",
         "ingredients": [2,3,4]
@@ -45,25 +45,28 @@ func readKeyFromValue(val int) string {
 
 
 func main() {
-	foodProvider := fromJSON(strings.NewReader(foodJSON))
+	foodProvider := fromJSON(strings.NewReader(inputJson))
 	search := newSearch(foodProvider)
 
 	threshold := 100
 	userFoods := newSet(5,4,1)
 	foodRecomendations := search.findFoods(userFoods, fitnessInclusionStrategy{threshold})
 
+	
+	fmt.Println(ingredientsString(userFoods))
 	for _, v := range foodRecomendations {
 		printFoodRecomendation(v)
 	}
 }
 
 func printFoodRecomendation(v foodRecommendation) {
-	fmt.Printf("FOOD: %v, fit: %v, ingredients: %v\n", v.name, v.fitnessLevel, printIngredients(v.requiredIngredients))
+	fmt.Printf("%v, fit: %v, ingredients: %v\n", v.name, v.fitnessLevel, ingredientsString(v.requiredIngredients))
 }
 
-func printIngredients(ing *set) {
+func ingredientsString(ing *set) string {
 	out := ""
 	for _,v := range ing.els() {
-		out := readKeyFromValue(v)+" "
+		out += readKeyFromValue(v)+" "
 	}
+	return out
 }
