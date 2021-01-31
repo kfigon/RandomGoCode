@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"testing"
 	"strings"
 )
@@ -35,15 +34,15 @@ var foodJSON string = `[
 var ingredientsJSON string = `[1,2,3,4,5,6,7]`
 
 func TestReadFoodbase(t *testing.T) {
-	provider := fromJson(strings.NewReader(foodJSON))
+	provider := fromJSON(strings.NewReader(foodJSON))
 	foods := provider.findFoods()
 	if len(foods) != 4 {
 		t.Errorf("invalid food len, wanted: %v, got %v", 4, len(foods))
 	}
 	if foods[0].name != "spaghetti" {
-		t.Errorf("invalid food name received: ", foods[0].name)
+		t.Errorf("invalid food name received: %v", foods[0].name)
 	}
-	if foods[0].ingredients.size() != 3 {
+	if foods[0].requiredIngredients.size() != 3 {
 		t.Error("Invalid ingredients received")
 	}
 }
