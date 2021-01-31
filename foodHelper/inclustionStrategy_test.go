@@ -33,13 +33,31 @@ func TestFitnessStrategy(t *testing.T) {
 	}
 }
 func TestFitness(t *testing.T)  {
-	strat := fitnessInclusionStrategy{-1}
-	required := newSet(int(1), int(2), int(3))
-	users := newSet(int(2), int(3))
-	
-	result := strat.calcFitness(users, required)
-	expected := 66
-	if result != expected {
-		t.Errorf("Got %v, exp: %v", result, expected)
+	tt := []struct{
+		desc string
+		in []int
+		required []int
+		exp int
+	}{
+		{"66%", []int{2,3}, []int{1,2,3}, 66},
+		{"33%", []int{2}, []int{1,2,3}, 33},
+		{"0%", []int{}, []int{1,2,3}, 0},
+		{"100%", []int{3,2,1}, []int{1,2,3}, 100},
+		{"75%", []int{3,2,1}, []int{1,2,3,4}, 75},
+		{"75%_additionalVals", []int{3,2,1, 10,11,12}, []int{1,2,3,4}, 75},
+		{"100%_additionalVals", []int{3,2,1,4, 10,11,12}, []int{1,2,3,4}, 100},
+	}
+	for _, tc := range tt {
+		t.Run(tc.desc, func(t *testing.T) {
+			strat := fitnessInclusionStrategy{100}
+
+			required := newSet(tc.required...)
+			users := newSet(tc.in...)
+			
+			result := strat.calcFitness(users, required)
+			if result != tc.exp {
+				t.Errorf("Got %v, exp: %v", result, tc.exp)
+			}
+		})
 	}
 }
