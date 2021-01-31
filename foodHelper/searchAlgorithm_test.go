@@ -66,6 +66,9 @@ func TestIngredients(t *testing.T) {
 				if exp.name != got.name {
 					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.name, exp.name)
 				}
+				if got.fitnessLevel != 100 {
+					t.Errorf("100 fitness expected, got :%v", got.fitnessLevel)
+				}
 			}
 			
 		})
