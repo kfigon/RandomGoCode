@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+	"flag"
+	"strconv"
 )
 
 var inputJson string = `[
@@ -43,20 +45,52 @@ func readKeyFromValue(val int) string {
 	return ""
 }
 
+type arrayFlags []string
+
+func (i *arrayFlags) String() string {
+    return "my string representation"
+}
+
+func (i *arrayFlags) Set(value string) error {
+    *i = append(*i, value)
+    return nil
+}
 
 func main() {
 	foodProvider := fromJSON(strings.NewReader(inputJson))
 	search := newSearch(foodProvider)
 
-	threshold := 100
-	userFoods := newSet(5,4,1)
-	foodRecomendations := search.findFoods(userFoods, fitnessInclusionStrategy{threshold})
 
+	var threshold = flag.Int("prog", 100, "Prog dolaczenia jedzenia <0;100>")
+	var foods arrayFlags
+	flag.Var(&foods, "f", "idx of ingredient")
 	
+	flag.Parse()
+
+	userFoods := parseFoods(foods)
+	foodRecomendations := search.findFoods(userFoods, fitnessInclusionStrategy{*threshold})
+
+	printKnownIngredients()
+	fmt.Println("\nProvided:")
 	fmt.Println(ingredientsString(userFoods))
+	fmt.Println("---------")
 	for _, v := range foodRecomendations {
 		printFoodRecomendation(v)
 	}
+}
+
+func parseFoods(foods arrayFlags) *set {
+	var out []int
+	for _, v := range foods {
+		i, err := strconv.Atoi(string(v))
+		if err != nil {
+			continue
+		}
+		if readKeyFromValue(i) != "" {
+			out = append(out, i)
+		}
+	}
+	return newSet(out...)
 }
 
 func printFoodRecomendation(v foodRecommendation) {
@@ -69,4 +103,11 @@ func ingredientsString(ing *set) string {
 		out += readKeyFromValue(v)+" "
 	}
 	return out
+}
+
+func printKnownIngredients() {
+	fmt.Println("Known ingredients")
+	for key := range knownIngredients {
+		fmt.Printf("%v -> %v\n", key, knownIngredients[key])
+	}
 }
