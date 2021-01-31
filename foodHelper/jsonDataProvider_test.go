@@ -31,8 +31,6 @@ var foodJSON string = `[
     }
 ]`
 
-var ingredientsJSON string = `[1,2,3,4,5,6,7]`
-
 func TestReadFoodbase(t *testing.T) {
 	provider := fromJSON(strings.NewReader(foodJSON))
 	foods := provider.findFoods()
@@ -47,3 +45,10 @@ func TestReadFoodbase(t *testing.T) {
 	}
 }
 
+func TestReadInvalidFoodbase(t *testing.T) {
+	provider := fromJSON(strings.NewReader("[{asd}]"))
+	foods := provider.findFoods()
+	if len(foods) != 0 {
+		t.Errorf("invalid food len, wanted: %v, got %v", 0, len(foods))
+	}
+}
