@@ -1,11 +1,11 @@
 package main
 
-type productDb interface {
+type foodDataProvider interface {
 	findFoods() []food
 }
 
 type searchService struct {
-	db productDb
+	db foodDataProvider
 }
 
 type food struct {
@@ -18,7 +18,7 @@ type foodRecommendation struct {
 	fitnessLevel int
 }
 
-func newSearch(db productDb) *searchService {
+func newSearch(db foodDataProvider) *searchService {
 	return &searchService{db}
 }
 
@@ -29,8 +29,9 @@ func (s *searchService) findFoods(ingredients *set, strategy inclusionStrategy) 
 	for _, v := range allFoods {
 
 		if strategy.shouldBeIncluded(ingredients, v.requiredIngredients) {
-			f := v // go :(
 			fitness := strategy.calcFitness(ingredients, v.requiredIngredients)
+			
+			f := v // go :(
 			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
 		}
