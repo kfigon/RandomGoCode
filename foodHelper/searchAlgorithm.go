@@ -26,13 +26,13 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 	result := make([]foodRecommendation,0)
 	allFoods := s.db.findFoods()
 
-	includeFunction := getStrategy(includeStategyType)
+	strategy := getStrategy(includeStategyType)
 
 	for _, v := range allFoods {
 		commonIngredients := ingredients.intersection(v.requiredIngredients)
 		fitness := calcFitness(commonIngredients, v.requiredIngredients)
 		
-		if includeFunction(fitness) {
+		if strategy.shouldBeIncluded(ingredients, v) {
 			f := v // go :(
 			candidate := foodRecommendation{ f, fitness, }
 			result = append(result, candidate)
@@ -42,16 +42,30 @@ func (s *searchService) findFoods(ingredients *set, includeStategyType includeSt
 	return result
 }
 
+type inclusionStrategy interface {
+	shouldBeIncluded(usersIngredients *set, foodData food) bool
+}
+
+type fitnessInclusionStrategy struct {
+	persentThreshold int
+}
+
+func (f fitnessInclusionStrategy) shouldBeIncluded(usersIngredients *set, foodData food) bool {
+	commonIngredients := usersIngredients.intersection(foodData.requiredIngredients)
+	fit := calcFitness(commonIngredients, foodData.requiredIngredients)
+	return fit >= f.persentThreshold
+}
+
 func calcFitness(commonIngredients *set, required *set) int {
 	return commonIngredients.size()/required.size() * 100
 }
 
-func getStrategy(strat includeStrategy) strategyFun {
+func getStrategy(strat includeStrategy) inclusionStrategy {
 	switch strat {
-	case defaultStrategy: return defaultIncludeStrategy
-	case eightyPercent: return includeEightyPercent
+	case defaultStrategy: return fitnessInclusionStrategy{ 100 }
+	case eightyPercent: return fitnessInclusionStrategy{ 80 }
 	}
-	return defaultIncludeStrategy
+	return fitnessInclusionStrategy{ 100 }
 }
 
 type includeStrategy string
@@ -59,14 +73,3 @@ const (
 	defaultStrategy includeStrategy = "DEFAULT"
 	eightyPercent = "80_PERCENT"
 )
-
-type strategyFun func(fitnessLevel int) bool
-
-// all required provided
-func defaultIncludeStrategy(fitnessLevel int) bool {
-	return fitnessLevel >= 100
-}
-
-func includeEightyPercent(fitnessLevel int) bool {
-	return fitnessLevel >= 80
-}
