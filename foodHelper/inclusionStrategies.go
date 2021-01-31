@@ -10,14 +10,17 @@ type fitnessInclusionStrategy struct {
 }
 
 func (f fitnessInclusionStrategy) shouldBeIncluded(usersIngredients *set, requiredIngredients *set) bool {
-	commonIngredients := usersIngredients.intersection(requiredIngredients)
-	fit := calcFitnessFun(commonIngredients, requiredIngredients)
+	fit := f.calcCommonAndFitness(usersIngredients, requiredIngredients)
 	return fit >= f.persentThreshold
 }
 
 func (f fitnessInclusionStrategy) calcFitness(usersIngredients *set, requiredIngredients *set) int {
-	commonIngredients := usersIngredients.intersection(requiredIngredients)
-	return calcFitnessFun(commonIngredients, requiredIngredients)
+	return f.calcCommonAndFitness(usersIngredients, requiredIngredients)
+}
+
+func (f fitnessInclusionStrategy) calcCommonAndFitness(users *set, required *set) int {
+	commonIngredients := users.intersection(required)
+	return calcFitnessFun(commonIngredients, required)
 }
 
 func calcFitnessFun(commonIngredients *set, required *set) int {
