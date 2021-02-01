@@ -54,6 +54,7 @@ func base64EncodingDemo() {
 	fmt.Printf("%q\n", decoded)
 }
 
-// 
+// context of request scoped data, passing around APIs (session data)
 func contextDemo()  {
+	// need http.Request to create context
 }
