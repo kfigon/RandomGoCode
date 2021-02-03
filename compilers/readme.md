@@ -24,7 +24,17 @@ understand words. Identify role of token in the text. Group in higher level cons
 * = - assignment
 
 ### semantic analysis
-understanding meaning of high level structure. **This is hard!** Compilers are only catching inconsistencies, we are very limited. We don't know what the program is meant to do
+understanding meaning of high level structure. **This is hard!** Compilers are only catching inconsistencies, we are very limited. We don't know what the program is meant to do. e.g.
+
+* strict rules to avoid ambiguity - variable shadowing
+* type checking
 
 ### optimization
+auto modification of program so that they run faster/use less memory.
+e.g. for integers we can optimize:
+```
+x=y*0
+x=0
+```
 ### code generation
+producing an exe (c->machine code) or a program in other language (js->ts, c->asm)
