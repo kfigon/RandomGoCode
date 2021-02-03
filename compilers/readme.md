@@ -32,6 +32,7 @@ understanding meaning of high level structure. **This is hard!** Compilers are o
 ### optimization
 auto modification of program so that they run faster/use less memory.
 e.g. for integers we can optimize:
+
 ```
 x=y*0
 x=0
