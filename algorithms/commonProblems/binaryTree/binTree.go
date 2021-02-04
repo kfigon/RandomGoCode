@@ -10,16 +10,41 @@ func (t *tree) size() int {
 
 func (t *tree) values() []int {
 	out := make([]int,0)
-	if t.top != nil {
-		out = append(out, t.top.val)
+	var dfs func(n *node)
+	dfs = func(n *node) {
+		if n == nil {
+			return
+		}
+		dfs(n.left)
+		out = append(out, n.val)
+		dfs(n.right)
 	}
+	
+	dfs(t.top)
 	return out
 }
 
 func (t *tree) insert(val int) {
+	n := newNode(val)
 	if t.top == nil {
-		t.top = newNode(val)
+		t.top = n
 		return
+	}
+	ptr := t.top
+	for {
+		if n.val < ptr.val {
+			if ptr.left == nil {
+				ptr.left = n
+				break
+			}
+			ptr = ptr.left
+		} else {
+			if ptr.right == nil {
+				ptr.right = n
+				break
+			}
+			ptr = ptr.right
+		}
 	}
 }
 
