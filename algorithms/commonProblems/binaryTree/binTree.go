@@ -10,6 +10,10 @@ func (t *tree) values() []int {
 	return []int{}
 }
 
+func (t *tree) insert(val int) {
+	
+}
+
 func newTree() *tree {
 	return &tree{}
 }
