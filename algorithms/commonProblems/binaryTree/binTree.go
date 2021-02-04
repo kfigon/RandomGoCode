@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type tree struct {
 	top *node
 }
@@ -48,6 +52,10 @@ func (t *tree) insert(val int) {
 	}
 }
 
+func (t *tree) isPresent(v int) bool {
+	return false
+}
+
 func newTree() *tree {
 	return &tree{}
 }
@@ -60,4 +68,17 @@ type node struct {
 
 func newNode(val int) *node {
 	return &node{val:val}
+}
+
+
+func main()  {
+	t := newTree()
+	els := []int{1,6,3,1,45,6,3,1,3,4,6,2,7,8}
+	for _,v := range els{
+		t.insert(v)
+	}
+	out := t.values()
+	for _,v := range out {
+		fmt.Println(v)
+	}
 }
