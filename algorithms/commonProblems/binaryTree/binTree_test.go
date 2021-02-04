@@ -6,25 +6,29 @@ import (
 
 func TestEmpty(t *testing.T) {
 	tr := newTree()
-	if tr.size() != 0 {
-		t.Error("Invalid size, got: ", tr.size())
+	assertElements(t, tr, []int{})
+}
+
+func assertElements(t *testing.T, tr *tree, exp []int) {
+	if v := tr.size(); v != len(exp) {
+		t.Errorf("Invalid size, exp: %v got: %v", len(exp), v)
 	}
-	if ln := len(tr.values()); ln != 0 {
-		t.Error("Invalid size, expected 0, got: ", ln)
+	vals := tr.values()
+	if ln := len(vals); ln != len(exp) {
+		t.Errorf("Invalid size on values, exp: %v got: %v", len(exp), len(vals))
+	}
+	for i := range exp {
+		e := exp[i]
+		got := vals[i]
+		if e != got {
+			t.Errorf("Invalid element id %v exp %v, got: %v", i, e, got)
+		}
 	}
 }
 
 func TestOneElement(t *testing.T) {
 	tr := newTree()
 	tr.insert(5)
-	if tr.size() != 1 {
-		t.Error("Invalid size, got: ", tr.size())
-	}
-	if ln := len(tr.values()); ln != 1 {
-		t.Fatal("Invalid size, expected 1, got: ", ln)
-	}
-	if v := tr.values(); v[0] != 5 {
-		t.Error("Invalid element received, got: ", v[0])
-	}
+	assertElements(t, tr, []int{5})
 }
 
