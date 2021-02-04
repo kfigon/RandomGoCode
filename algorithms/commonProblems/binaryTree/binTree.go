@@ -53,6 +53,16 @@ func (t *tree) insert(val int) {
 }
 
 func (t *tree) isPresent(v int) bool {
+	ptr := t.top
+	for ptr != nil {
+		if v == ptr.val {
+			return true
+		} else if v < ptr.val {
+			ptr = ptr.left
+		} else {
+			ptr = ptr.right
+		}
+	}
 	return false
 }
 
