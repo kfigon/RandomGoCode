@@ -7,127 +7,177 @@ import (
 	"io"
 	"os"
 )
-func readFile(path string)[][]string {
-	f, _ := os.Open(path)
-	defer f.Close()
+
+func Where(options map[string]string) []map[string]string {
+	f, _ := os.Open("startup_funding.csv")
 	reader := csv.NewReader(bufio.NewReader(f))
-	csvData := [][]string{}
+	csv_data := [][]string{}
 
 	for {
 		row, err := reader.Read()
+
 		if err == io.EOF {
 			break
 		}
-		csvData = append(csvData, row)
-	}
-	return csvData
-}
 
-type Reader struct {
-	options map[string]string
-	columnIndexMapping map[string]int
-}
-
-func newReader(opts map[string]string) (*Reader, [][]string) {
-	colIdxMap := make(map[string]int)
-	colIdxMap["permalink"] = 0
-	colIdxMap["company_name"] = 1
-	colIdxMap["number_employees"] = 2
-	colIdxMap["category"] = 3
-	colIdxMap["city"] = 4
-	colIdxMap["state"] = 5
-	colIdxMap["funded_date"] = 6
-	colIdxMap["raised_amount"] = 7
-	colIdxMap["raised_currency"] = 8
-	colIdxMap["round"] = 9
-
-	return &Reader {
-		options: opts,
-		columnIndexMapping: colIdxMap,
-	}, readFile("startup_funding.csv")
-}
-
-func (reader *Reader) filterRows(key string, rows [][]string) [][]string {
-	value, ok := reader.options[key]
-	if ok != true {
-		return nil
+		csv_data = append(csv_data, row)
 	}
 
-	results := [][]string{}
-	id := reader.columnIndexMapping[key]
-	for _, row := range rows {
-		if row[id] == value {
-			results = append(results, row)
+	_, ok := options["company_name"]
+	if ok == true {
+		results := [][]string{}
+		for i := 0; i < len(csv_data); i++ {
+			if csv_data[i][1] == options["company_name"] {
+				results = append(results, csv_data[i])
+			}
 		}
+		csv_data = results
 	}
-	return results
-}
 
-// Where - searches though csv and finds all lines with given params
-func Where(options map[string]string) []map[string]string {
-	reader, rows := newReader(options)
-	
-	allowedColumnsForFiltering := []string{"company_name", "city", "state", "round"}
-	for _, col := range allowedColumnsForFiltering {
-		if res := reader.filterRows(col, rows); res != nil {
-			rows = res
+	_, ok = options["city"]
+	if ok == true {
+		results := [][]string{}
+		for i := 0; i < len(csv_data); i++ {
+			if csv_data[i][4] == options["city"] {
+				results = append(results, csv_data[i])
+			}
 		}
+		csv_data = results
+	}
+
+	_, ok = options["state"]
+	if ok == true {
+		results := [][]string{}
+		for i := 0; i < len(csv_data); i++ {
+			if csv_data[i][5] == options["state"] {
+				results = append(results, csv_data[i])
+			}
+		}
+		csv_data = results
+	}
+
+	_, ok = options["round"]
+	if ok == true {
+		results := [][]string{}
+		for i := 0; i < len(csv_data); i++ {
+			if csv_data[i][9] == options["round"] {
+				results = append(results, csv_data[i])
+			}
+		}
+		csv_data = results
 	}
 
 	output := []map[string]string{}
-	for _, row := range rows {
+	for i := 0; i < len(csv_data); i++ {
 		mapped := make(map[string]string)
-		reader.readProperties(mapped, row)
+		mapped["permalink"] = csv_data[i][0]
+		mapped["company_name"] = csv_data[i][1]
+		mapped["number_employees"] = csv_data[i][2]
+		mapped["category"] = csv_data[i][3]
+		mapped["city"] = csv_data[i][4]
+		mapped["state"] = csv_data[i][5]
+		mapped["funded_date"] = csv_data[i][6]
+		mapped["raised_amount"] = csv_data[i][7]
+		mapped["raised_currency"] = csv_data[i][8]
+		mapped["round"] = csv_data[i][9]
 		output = append(output, mapped)
 	}
 
 	return output
 }
 
-func (reader *Reader) readProperties(mapped map[string]string, row []string) {
-	writeToMap := func(colName string) {
-		id := reader.columnIndexMapping[colName]
-		mapped[colName] = row[id]
-	}
-	writeToMap("permalink")
-	writeToMap("company_name")
-	writeToMap("number_employees")
-	writeToMap("category")
-	writeToMap("city")
-	writeToMap("state")
-	writeToMap("funded_date")
-	writeToMap("raised_amount")
-	writeToMap("raised_currency")
-	writeToMap("round")
-}
-
-// returns - should skip to next iteration
-func (reader *Reader) readSingleProperty(mapped map[string] string, keyName string, row []string) bool {
-	value, ok := reader.options[keyName]
-	if ok != true {
-		return false
-	}
-	id := reader.columnIndexMapping[keyName]
-	if row[id] != value {
-		return true
-	} 
-	reader.readProperties(mapped, row)
-	return false
-}
-
-// FindBy - searches though csv and finds first line with given params
 func FindBy(options map[string]string) (map[string]string, error) {
-	reader, rows := newReader(options)
+	f, _ := os.Open("startup_funding.csv")
+	reader := csv.NewReader(bufio.NewReader(f))
+	csv_data := [][]string{}
 
-	for _,row := range rows {
+	for {
+		row, err := reader.Read()
+
+		if err == io.EOF {
+			break
+		}
+
+		csv_data = append(csv_data, row)
+	}
+
+	for i := 0; i < len(csv_data); i++ {
+		var ok bool
 		mapped := make(map[string]string)
 
-		if !reader.readSingleProperty(mapped, "company_name", row) &&
-			!reader.readSingleProperty(mapped, "city", row) &&
-			!reader.readSingleProperty(mapped, "state", row) && 
-			!reader.readSingleProperty(mapped, "round", row) {
-			return mapped, nil
+		_, ok = options["company_name"]
+		if ok == true {
+			if csv_data[i][1] == options["company_name"] {
+				mapped["permalink"] = csv_data[i][0]
+				mapped["company_name"] = csv_data[i][1]
+				mapped["number_employees"] = csv_data[i][2]
+				mapped["category"] = csv_data[i][3]
+				mapped["city"] = csv_data[i][4]
+				mapped["state"] = csv_data[i][5]
+				mapped["funded_date"] = csv_data[i][6]
+				mapped["raised_amount"] = csv_data[i][7]
+				mapped["raised_currency"] = csv_data[i][8]
+				mapped["round"] = csv_data[i][9]
+			} else {
+				continue
+			}
 		}
+
+		_, ok = options["city"]
+		if ok == true {
+			if csv_data[i][4] == options["city"] {
+				mapped["permalink"] = csv_data[i][0]
+				mapped["company_name"] = csv_data[i][1]
+				mapped["number_employees"] = csv_data[i][2]
+				mapped["category"] = csv_data[i][3]
+				mapped["city"] = csv_data[i][4]
+				mapped["state"] = csv_data[i][5]
+				mapped["funded_date"] = csv_data[i][6]
+				mapped["raised_amount"] = csv_data[i][7]
+				mapped["raised_currency"] = csv_data[i][8]
+				mapped["round"] = csv_data[i][9]
+			} else {
+				continue
+			}
+		}
+
+		_, ok = options["state"]
+		if ok == true {
+			if csv_data[i][5] == options["state"] {
+				mapped["permalink"] = csv_data[i][0]
+				mapped["company_name"] = csv_data[i][1]
+				mapped["number_employees"] = csv_data[i][2]
+				mapped["category"] = csv_data[i][3]
+				mapped["city"] = csv_data[i][4]
+				mapped["state"] = csv_data[i][5]
+				mapped["funded_date"] = csv_data[i][6]
+				mapped["raised_amount"] = csv_data[i][7]
+				mapped["raised_currency"] = csv_data[i][8]
+				mapped["round"] = csv_data[i][9]
+			} else {
+				continue
+			}
+		}
+
+		_, ok = options["round"]
+		if ok == true {
+			if csv_data[i][9] == options["round"] {
+				mapped["permalink"] = csv_data[i][0]
+				mapped["company_name"] = csv_data[i][1]
+				mapped["number_employees"] = csv_data[i][2]
+				mapped["category"] = csv_data[i][3]
+				mapped["city"] = csv_data[i][4]
+				mapped["state"] = csv_data[i][5]
+				mapped["funded_date"] = csv_data[i][6]
+				mapped["raised_amount"] = csv_data[i][7]
+				mapped["raised_currency"] = csv_data[i][8]
+				mapped["round"] = csv_data[i][9]
+			} else {
+				continue
+			}
+		}
+
+		return mapped, nil
 	}
 
 	return make(map[string]string), errors.New("Record Not Found")
