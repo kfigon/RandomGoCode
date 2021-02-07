@@ -8,176 +8,122 @@ import (
 	"os"
 )
 
-func Where(options map[string]string) []map[string]string {
-	f, _ := os.Open("startup_funding.csv")
+func readFile(fileName string) [][]string {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return [][]string{}
+	}
 	reader := csv.NewReader(bufio.NewReader(f))
-	csv_data := [][]string{}
+	csvData := [][]string{}
 
 	for {
 		row, err := reader.Read()
-
 		if err == io.EOF {
-			break
+			return csvData
 		}
+		csvData = append(csvData, row)
+	}
+}
 
-		csv_data = append(csv_data, row)
+type optionsWrapper struct {
+	options map[string]string
+}
+
+func (o optionsWrapper) isPresentInRow(row []string, propertyName string) bool {
+	valueToFind := o.options[propertyName]
+	return row[columnNameToIdx[propertyName]] == valueToFind
+}
+
+func (o optionsWrapper) fieldProvidedForSearch(propertyName string) bool {
+	_, ok := o.options[propertyName]
+	return ok
+}
+
+func (o optionsWrapper) filterData(csvData [][]string, propertyName string) [][]string {
+	if !o.fieldProvidedForSearch(propertyName) {
+		return csvData
 	}
 
-	_, ok := options["company_name"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][1] == options["company_name"] {
-				results = append(results, csv_data[i])
-			}
+	results := [][]string{}
+	for _, row := range csvData {
+		if o.isPresentInRow(row, propertyName) {
+			results = append(results, row)
 		}
-		csv_data = results
 	}
+	return results
+}
 
-	_, ok = options["city"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][4] == options["city"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
-	}
 
-	_, ok = options["state"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][5] == options["state"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
-	}
+var columnNameToIdx = map[string]int {
+	"permalink": 0,
+	"company_name": 1,
+	"number_employees": 2,
+	"category": 3,
+	"city": 4,
+	"state": 5,
+	"funded_date": 6,
+	"raised_amount": 7,
+	"raised_currency": 8,
+	"round": 9,
+}
 
-	_, ok = options["round"]
-	if ok == true {
-		results := [][]string{}
-		for i := 0; i < len(csv_data); i++ {
-			if csv_data[i][9] == options["round"] {
-				results = append(results, csv_data[i])
-			}
-		}
-		csv_data = results
+func collectDataFromRow(aggregatedData map[string]string, row []string) {
+	for key := range columnNameToIdx {
+		aggregatedData[key] = row[columnNameToIdx[key]]
 	}
+}
+
+func Where(options map[string]string) []map[string]string {
+	csvData := readFile("startup_funding.csv")
+	opts := optionsWrapper{options}
+
+	narrowedData := opts.filterData(csvData, "company_name")
+	narrowedData = opts.filterData(narrowedData, "city")
+	narrowedData = opts.filterData(narrowedData, "state")
+	narrowedData = opts.filterData(narrowedData, "round")
 
 	output := []map[string]string{}
-	for i := 0; i < len(csv_data); i++ {
-		mapped := make(map[string]string)
-		mapped["permalink"] = csv_data[i][0]
-		mapped["company_name"] = csv_data[i][1]
-		mapped["number_employees"] = csv_data[i][2]
-		mapped["category"] = csv_data[i][3]
-		mapped["city"] = csv_data[i][4]
-		mapped["state"] = csv_data[i][5]
-		mapped["funded_date"] = csv_data[i][6]
-		mapped["raised_amount"] = csv_data[i][7]
-		mapped["raised_currency"] = csv_data[i][8]
-		mapped["round"] = csv_data[i][9]
-		output = append(output, mapped)
+	for _, row := range narrowedData {
+		aggregatedData := make(map[string]string)
+		collectDataFromRow(aggregatedData, row)
+		output = append(output, aggregatedData)
 	}
-
-	return output
+	return output	
 }
 
 func FindBy(options map[string]string) (map[string]string, error) {
-	f, _ := os.Open("startup_funding.csv")
-	reader := csv.NewReader(bufio.NewReader(f))
-	csv_data := [][]string{}
+	csvData := readFile("startup_funding.csv")
 
-	for {
-		row, err := reader.Read()
+	opts := optionsWrapper{options}
 
-		if err == io.EOF {
-			break
-		}
+	for _, row := range csvData {
+		aggregatedData := make(map[string]string)
 
-		csv_data = append(csv_data, row)
-	}
-
-	for i := 0; i < len(csv_data); i++ {
-		var ok bool
-		mapped := make(map[string]string)
-
-		_, ok = options["company_name"]
-		if ok == true {
-			if csv_data[i][1] == options["company_name"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
-			} else {
-				continue
+		collectDataAndStopSearching := func (propertyName string) bool {
+			if !opts.fieldProvidedForSearch(propertyName) {
+				return false
 			}
-		}
-
-		_, ok = options["city"]
-		if ok == true {
-			if csv_data[i][4] == options["city"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
-			} else {
-				continue
+			propertyPresentInRow := opts.isPresentInRow(row, propertyName)
+			if !propertyPresentInRow {
+				return true // skip row - provided property not found in row
 			}
+			// all good - append data and proceed with next property
+			collectDataFromRow(aggregatedData, row)
+			return false
 		}
 
-		_, ok = options["state"]
-		if ok == true {
-			if csv_data[i][5] == options["state"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
-			} else {
-				continue
-			}
+		if collectDataAndStopSearching("company_name") {
+			continue
+		} else if collectDataAndStopSearching("city") {
+			continue
+		} else if  collectDataAndStopSearching("state") {
+			continue
+		} else if collectDataAndStopSearching("round") {
+			continue
 		}
 
-		_, ok = options["round"]
-		if ok == true {
-			if csv_data[i][9] == options["round"] {
-				mapped["permalink"] = csv_data[i][0]
-				mapped["company_name"] = csv_data[i][1]
-				mapped["number_employees"] = csv_data[i][2]
-				mapped["category"] = csv_data[i][3]
-				mapped["city"] = csv_data[i][4]
-				mapped["state"] = csv_data[i][5]
-				mapped["funded_date"] = csv_data[i][6]
-				mapped["raised_amount"] = csv_data[i][7]
-				mapped["raised_currency"] = csv_data[i][8]
-				mapped["round"] = csv_data[i][9]
-			} else {
-				continue
-			}
-		}
-
-		return mapped, nil
+		// all found in this row
+		return aggregatedData, nil
 	}
 
 	return make(map[string]string), errors.New("Record Not Found")
