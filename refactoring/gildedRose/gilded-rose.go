@@ -88,9 +88,9 @@ func (b backstagePassItem) updateQuality(item *Item) {
 }
 
 func (b backstagePassItem) howManyQualityIncreases(sellIn int) int {
-	if sellIn < 6 {
+	if sellIn <= 5 {
 		return 3
-	} else if sellIn < 11 {
+	} else if sellIn <= 10 {
 		return 2
 	}
 	return 1
