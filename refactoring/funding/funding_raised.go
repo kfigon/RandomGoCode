@@ -67,6 +67,8 @@ var columnNameToIdx = map[string]int {
 	"round": 9,
 }
 
+var fieldsForSearch = []string {"company_name","city","state","round"}
+
 func collectDataFromRow(aggregatedData map[string]string, row []string) {
 	for key := range columnNameToIdx {
 		aggregatedData[key] = row[columnNameToIdx[key]]
@@ -76,11 +78,11 @@ func collectDataFromRow(aggregatedData map[string]string, row []string) {
 func Where(options map[string]string) []map[string]string {
 	csvData := readFile("startup_funding.csv")
 	opts := optionsWrapper{options}
-
-	narrowedData := opts.filterData(csvData, "company_name")
-	narrowedData = opts.filterData(narrowedData, "city")
-	narrowedData = opts.filterData(narrowedData, "state")
-	narrowedData = opts.filterData(narrowedData, "round")
+	narrowedData := csvData
+	
+	for _,field := range fieldsForSearch {
+		narrowedData = opts.filterData(narrowedData, field)
+	}
 
 	output := []map[string]string{}
 	for _, row := range narrowedData {
@@ -91,39 +93,40 @@ func Where(options map[string]string) []map[string]string {
 	return output	
 }
 
+func collectDataAndStopSearching(opts optionsWrapper, propertyName string, row []string, aggregatedData map[string]string) bool {
+	if !opts.fieldProvidedForSearch(propertyName) {
+		return false
+	}
+	propertyPresentInRow := opts.isPresentInRow(row, propertyName)
+	if !propertyPresentInRow {
+		return true // skip row - provided property not found in row
+	}
+	// all good - append data and proceed with next property
+	collectDataFromRow(aggregatedData, row)
+	return false
+}
+
 func FindBy(options map[string]string) (map[string]string, error) {
 	csvData := readFile("startup_funding.csv")
 
 	opts := optionsWrapper{options}
 
 	for _, row := range csvData {
-		aggregatedData := make(map[string]string)
+		aggregatedRowData := make(map[string]string)
 
-		collectDataAndStopSearching := func (propertyName string) bool {
-			if !opts.fieldProvidedForSearch(propertyName) {
-				return false
+		goToNextRow := false
+		for _, field := range fieldsForSearch {
+			if collectDataAndStopSearching(opts, field, row, aggregatedRowData) {
+				goToNextRow = true
+				break
 			}
-			propertyPresentInRow := opts.isPresentInRow(row, propertyName)
-			if !propertyPresentInRow {
-				return true // skip row - provided property not found in row
-			}
-			// all good - append data and proceed with next property
-			collectDataFromRow(aggregatedData, row)
-			return false
 		}
-
-		if collectDataAndStopSearching("company_name") {
-			continue
-		} else if collectDataAndStopSearching("city") {
-			continue
-		} else if  collectDataAndStopSearching("state") {
-			continue
-		} else if collectDataAndStopSearching("round") {
+		if goToNextRow {
 			continue
 		}
 
 		// all found in this row
-		return aggregatedData, nil
+		return aggregatedRowData, nil
 	}
 
 	return make(map[string]string), errors.New("Record Not Found")
