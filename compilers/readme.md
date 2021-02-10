@@ -56,10 +56,10 @@ class Main {
 
 ```
 class Main {
-  i: IO;
+  i: IO <- new IO;
   main():Int {
     i.out_string("Hello, world!");
-    1
+    1;
   };
 };
 ```
