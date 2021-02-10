@@ -39,3 +39,10 @@ x=0
 ```
 ### code generation
 producing an exe (c->machine code) or a program in other language (js->ts, c->asm)
+
+# Our example language:
+`cool` - classroom object oriented language. Compile `cool` to MIPS assembly
+* abstraction
+* static typing
+* inheritance
+* memory management
