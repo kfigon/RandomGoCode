@@ -57,9 +57,8 @@ class Main {
 ```
 class Main {
   i: IO <- new IO;
-  main():Int {
+  main():IO {
     i.out_string("Hello, world!");
-    1;
   };
 };
 ```
