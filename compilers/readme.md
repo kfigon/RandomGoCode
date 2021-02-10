@@ -53,6 +53,7 @@ this will return 1, explicit returns
 class Main {
   main():Int { 1 };
 };
+```
 
 ```
 class Main {
@@ -62,3 +63,22 @@ class Main {
   };
 };
 ```
+
+# lexical analysis
+tokenize text input (classify program substring) and communicate tokens to parser.
+list of tokens - pairs with `class` and `string corresponding`(lexeme)
+
+* recognise substrings corresponding to tokens (lexemes)
+* identify token class of each lexeme
+
+
+example of token - LA output:
+* <ID, "foo"> - identifier
+* <OP, "="> - assignment
+
+```
+if (i==j) z = 0;
+else z = 1;
+```
+find whitespace, keywords, identifiers, numbers, equal operator, (, ), ;, =
+
