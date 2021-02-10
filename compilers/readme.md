@@ -41,8 +41,25 @@ x=0
 producing an exe (c->machine code) or a program in other language (js->ts, c->asm)
 
 # Our example language:
-`cool` - classroom object oriented language. Compile `cool` to MIPS assembly
+`cool` - classroom object oriented language. Compile `cool` to MIPS assembly. Run by spim exec. Language:
 * abstraction
 * static typing
 * inheritance
 * memory management
+
+
+this will return 1, explicit returns
+```
+class Main {
+  main():Int { 1 };
+};
+
+```
+class Main {
+  i: IO;
+  main():Int {
+    i.out_string("Hello, world!");
+    1
+  };
+};
+```
