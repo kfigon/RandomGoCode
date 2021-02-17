@@ -34,16 +34,14 @@ func bubbleSort(tab []int) []int {
 func insertionSort(tab []int) []int {
 	out := copyTab(tab)
 	
-	for i := 0; i < len(out); i++ {
-		curIdx := i
-		prevIdx := i-1
-		for prevIdx >= 0 && out[curIdx] < out[prevIdx] {
-			tmp := out[curIdx]
-			out[curIdx] = out[prevIdx]
-			out[prevIdx] = tmp
-			curIdx--
-			prevIdx--
+	for i := 1; i < len(out); i++ {
+		curElement := out[i]
+		j := i-1
+		for j >= 0 && curElement < out[j] {
+			out[j+1] = out[j]
+			j--
 		}
+		out[j+1] = curElement
 	}
 	return out
 }
