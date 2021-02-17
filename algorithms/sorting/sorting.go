@@ -30,3 +30,8 @@ func bubbleSort(tab []int) []int {
 	}
 	return out
 }
+
+func insertionSort(tab []int) []int {
+	out := copyTab(tab)
+	return out
+}
