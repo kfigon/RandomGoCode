@@ -45,3 +45,25 @@ func insertionSort(tab []int) []int {
 	}
 	return out
 }
+
+func selectionSort(tab []int) []int {
+	out := copyTab(tab)
+
+	findMinIdx := func(startIdx int) int {
+		minIdx := startIdx
+		for j := startIdx; j < len(out); j++ {
+			if out[j] < out[minIdx] {
+				minIdx = j
+			}
+		}
+		return minIdx
+	}
+
+	for i := 0; i < len(out); i++ {
+		minIdx := findMinIdx(i)
+		tmp := out[i]
+		out[i] = out[minIdx]
+		out[minIdx] = tmp
+	}
+	return out
+}
