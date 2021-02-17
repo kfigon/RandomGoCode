@@ -27,6 +27,9 @@ func TestSort(t *testing.T) {
 		{"insertion", insertionSort},
 		{"selection", selectionSort},
 		{"merge", mergeSort},
+		{"quick", quickSort},
+		{"mergeParallel", mergeSortParallel},
+		{"raidx", raidxSort},
 	}
 
 	for _,alg := range algorithms {

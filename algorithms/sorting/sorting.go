@@ -72,3 +72,18 @@ func mergeSort(tab []int) []int {
 	out := copyTab(tab)
 	return out
 }
+
+func mergeSortParallel(tab []int) []int {
+	out := copyTab(tab)
+	return out
+}
+
+func quickSort(tab []int) []int {
+	out := copyTab(tab)
+	return out
+}
+
+func raidxSort(tab []int) []int {
+	out := copyTab(tab)
+	return out
+}
