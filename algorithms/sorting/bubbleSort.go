@@ -14,7 +14,7 @@ func bubbleSort(tab []int) []int {
 	numberOfSortedElements := 0
 	arrayLen := len(out)
 
-	for i := 0; i < arrayLen-numberOfSortedElements; i++ {
+	for i := 0; i < arrayLen; i++ {
 		for j := 0; j < arrayLen-1-numberOfSortedElements; j++ {
 			currentIdx := j
 			nextIdx := j+1
