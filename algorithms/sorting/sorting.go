@@ -67,3 +67,8 @@ func selectionSort(tab []int) []int {
 	}
 	return out
 }
+
+func mergeSort(tab []int) []int {
+	out := copyTab(tab)
+	return out
+}

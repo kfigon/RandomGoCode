@@ -26,6 +26,7 @@ func TestSort(t *testing.T) {
 		{"bubble", bubbleSort},
 		{"insertion", insertionSort},
 		{"selection", selectionSort},
+		{"merge", mergeSort},
 	}
 
 	for _,alg := range algorithms {
