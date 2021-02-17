@@ -51,7 +51,7 @@ func selectionSort(tab []int) []int {
 
 	findMinIdx := func(startIdx int) int {
 		minIdx := startIdx
-		for j := startIdx; j < len(out); j++ {
+		for j := startIdx+1; j < len(out); j++ {
 			if out[j] < out[minIdx] {
 				minIdx = j
 			}
