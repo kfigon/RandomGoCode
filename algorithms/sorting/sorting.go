@@ -72,7 +72,35 @@ func selectionSort(tab []int) []int {
 }
 
 func mergeTabs(a []int, b []int) []int {
-	return []int{}
+	out := make([]int, len(a)+len(b))
+
+	aIdx := 0
+	bIdx := 0
+	outIdx := 0
+	for aIdx < len(a) && bIdx < len(b) {
+		if a[aIdx] < b[bIdx] {
+			out[outIdx] = a[aIdx]
+			aIdx++
+		} else {
+			out[outIdx] = b[bIdx]
+			bIdx++
+		}
+		outIdx++
+	}
+
+	for aIdx < len(a) {
+		out[outIdx] = a[aIdx]
+		aIdx++
+		outIdx++
+	}
+
+	for bIdx < len(b) {
+		out[outIdx] = b[bIdx]
+		bIdx++
+		outIdx++
+	}
+
+	return out
 }
 
 func mergeSort(tab []int) []int {
