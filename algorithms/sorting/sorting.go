@@ -1,4 +1,4 @@
-package sorting
+package main
 
 func copyTab(tab []int) []int {
 	out := make([]int, len(tab))
