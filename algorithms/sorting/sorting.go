@@ -103,31 +103,21 @@ func mergeTabs(a []int, b []int) []int {
 // go test -v -run "TestSort/merge->*"
 // O(nlogn)
 func mergeSort(tab []int) []int {
-	out := copyTab(tab)
-	outIdx := 0
-
-	var split func(t []int) ([]int, []int)
-	split = func(t []int) ([]int, []int) {
+	var splitAndMerge func(t []int) []int
+	
+	splitAndMerge = func(t []int) []int {
 		if len(t) == 0 {
-			return []int{},[]int{}
+			return []int{}
 		} else if len(t) == 1 {
-			return []int{tab[0]},[]int{}
+			return t
 		}
 		left := t[:len(t)/2]
 		right := t[len(t)/2:]
 
-		// todo
-		return split(left), split(right)
+		return mergeTabs(splitAndMerge(left), splitAndMerge(right))
 	}
 
-	left,right := split(tab)
-	merged := mergeTabs(left, right)
-	for _,v := range merged {
-		out[outIdx] = v
-		outIdx++
-	}
-
-	return out
+	return splitAndMerge(tab)
 }
 
 func mergeSortParallel(tab []int) []int {
