@@ -102,6 +102,7 @@ func mergeTabs(a []int, b []int) []int {
 
 func mergeSort(tab []int) []int {
 	out := copyTab(tab)
+	// outIdx := 0
 	return out
 }
 
