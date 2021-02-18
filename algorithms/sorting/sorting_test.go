@@ -66,6 +66,16 @@ func TestMergeTabs(t *testing.T) {
 		exp []int
 	} {
 		{"empty", []int{}, []int{}, []int{}},
+		{"singleLeft", []int{4}, []int{}, []int{4}},
+		{"singleRight", []int{}, []int{4}, []int{4}},
+		{"singleBoth", []int{4}, []int{4}, []int{4,4}},
+		{"singleBoth2", []int{2}, []int{3}, []int{2,3}},
+		{"emptyRight", []int{2,3,4}, []int{}, []int{2,3,4}},
+		{"emptyLeft", []int{}, []int{2,3,4}, []int{2,3,4}},
+		{"uneven1", []int{1,3,4,6,8}, []int{2,5}, []int{1,2,3,4,5,6,8}},
+		{"uneven2", []int{2,5}, []int{1,3,4,6,8}, []int{1,2,3,4,5,6,8}},
+		{"even1", []int{1,2,3}, []int{4,5,6}, []int{1,2,3,4,5,6}},
+		{"even2", []int{1,5,6}, []int{2,3,4}, []int{1,2,3,4,5,6}},
 	}
 
 	for _,tc := range tdt {
