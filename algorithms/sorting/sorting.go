@@ -8,6 +8,7 @@ func copyTab(tab []int) []int {
 	return out
 }
 
+// O(n^2)
 func bubbleSort(tab []int) []int {
 	out := copyTab(tab)
 	
@@ -31,6 +32,7 @@ func bubbleSort(tab []int) []int {
 	return out
 }
 
+// O(n^2)
 func insertionSort(tab []int) []int {
 	out := copyTab(tab)
 	
@@ -46,6 +48,7 @@ func insertionSort(tab []int) []int {
 	return out
 }
 
+// O(n^2)
 func selectionSort(tab []int) []int {
 	out := copyTab(tab)
 
@@ -66,6 +69,10 @@ func selectionSort(tab []int) []int {
 		out[minIdx] = tmp
 	}
 	return out
+}
+
+func mergeTabs(a []int, b []int) []int {
+	return []int{}
 }
 
 func mergeSort(tab []int) []int {

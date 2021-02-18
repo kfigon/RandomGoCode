@@ -57,3 +57,21 @@ func assertResult(t *testing.T, got []int, exp []int) {
 		}
 	}
 }
+
+func TestMergeTabs(t *testing.T) {
+	tdt := [] struct {
+		desc string
+		a []int
+		b []int
+		exp []int
+	} {
+		{"empty", []int{}, []int{}, []int{}},
+	}
+
+	for _,tc := range tdt {
+		t.Run(tc.desc, func(t *testing.T) {
+			got := mergeTabs(tc.a, tc.b)
+			assertResult(t, got, tc.exp)
+		})
+	}
+}
