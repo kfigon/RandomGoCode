@@ -87,18 +87,15 @@ func mergeTabs(a []int, b []int) []int {
 		}
 		outIdx++
 	}
-
-	for aIdx < len(a) {
-		out[outIdx] = a[aIdx]
-		aIdx++
-		outIdx++
+	appendRest := func(tab[]int, tabIdx *int) {
+		for *tabIdx < len(tab) {
+			out[outIdx] = tab[*tabIdx]
+			*tabIdx++
+			outIdx++
+		}	
 	}
-
-	for bIdx < len(b) {
-		out[outIdx] = b[bIdx]
-		bIdx++
-		outIdx++
-	}
+	appendRest(a, &aIdx)
+	appendRest(b, &bIdx)
 
 	return out
 }
