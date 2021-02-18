@@ -71,6 +71,7 @@ func selectionSort(tab []int) []int {
 	return out
 }
 
+// O(n+m)
 func mergeTabs(a []int, b []int) []int {
 	out := make([]int, len(a)+len(b))
 
@@ -103,21 +104,14 @@ func mergeTabs(a []int, b []int) []int {
 // go test -v -run "TestSort/merge->*"
 // O(nlogn)
 func mergeSort(tab []int) []int {
-	var splitAndMerge func(t []int) []int
-	
-	splitAndMerge = func(t []int) []int {
-		if len(t) == 0 {
-			return []int{}
-		} else if len(t) == 1 {
-			return t
-		}
-		left := t[:len(t)/2]
-		right := t[len(t)/2:]
-
-		return mergeTabs(splitAndMerge(left), splitAndMerge(right))
+	if len(tab) <= 1 {
+		return tab
 	}
+	splittingPoint := len(tab)/2
+	left := tab[:splittingPoint]
+	right := tab[splittingPoint:]
 
-	return splitAndMerge(tab)
+	return mergeTabs(mergeSort(left), mergeSort(right))
 }
 
 func mergeSortParallel(tab []int) []int {
