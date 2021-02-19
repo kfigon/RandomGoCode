@@ -3,7 +3,11 @@ package main
 import (
 	"testing"
 	"fmt"
+	"net/http/httptest"
+	"net/http"
+	"io/ioutil"
 )
+
 type mockDb struct {
 	readListFun func() []todoListItem
 	readEntryFun func() *todoEntry
@@ -151,6 +155,24 @@ func TestUpdateEntryButFailed(t *testing.T) {
 	}
 }
 
-func TestReadListByWeb(t *testing.T) {
-	t.Fatal("todo")
+func createServer() *httptest.Server {
+	return httptest.NewServer(createMux())
+}
+
+func TestBasicWeb(t *testing.T) {
+	srv := createServer()
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL +"/")
+	expStatus := http.StatusOK
+	if gotStatus := resp.StatusCode; gotStatus != expStatus {
+		t.Errorf("Wrong status, got %v, exp %v", gotStatus, expStatus)
+	} 
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Error("Error during reading response:", err)
+	}
+	if responseBody := string(data); responseBody != "hello" {
+		t.Errorf("Invalid response, got: %v", responseBody)
+	}
 }

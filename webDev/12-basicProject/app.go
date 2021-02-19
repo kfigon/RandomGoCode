@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"io"
 )
 
 func main() {
@@ -52,4 +54,14 @@ func (a *app) createNewEntry(entry todoEntry) error {
 
 func (a *app) update(entry todoEntry) error {
 	return a.db.update(entry)
+}
+
+func createMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", index)
+	return mux
+}
+
+func index(w http.ResponseWriter, req* http.Request) {
+	io.WriteString(w, "hello")
 }
