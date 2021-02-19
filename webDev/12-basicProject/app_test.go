@@ -5,34 +5,40 @@ import (
 	"fmt"
 )
 type mockDb struct {
-	list []todoListItem
-	entry *todoEntry
+	readListFun func() []todoListItem
+	readEntryFun func() *todoEntry
 	insertFun func() error
 	updateFun func() error
 }
 func (m mockDb) readList() []todoListItem {
-	return m.list
+	if m.readListFun == nil {
+		return []todoListItem{}
+	}
+	return m.readListFun()
 }
 func (m mockDb) readEntry(id int) *todoEntry {
-	return m.entry
+	if m.readEntryFun == nil {
+		return nil
+	}
+	return m.readEntryFun()
 }
 func (m mockDb) insert(entry todoEntry) error {
+	if m.insertFun == nil {
+		return nil
+	}
 	return m.insertFun()
 }
 func (m mockDb) update(entry todoEntry) error {
+	if m.updateFun == nil {
+		return nil
+	}
 	return m.updateFun()
 }
 
-func createMock(list []todoListItem, entry *todoEntry) mockDb {
-	return mockDb{
-		list:list,
-		entry: entry,
-	}
-}
 
 func TestReadTodoListWhenEmpty(t *testing.T) {
 	// given
-	app := makeApp(createMock([]todoListItem{}, nil))
+	app := makeApp(mockDb{})
 	// when
 	todos := app.readList()
 	// then
@@ -43,12 +49,11 @@ func TestReadTodoListWhenEmpty(t *testing.T) {
 
 func TestReadTodoList(t *testing.T) {
 	// given
-	mockTodos := []todoListItem { 
+	mock := mockDb{readListFun: func() []todoListItem { return []todoListItem { 
 		todoListItem{title:"first task"},
 		todoListItem{title:"second task"},
-	}
-
-	app := makeApp(createMock(mockTodos, nil))
+	}}}
+	app := makeApp(mock)
 	// when
 	todos := app.readList()
 	// then
@@ -65,9 +70,9 @@ func TestReadTodoList(t *testing.T) {
 
 func TestReadSingleTodo(t *testing.T) {
 	// given
-	singleEntry := todoEntry{ todoListItem: todoListItem{title:"first task"}, }
-
-	app := makeApp(createMock(nil, &singleEntry))
+	mockEntry := todoEntry{ todoListItem: todoListItem{title:"first task"}}
+	mock := mockDb{readEntryFun: func() *todoEntry { return &mockEntry}}
+	app := makeApp(mock)
 	// when
 	todo,err := app.readEntry(456)
 	// then
@@ -84,7 +89,7 @@ func TestReadSingleTodo(t *testing.T) {
 
 func TestReadTodoWhenNotFound(t *testing.T) {
 	// given
-	app := makeApp(createMock(nil, nil))
+	app := makeApp(mockDb{})
 	// when
 	todo,err := app.readEntry(456)
 	// then
@@ -98,8 +103,7 @@ func TestReadTodoWhenNotFound(t *testing.T) {
 
 func TestCreateNewEntry(t *testing.T) {
 	// given
-	mock := mockDb{insertFun: func() error {return nil}}
-	app := makeApp(mock)
+	app := makeApp(mockDb{})
 	// when
 	todoEntry := todoEntry{}
 	err := app.createNewEntry(todoEntry)
@@ -124,8 +128,7 @@ func TestCreateNewEntryWhenNotSucceed(t *testing.T) {
 
 func TestUpdateEntry(t *testing.T) {
 	// given
-	mock := mockDb{updateFun: func() error {return nil}}
-	app := makeApp(mock)
+	app := makeApp(mockDb{})
 	// when
 	todoEntry := todoEntry{}
 	err := app.update(todoEntry)
