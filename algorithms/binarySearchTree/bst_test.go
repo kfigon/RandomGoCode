@@ -30,9 +30,12 @@ func TestInsertAndTraverse(t *testing.T) {
 		expected []int
 	} {
 		{ []int{15}, []int{15}},
+		{ []int{15, 16}, []int{15, 16}},
+		{ []int{15, 14}, []int{14, 15}},
 	}
 	for _, tc := range tdt {
-		t.Run(fmt.Sprint(tc.elements), func(t *testing.T) {
+		runName := fmt.Sprint(tc.elements)
+		t.Run(runName, func(t *testing.T) {
 			tree := createTree()
 			for _, v := range tc.elements {
 				tree.insert(v)	

@@ -22,9 +22,18 @@ func createTree() *tree {
 
 func (t *tree) values() []int {
 	out := make([]int,0)
-	if t.root != nil {
-		out = append(out, t.root.val)
+	var traverse func(*node)
+	
+	traverse = func(n *node) {
+		if n == nil {
+			return
+		}
+		traverse(n.left)
+		out = append(out, n.val)
+		traverse(n.right)
 	}
+
+	traverse(t.root)
 	return out
 }
 
@@ -35,5 +44,20 @@ func (t *tree) insert(value int)  {
 		return
 	}
 	
-
+	ptr := t.root
+	for ptr != nil {
+		if value < ptr.val  {
+			if ptr.left == nil {
+				ptr = newNode
+				break
+			}
+			ptr = ptr.left
+		} else {
+			if ptr.right == nil {
+				ptr = newNode
+				break
+			}
+			ptr = ptr.right
+		}
+	}
 }
