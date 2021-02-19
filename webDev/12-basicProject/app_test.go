@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/http"
 	"io/ioutil"
+	"strings"
 )
 
 type mockDb struct {
@@ -172,7 +173,7 @@ func TestBasicWeb(t *testing.T) {
 	if err != nil {
 		t.Error("Error during reading response:", err)
 	}
-	if responseBody := string(data); responseBody != "hello" {
+	if responseBody := string(data); !strings.Contains(responseBody, "hi there") {
 		t.Errorf("Invalid response, got: %v", responseBody)
 	}
 }

@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"io"
+	"log"
+	"html/template"
 )
 
 func main() {
-
+	log.Fatal(http.ListenAndServe(":8080", createMux()))
 }
 
 func makeApp(db dataProvider) *app {
@@ -63,5 +64,7 @@ func createMux() *http.ServeMux {
 }
 
 func index(w http.ResponseWriter, req* http.Request) {
-	io.WriteString(w, "hello")
+	tpl := template.Must(template.ParseFiles("base.html"))
+
+	tpl.Execute(w, "ziomx")
 }
