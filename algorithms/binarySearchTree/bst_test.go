@@ -29,7 +29,7 @@ func TestInsertAndTraverse(t *testing.T) {
 		elements []int
 		expected []int
 	} {
-		// { []int{15}, []int{15}},
+		{ []int{15}, []int{15}},
 		{ []int{15, 16}, []int{15, 16}},
 		{ []int{15, 14}, []int{14, 15}},
 		{ []int{15, 1, 14}, []int{1, 14, 15}},

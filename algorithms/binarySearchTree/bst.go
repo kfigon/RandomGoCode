@@ -66,13 +66,32 @@ func (t *tree) insert(value int)  {
 
 func (t *tree) insertRecursive(value int)  {
 	newNode := createNode(value)
+	if t.root == nil {
+		t.root = newNode
+		return
+	}
+	
 	var insertRec func(*node)
 	insertRec = func(n *node) {
 		if n == nil {
 			n = newNode
 			return
+		} else if value < n.val {
+			if n.left == nil {
+				n.left = newNode
+				return
+			}
+			insertRec(n.left)
+			
+		} else {
+			if n.right == nil {
+				n.right = newNode
+				return
+			}
+			insertRec(n.right)
 		}
 		
 	}
+
 	insertRec(t.root)
 }
