@@ -109,3 +109,20 @@ func (t *tree) contains(value int) bool {
 	}
 	return false
 }
+
+func (t *tree) containsRecursive(value int) bool {
+	var find func(*node) bool
+	find = func(n *node) bool {
+		if n == nil {
+			return false
+		} else if n.val == value {
+			return true
+		} else if value < n.val {
+			return find(n.left)
+		} else {
+			return find(n.right)
+		}
+	}
+
+	return find(t.root)
+}

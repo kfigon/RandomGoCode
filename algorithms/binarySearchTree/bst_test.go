@@ -67,10 +67,15 @@ func searchInTree(t *testing.T, tree *tree, val int, expectToFind bool) {
 		errorMsg = fmt.Sprintf("%v expected to be not found, but it was", val)
 	}
 
-	found := tree.contains(val)
-	if (expectToFind && !found) || (!expectToFind && found) {
+	foundIter := tree.contains(val)
+	if (expectToFind && !foundIter) || (!expectToFind && foundIter) {
 		t.Error(errorMsg)
 	}
+	foundRecursive := tree.containsRecursive(val)
+	if foundIter != foundRecursive {
+		t.Errorf("Difference in result in recursive (%v) and iterative (%v) contains", foundRecursive, foundIter)
+	}
+	
 }
 
 func TestSearchWhenEmpty(t *testing.T) {
