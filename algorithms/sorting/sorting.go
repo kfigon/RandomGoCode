@@ -116,11 +116,6 @@ func mergeSort(tab []int) []int {
 	return mergeTabs(mergeSort(left), mergeSort(right))
 }
 
-func mergeSortParallel(tab []int) []int {
-	out := copyTab(tab)
-	return out
-}
-
 func splitThroughPivot(tab []int) ([]int, []int, int) {
 	left := make([]int,0)
 	right := make([]int,0)
@@ -181,11 +176,14 @@ func radixSort(tab []int) []int {
 			list = append(list, v)
 			buckets[digit] = list
 		}
+		// short circuit
+		if !canContinue {
+			return canContinue
+		}
 
 		outIdx := 0
-		for key := range buckets {
-			subList := buckets[key]
-			for _, el := range subList {
+		for _,subList := range buckets {
+			for _,el := range subList {
 				out[outIdx] = el
 				outIdx++
 			}

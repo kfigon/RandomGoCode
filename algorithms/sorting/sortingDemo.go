@@ -9,8 +9,9 @@ import (
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	// demoAlgorithm("bubble", 50000, bubbleSort)
-	demoAlgorithm("merge", 1000000, mergeSort)
-	demoAlgorithm("quick", 1000000, quickSort)
+	demoAlgorithm("merge", 10000000, mergeSort)
+	demoAlgorithm("quick", 10000000, quickSort)
+	demoAlgorithm("radix", 10000000, radixSort)
 }
 
 func demoAlgorithm(name string, tabLen int, alg func([]int)[]int) {
