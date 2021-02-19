@@ -48,13 +48,13 @@ func (t *tree) insert(value int)  {
 	for ptr != nil {
 		if value < ptr.val  {
 			if ptr.left == nil {
-				ptr = newNode
+				ptr.left = newNode
 				break
 			}
 			ptr = ptr.left
 		} else {
 			if ptr.right == nil {
-				ptr = newNode
+				ptr.right = newNode
 				break
 			}
 			ptr = ptr.right
