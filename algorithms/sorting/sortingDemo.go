@@ -10,6 +10,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	// demoAlgorithm("bubble", 50000, bubbleSort)
 	demoAlgorithm("merge", 1000000, mergeSort)
+	demoAlgorithm("quick", 1000000, quickSort)
 }
 
 func demoAlgorithm(name string, tabLen int, alg func([]int)[]int) {

@@ -135,6 +135,9 @@ func splitThroughPivot(tab []int) ([]int, []int, int) {
 	return left, right, pivot
 }
 
+// O(nlogn)
+// in worst case - O(n^2)
+// better to use idx, not slices
 func quickSort(tab []int) []int {
 	if len(tab) <= 1 {
 		return tab
