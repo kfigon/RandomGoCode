@@ -85,3 +85,36 @@ func TestMergeTabs(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractDigit(t *testing.T) {
+	testCases := []struct {
+		number int
+		digitNum int
+		expected int
+	}{
+		{0,0,0},
+		{0,1,0},
+		{0,2,0},
+		{1,0,1},
+		{1,1,0},
+		{34,0,3},
+		{34,1,4},
+		{34,2,0},
+		{567893,0,3},
+		{567893,1,9},
+		{567893,2,8},
+		{567893,3,7},
+		{567893,4,6},
+		{567893,5,5},
+		{567893,6,0},
+		{567893,7,0},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("%v[%v]", tc.number, tc.digitNum), func(t *testing.T) {
+			got := extractDigit(tc.number, tc.digitNum)
+			if got != tc.expected {
+				t.Errorf("%v[%v], got %v, exp %v", tc.number, tc.digitNum, got, tc.expected)
+			}
+		})
+	}
+}

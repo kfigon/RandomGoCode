@@ -155,6 +155,10 @@ func quickSort(tab []int) []int {
 	return out
 }
 
+func extractDigit(num int, digitNum int) int {
+	return -1
+}
+
 func raidxSort(tab []int) []int {
 	out := copyTab(tab)
 	return out
