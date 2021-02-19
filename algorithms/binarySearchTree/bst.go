@@ -22,8 +22,8 @@ func createTree() *tree {
 
 func (t *tree) values() []int {
 	out := make([]int,0)
-	var traverse func(*node)
-	
+	var traverse func(n *node)
+
 	traverse = func(n *node) {
 		if n == nil {
 			return

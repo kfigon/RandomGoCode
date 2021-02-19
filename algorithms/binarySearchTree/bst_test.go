@@ -29,9 +29,12 @@ func TestInsertAndTraverse(t *testing.T) {
 		elements []int
 		expected []int
 	} {
-		{ []int{15}, []int{15}},
+		// { []int{15}, []int{15}},
 		{ []int{15, 16}, []int{15, 16}},
 		{ []int{15, 14}, []int{14, 15}},
+		{ []int{15, 1, 14}, []int{1, 14, 15}},
+		{ []int{-1, 15, 1, 14}, []int{-1, 1, 14, 15}},
+		{ []int{-1, 15, 1, 14,18, 3}, []int{-1, 1, 3, 14, 15, 18}},
 	}
 	for _, tc := range tdt {
 		runName := fmt.Sprint(tc.elements)
@@ -40,7 +43,7 @@ func TestInsertAndTraverse(t *testing.T) {
 			for _, v := range tc.elements {
 				tree.insert(v)	
 			}
-			assertValues(t, tree, []int{15})
+			assertValues(t, tree, tc.expected)
 		})
 	}
 	
