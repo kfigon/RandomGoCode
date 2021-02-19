@@ -1,6 +1,9 @@
 package binarySearchTree
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+)
 
 func assertValues(t *testing.T, tree *tree, expected []int) {
 	vals := tree.values()
@@ -21,8 +24,21 @@ func TestCreateTree(t *testing.T) {
 	assertValues(t, tree, []int{})
 }
 
-func TestAdd(t *testing.T) {
-	tree := createTree()
-	tree.insert(15)
-	assertValues(t, tree, []int{15})
+func TestInsertAndTraverse(t *testing.T) {
+	tdt := [] struct {
+		elements []int
+		expected []int
+	} {
+		{ []int{15}, []int{15}},
+	}
+	for _, tc := range tdt {
+		t.Run(fmt.Sprint(tc.elements), func(t *testing.T) {
+			tree := createTree()
+			for _, v := range tc.elements {
+				tree.insert(v)	
+			}
+			assertValues(t, tree, []int{15})
+		})
+	}
+	
 }
