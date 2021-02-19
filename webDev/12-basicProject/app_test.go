@@ -147,3 +147,7 @@ func TestUpdateEntryButFailed(t *testing.T) {
 		t.Error("Expected error during insert, not received")
 	}
 }
+
+func TestReadListByWeb(t *testing.T) {
+	t.Fatal("todo")
+}
