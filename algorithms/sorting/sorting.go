@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 func copyTab(tab []int) []int {
 	out := make([]int, len(tab))
 	for i := 0; i < len(tab); i++ {
@@ -155,8 +157,9 @@ func quickSort(tab []int) []int {
 	return out
 }
 
+// idx from 0
 func extractDigit(num int, digitNum int) int {
-	return -1
+	return (num/int(math.Pow10(digitNum)) % 10)
 }
 
 func raidxSort(tab []int) []int {
