@@ -12,6 +12,8 @@ func createNode(val int) *node {
 // binary - 2 children
 // search tree - sorted in specific way. Data can be compared
 // left child is smaller, right is greater
+// insert - O(logn)
+// find - O(logn)
 type tree struct{
 	root *node
 }
@@ -60,4 +62,17 @@ func (t *tree) insert(value int)  {
 			ptr = ptr.right
 		}
 	}
+}
+
+func (t *tree) insertRecursive(value int)  {
+	newNode := createNode(value)
+	var insertRec func(*node)
+	insertRec = func(n *node) {
+		if n == nil {
+			n = newNode
+			return
+		}
+		
+	}
+	insertRec(t.root)
 }

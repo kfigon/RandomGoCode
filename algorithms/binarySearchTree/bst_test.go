@@ -36,15 +36,25 @@ func TestInsertAndTraverse(t *testing.T) {
 		{ []int{-1, 15, 1, 14}, []int{-1, 1, 14, 15}},
 		{ []int{-1, 15, 1, 14,18, 3}, []int{-1, 1, 3, 14, 15, 18}},
 	}
-	for _, tc := range tdt {
-		runName := fmt.Sprint(tc.elements)
-		t.Run(runName, func(t *testing.T) {
-			tree := createTree()
-			for _, v := range tc.elements {
-				tree.insert(v)	
-			}
-			assertValues(t, tree, tc.expected)
-		})
+	recursiveInsert := map[bool]string {
+		false: "iterative",
+		true: "recursive",
 	}
-	
+	for recursiveAlg := range recursiveInsert {
+		for _, tc := range tdt {
+			runName := fmt.Sprintf("%v %v", recursiveInsert[recursiveAlg], tc.elements)
+			t.Run(runName, func(t *testing.T) {
+				tree := createTree()
+				for _, v := range tc.elements {
+					
+					if recursiveAlg {
+						tree.insertRecursive(v)	
+					} else {
+						tree.insert(v)
+					}
+				}
+				assertValues(t, tree, tc.expected)
+			})
+		}
+	}
 }
