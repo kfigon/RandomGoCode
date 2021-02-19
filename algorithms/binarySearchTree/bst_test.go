@@ -58,3 +58,42 @@ func TestInsertAndTraverse(t *testing.T) {
 		}
 	}
 }
+
+func searchInTree(t *testing.T, tree *tree, val int, expectToFind bool) {
+	var errorMsg string
+	if expectToFind {
+		errorMsg = fmt.Sprintf("%v expected to be found, but it was not", val)
+	} else {
+		errorMsg = fmt.Sprintf("%v expected to be not found, but it was", val)
+	}
+
+	found := tree.contains(val)
+	if (expectToFind && !found) || (!expectToFind && found) {
+		t.Error(errorMsg)
+	}
+}
+
+func TestSearchWhenEmpty(t *testing.T) {
+	tree := createTree()
+	searchInTree(t, tree, 4, false)
+}
+
+func TestSearch(t *testing.T) {
+	tree := createTree()
+	tree.insert(4)
+	tree.insert(3)
+	tree.insert(2)
+	tree.insert(6)
+	
+	searchInTree(t, tree, 4, true)
+	searchInTree(t, tree, 3, true)
+	searchInTree(t, tree, 2, true)
+	searchInTree(t, tree, 6, true)
+	
+	searchInTree(t, tree, -1, false)
+	searchInTree(t, tree, 5, false)
+	searchInTree(t, tree, -7, false)
+	searchInTree(t, tree, 8, false)
+	searchInTree(t, tree, -8, false)
+}
+

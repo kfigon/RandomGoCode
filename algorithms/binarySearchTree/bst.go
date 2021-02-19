@@ -70,7 +70,7 @@ func (t *tree) insertRecursive(value int)  {
 		t.root = newNode
 		return
 	}
-	
+
 	var insertRec func(*node)
 	insertRec = func(n *node) {
 		if n == nil {
@@ -94,4 +94,18 @@ func (t *tree) insertRecursive(value int)  {
 	}
 
 	insertRec(t.root)
+}
+
+func (t *tree) contains(value int) bool {
+	ptr := t.root
+	for ptr != nil {
+		if ptr.val == value {
+			return true
+		} else if value < ptr.val  {
+			ptr = ptr.left
+		} else {
+			ptr = ptr.right
+		}
+	}
+	return false
 }
