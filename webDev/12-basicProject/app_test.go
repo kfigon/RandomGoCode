@@ -2,17 +2,25 @@ package main
 
 import (
 	"testing"
-	// "fmt"
+	"fmt"
 )
 type mockDb struct {
 	list []todoListItem
 	entry *todoEntry
+	insertFun func() error
+	updateFun func() error
 }
 func (m mockDb) readList() []todoListItem {
 	return m.list
 }
 func (m mockDb) readEntry(id int) *todoEntry {
 	return m.entry
+}
+func (m mockDb) insert(entry todoEntry) error {
+	return m.insertFun()
+}
+func (m mockDb) update(entry todoEntry) error {
+	return m.updateFun()
 }
 
 func createMock(list []todoListItem, entry *todoEntry) mockDb {
@@ -85,5 +93,57 @@ func TestReadTodoWhenNotFound(t *testing.T) {
 	}
 	if todo != nil {
 		t.Error("Entry found, but shouldn't. Got:", todo)
+	}
+}
+
+func TestCreateNewEntry(t *testing.T) {
+	// given
+	mock := mockDb{insertFun: func() error {return nil}}
+	app := makeApp(mock)
+	// when
+	todoEntry := todoEntry{}
+	err := app.createNewEntry(todoEntry)
+	// then
+	if err != nil {
+		t.Error("Error during creation not expected, got", err)
+	}
+}
+
+func TestCreateNewEntryWhenNotSucceed(t *testing.T) {
+	// given
+	mock := mockDb{insertFun: func() error {return fmt.Errorf("got error")}}
+	app := makeApp(mock)
+	// when
+	todoEntry := todoEntry{}
+	err := app.createNewEntry(todoEntry)
+	// then
+	if err == nil {
+		t.Error("Expected error during insert, not received")
+	}
+}
+
+func TestUpdateEntry(t *testing.T) {
+	// given
+	mock := mockDb{updateFun: func() error {return nil}}
+	app := makeApp(mock)
+	// when
+	todoEntry := todoEntry{}
+	err := app.update(todoEntry)
+	// then
+	if err != nil {
+		t.Error("Error not expected, got:",err)
+	}
+}
+
+func TestUpdateEntryButFailed(t *testing.T) {
+	// given
+	mock := mockDb{updateFun: func() error {return fmt.Errorf("error occured")}}
+	app := makeApp(mock)
+	// when
+	todoEntry := todoEntry{}
+	err := app.update(todoEntry)
+	// then
+	if err == nil {
+		t.Error("Expected error during insert, not received")
 	}
 }

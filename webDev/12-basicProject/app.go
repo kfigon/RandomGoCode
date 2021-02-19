@@ -19,6 +19,8 @@ type app struct {
 type dataProvider interface {
 	readList() []todoListItem
 	readEntry(int) *todoEntry
+	insert(todoEntry) error
+	update(todoEntry) error
 }
 
 type todoListItem struct {
@@ -42,4 +44,12 @@ func (a *app) readEntry(id int) (*todoEntry,error) {
 		return entry, fmt.Errorf("Entity not found, id %v", id)
 	}
 	return entry, nil
+}
+
+func (a *app) createNewEntry(entry todoEntry) error {
+	return a.db.insert(entry)
+}
+
+func (a *app) update(entry todoEntry) error {
+	return a.db.update(entry)
 }
