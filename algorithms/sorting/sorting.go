@@ -162,7 +162,41 @@ func extractDigit(num int, digitNum int) int {
 	return (num/int(math.Pow10(digitNum)) % 10)
 }
 
-func raidxSort(tab []int) []int {
+func radixSort(tab []int) []int {
 	out := copyTab(tab)
+
+	singleIteration := func(idx int) bool {
+		buckets := make([][]int,10)
+		for i := 0; i < 10; i++ {
+			buckets[i] = make([]int,0)
+		}
+		
+		canContinue := false
+		for _, v := range out {
+			digit := extractDigit(v,idx)
+			if digit != 0 {
+				canContinue = true
+			}
+			list := buckets[digit]
+			list = append(list, v)
+			buckets[digit] = list
+		}
+
+		outIdx := 0
+		for key := range buckets {
+			subList := buckets[key]
+			for _, el := range subList {
+				out[outIdx] = el
+				outIdx++
+			}
+		}
+		return canContinue
+	}
+
+	idx := 0
+	for singleIteration(idx) {
+		idx++
+	}
+
 	return out
 }
