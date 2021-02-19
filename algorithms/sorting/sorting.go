@@ -119,8 +119,36 @@ func mergeSortParallel(tab []int) []int {
 	return out
 }
 
+func splitThroughPivot(tab []int) ([]int, []int, int) {
+	left := make([]int,0)
+	right := make([]int,0)
+	pivotIdx := 0
+	pivot := tab[pivotIdx]
+	for i := 1; i < len(tab); i++ {
+		el := tab[i]
+		if el < pivot {
+			left = append(left, el)
+		} else {
+			right = append(right, el)
+		}
+	}
+	return left, right, pivot
+}
+
 func quickSort(tab []int) []int {
-	out := copyTab(tab)
+	if len(tab) <= 1 {
+		return tab
+	}
+	left,right,pivot := splitThroughPivot(tab)
+
+	out := make([]int,0)
+	newLeft := quickSort(left)
+	for i := 0; i < len(newLeft); i++ { out = append(out, newLeft[i]) }
+	
+	out = append(out, pivot)
+	
+	newRight := quickSort(right)
+	for i := 0; i < len(newRight); i++ { out = append(out, newRight[i]) }
 	return out
 }
 
