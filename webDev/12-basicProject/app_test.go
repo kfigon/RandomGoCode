@@ -11,7 +11,7 @@ import (
 
 type mockDb struct {
 	readListFun func() []TodoListItem
-	insertFun func() error
+	insertFun func(entry TodoListItem) error
 	updateFun func() error
 }
 func (m mockDb) readList() []TodoListItem {
@@ -24,7 +24,7 @@ func (m mockDb) insert(entry TodoListItem) error {
 	if m.insertFun == nil {
 		return nil
 	}
-	return m.insertFun()
+	return m.insertFun(entry)
 }
 func (m mockDb) update(entry TodoListItem) error {
 	if m.updateFun == nil {
@@ -79,7 +79,7 @@ func TestCreateNewEntry(t *testing.T) {
 
 func TestCreateNewEntryWhenNotSucceed(t *testing.T) {
 	// given
-	mock := mockDb{insertFun: func() error {return fmt.Errorf("got error")}}
+	mock := mockDb{insertFun: func(TodoListItem) error {return fmt.Errorf("got error")}}
 	app := makeApp(mock)
 	// when
 	err := app.createNewEntry(TodoListItem{})
@@ -183,4 +183,30 @@ func TestRoutingGetList(t *testing.T) {
 	}
 }
 
-// todo: test handleAddNew
+func TestRoutingPostToAddNew(t *testing.T) {
+	assertOnInsertFun := func(newEntry TodoListItem) error {
+		if newEntry.Title != "My new title" {
+			t.Error("Invalid entity saved", newEntry)
+		}
+		return nil
+	}
+
+	db := &mockDb{
+		insertFun: assertOnInsertFun,
+	}
+	srv := createServer(db)
+	defer srv.Close()
+
+	data := map[string][]string {
+		"title": []string{"My new title"},
+		"date": []string{"2021-02-20"},
+		"isDone": []string{"on"},
+	}
+	resp, _ := http.PostForm(srv.URL +"/addNew", data)
+	assertStatus(t, resp.StatusCode, http.StatusOK)
+
+	responseBody := getStringBody(t, resp)
+	if !strings.Contains(responseBody, "To do list") {
+		t.Error("Invalid response")
+	}
+}
