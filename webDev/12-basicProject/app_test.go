@@ -166,20 +166,39 @@ func createServer() *httptest.Server {
 	return httptest.NewServer(createMux(mockView{}))
 }
 
+func assertStatus(t *testing.T, got int, exp int) {
+	if got != exp {
+		t.Errorf("Wrong status, got %v, exp %v", got, exp)
+	} 
+}
+
 func TestBasicWeb(t *testing.T) {
 	srv := createServer()
 	defer srv.Close()
 
 	resp, _ := http.Get(srv.URL +"/")
-	expStatus := http.StatusOK
-	if gotStatus := resp.StatusCode; gotStatus != expStatus {
-		t.Errorf("Wrong status, got %v, exp %v", gotStatus, expStatus)
-	} 
+	assertStatus(t, resp.StatusCode, http.StatusOK)
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Error("Error during reading response:", err)
 	}
 	if responseBody := string(data); !strings.Contains(responseBody, "hi there") {
+		t.Errorf("Invalid response, got: %v", responseBody)
+	}
+}
+
+func TestGetList(t *testing.T) {
+	srv := createServer()
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL +"/list")
+	assertStatus(t, resp.StatusCode, http.StatusOK)
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Error("Error during reading response:", err)
+	}
+	if responseBody := string(data); !strings.Contains(responseBody, "Todo list") {
 		t.Errorf("Invalid response, got: %v", responseBody)
 	}
 }
