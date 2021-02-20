@@ -1,7 +1,41 @@
 package binaryHeap
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
-func Test(t *testing.T) {
-	t.Fatal("todo")
+func assertElements(t *testing.T, h *heap, expected []int) {
+	vals := h.values()
+	if len(vals) != len(expected) {
+		t.Fatalf("Invalid len, got: %v, exp %v", len(vals), len(expected))
+	}
+	for i := range expected {
+		got := vals[i]
+		exp := expected[i]
+		if got != exp {
+			t.Errorf("Error in idx %v, got %v, exp %v", i, got, exp)
+			t.Fatalf("%v != %v", vals, expected)
+		}
+	}
+
+}
+
+func TestInsert(t *testing.T) {
+	tdt := []struct {
+		input    []int
+		expected []int
+	}{
+		{[]int{}, []int{}},
+		{[]int{1, 2}, []int{1, 2}},
+	}
+	for _, tc := range tdt {
+		t.Run(fmt.Sprintf("%v", tc.input), func(t *testing.T) {
+			heap := newHeap()
+			for _, v := range tc.input {
+				heap.insert(v)
+			}
+			assertElements(t, heap, tc.expected)
+		})
+	}
 }
