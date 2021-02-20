@@ -88,13 +88,8 @@ func (a *app) update(entry TodoEntry) error {
 type view struct{
 	app *app
 }
-type basicView interface {
-	handleIndex(w http.ResponseWriter, req* http.Request)
-	handleList(w http.ResponseWriter, req* http.Request)
-	handleAddNew(w http.ResponseWriter, req* http.Request)
-}
 
-func createMux(v basicView) *http.ServeMux {
+func createMux(v *view) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", v.handleIndex)
 	mux.HandleFunc("/list", v.handleList)

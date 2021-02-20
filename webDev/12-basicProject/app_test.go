@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"testing"
 	"fmt"
 	"net/http/httptest"
@@ -157,23 +156,9 @@ func TestUpdateEntryButFailed(t *testing.T) {
 	}
 }
 
-type mockView struct{
-	app *app
-}
-func (m mockView) handleIndex(w http.ResponseWriter, req* http.Request) {
-	io.WriteString(w, "hi there")
-}
-func (m mockView) handleList(w http.ResponseWriter, req* http.Request) {
-	io.WriteString(w, "test list")
-}
-// todo: pointless thing, think how to test code, not mocks
-func (m mockView) handleAddNew(w http.ResponseWriter, req* http.Request) {
-	io.WriteString(w, "test list")
-}
-
-func createServer() *httptest.Server {
-	application := makeApp(&mockDb{})
-	return httptest.NewServer(createMux(mockView{app:application}))
+func createServer(db *mockDb) *httptest.Server {
+	application := makeApp(db)
+	return httptest.NewServer(createMux(&view{app:application}))
 }
 
 func assertStatus(t *testing.T, got int, exp int) {
@@ -182,33 +167,35 @@ func assertStatus(t *testing.T, got int, exp int) {
 	} 
 }
 
-func TestBasicWebRouting(t *testing.T) {
-	srv := createServer()
-	defer srv.Close()
-
-	resp, _ := http.Get(srv.URL +"/")
-	assertStatus(t, resp.StatusCode, http.StatusOK)
+func getStringBody(t *testing.T, resp *http.Response) string {
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Error("Error during reading response:", err)
 	}
-	if responseBody := string(data); !strings.Contains(responseBody, "hi there") {
-		t.Errorf("Invalid response, got: %v", responseBody)
+	return string(data)
+}
+
+func TestBasicWebRouting(t *testing.T) {
+	srv := createServer(&mockDb{})
+	defer srv.Close()
+
+	resp, _ := http.Get(srv.URL +"/")
+	assertStatus(t, resp.StatusCode, http.StatusOK)
+	responseBody := getStringBody(t, resp)
+	if !strings.Contains(responseBody, "hi there") {
+		t.Error("Invalid response")
 	}
 }
 
 func TestRoutingGetList(t *testing.T) {
-	srv := createServer()
+	srv := createServer(&mockDb{})
 	defer srv.Close()
 
 	resp, _ := http.Get(srv.URL +"/list")
 	assertStatus(t, resp.StatusCode, http.StatusOK)
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Error("Error during reading response:", err)
-	}
-	if responseBody := string(data); !strings.Contains(responseBody, "test list") {
-		t.Errorf("Invalid response, got: %v", responseBody)
+	responseBody := getStringBody(t, resp)
+	if !strings.Contains(responseBody, "To do list") {
+		t.Error("Invalid response")
 	}
 }
