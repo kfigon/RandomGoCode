@@ -18,7 +18,6 @@ func assertElements(t *testing.T, h *heap, expected []int) {
 			t.Fatalf("%v != %v", vals, expected)
 		}
 	}
-
 }
 
 func TestInsert(t *testing.T) {
@@ -27,7 +26,10 @@ func TestInsert(t *testing.T) {
 		expected []int
 	}{
 		{[]int{}, []int{}},
+		{[]int{5}, []int{5}},
 		{[]int{1, 2}, []int{1, 2}},
+		{[]int{1, 2, 5}, []int{1, 2, 5}},
+		{[]int{1, 4, 2, 5}, []int{1, 2, 4, 5}},
 	}
 	for _, tc := range tdt {
 		t.Run(fmt.Sprintf("%v", tc.input), func(t *testing.T) {
