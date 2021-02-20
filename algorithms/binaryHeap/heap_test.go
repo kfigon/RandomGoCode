@@ -30,6 +30,7 @@ func TestInsert(t *testing.T) {
 		{[]int{1, 2}, []int{1, 2}},
 		{[]int{1, 2, 5}, []int{1, 2, 5}},
 		{[]int{1, 4, 2, 5}, []int{1, 2, 4, 5}},
+		{[]int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
 	}
 	for _, tc := range tdt {
 		t.Run(fmt.Sprintf("%v", tc.input), func(t *testing.T) {
@@ -40,4 +41,8 @@ func TestInsert(t *testing.T) {
 			assertElements(t, heap, tc.expected)
 		})
 	}
+}
+
+func TestBubbleUp(t *testing.T) {
+	t.Fatal("todo - bubble up when adding")
 }
