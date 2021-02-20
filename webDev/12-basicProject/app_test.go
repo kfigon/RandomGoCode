@@ -166,9 +166,13 @@ func (m mockView) handleIndex(w http.ResponseWriter, req* http.Request) {
 func (m mockView) handleList(w http.ResponseWriter, req* http.Request) {
 	io.WriteString(w, "test list")
 }
+// todo: pointless thing, think how to test code, not mocks
+func (m mockView) handleAddNew(w http.ResponseWriter, req* http.Request) {
+	io.WriteString(w, "test list")
+}
 
 func createServer() *httptest.Server {
-	application := makeApp(mockDb{})
+	application := makeApp(&mockDb{})
 	return httptest.NewServer(createMux(mockView{app:application}))
 }
 

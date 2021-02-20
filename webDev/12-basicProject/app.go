@@ -9,7 +9,7 @@ import (
 
 func main() {
 	app := makeApp(makeDb())
-	view := view{app}
+	view := &view{app}
 	log.Fatal(http.ListenAndServe(":8080", createMux(view)))
 }
 
@@ -17,8 +17,8 @@ func makeApp(db dataProvider) *app {
 	return &app{db}
 }
 
-func makeDb() mapDb {
-	return mapDb{
+func makeDb() *mapDb {
+	return &mapDb{
 		data: []TodoListItem {
 			TodoListItem{Title: "first task", IsDone: false, Date: "20-02-2021"},
 			TodoListItem{Title: "second task", IsDone: true, Date: "15-01-2020"},
@@ -28,16 +28,17 @@ func makeDb() mapDb {
 type mapDb struct {
 	data []TodoListItem
 }
-func (m mapDb) readList() []TodoListItem{
+func (m *mapDb) readList() []TodoListItem{
 	return m.data
 }
-func (m mapDb) readEntry(int) *TodoEntry{
+func (m *mapDb) readEntry(int) *TodoEntry{
 	return nil
 }
-func (m mapDb) insert(TodoEntry) error{
+func (m *mapDb) insert(entry TodoEntry) error{
+	m.data = append(m.data, entry.TodoListItem)
 	return nil
 }
-func (m mapDb) update(TodoEntry) error{
+func (m *mapDb) update(TodoEntry) error{
 	return nil
 }
 
@@ -90,21 +91,44 @@ type view struct{
 type basicView interface {
 	handleIndex(w http.ResponseWriter, req* http.Request)
 	handleList(w http.ResponseWriter, req* http.Request)
+	handleAddNew(w http.ResponseWriter, req* http.Request)
 }
 
 func createMux(v basicView) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", v.handleIndex)
 	mux.HandleFunc("/list", v.handleList)
+	mux.HandleFunc("/addNew", v.handleAddNew)
 	return mux
 }
 
-func (v view) handleIndex(w http.ResponseWriter, req* http.Request) {
+func (v *view) handleIndex(w http.ResponseWriter, req* http.Request) {
 	tpl := template.Must(template.ParseFiles("base.html", "landingPage.html"))
 	tpl.Execute(w, "ziomx")
 }
 
-func (v view) handleList(w http.ResponseWriter, req* http.Request) {
+func (v *view) handleList(w http.ResponseWriter, req* http.Request) {
 	tpl := template.Must(template.ParseFiles("base.html", "list.html"))
 	tpl.Execute(w, v.app.readList())
+}
+
+func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
+	err := req.ParseForm()
+	if err != nil {
+		http.Redirect(w,req,"/list",http.StatusSeeOther)
+		return
+	}
+	isDone := false
+	if value := req.FormValue("isDone"); value == "on" {
+		isDone = true
+	}
+	newTodoEntry := TodoListItem{
+		Title: req.FormValue("title"),
+		Date: req.FormValue("date"),
+		IsDone: isDone,
+	}
+
+	v.app.createNewEntry(TodoEntry{TodoListItem: newTodoEntry})
+	
+	http.Redirect(w,req,"/list",http.StatusSeeOther)
 }
