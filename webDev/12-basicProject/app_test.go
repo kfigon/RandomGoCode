@@ -164,7 +164,7 @@ func (m mockView) handleIndex(w http.ResponseWriter, req* http.Request) {
 	io.WriteString(w, "hi there")
 }
 func (m mockView) handleList(w http.ResponseWriter, req* http.Request) {
-	io.WriteString(w, "Todo list")
+	io.WriteString(w, "test list")
 }
 
 func createServer() *httptest.Server {
@@ -178,7 +178,7 @@ func assertStatus(t *testing.T, got int, exp int) {
 	} 
 }
 
-func TestBasicWeb(t *testing.T) {
+func TestBasicWebRouting(t *testing.T) {
 	srv := createServer()
 	defer srv.Close()
 
@@ -193,8 +193,7 @@ func TestBasicWeb(t *testing.T) {
 	}
 }
 
-// todo: this not test anything useful other than routing
-func TestGetList(t *testing.T) {
+func TestRoutingGetList(t *testing.T) {
 	srv := createServer()
 	defer srv.Close()
 
@@ -205,7 +204,7 @@ func TestGetList(t *testing.T) {
 	if err != nil {
 		t.Error("Error during reading response:", err)
 	}
-	if responseBody := string(data); !strings.Contains(responseBody, "Todo list") {
+	if responseBody := string(data); !strings.Contains(responseBody, "test list") {
 		t.Errorf("Invalid response, got: %v", responseBody)
 	}
 }
