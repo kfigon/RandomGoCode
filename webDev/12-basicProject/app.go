@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"log"
 	"html/template"
@@ -31,14 +30,11 @@ type mapDb struct {
 func (m *mapDb) readList() []TodoListItem{
 	return m.data
 }
-func (m *mapDb) readEntry(int) *TodoEntry{
+func (m *mapDb) insert(entry TodoListItem) error{
+	m.data = append(m.data, entry)
 	return nil
 }
-func (m *mapDb) insert(entry TodoEntry) error{
-	m.data = append(m.data, entry.TodoListItem)
-	return nil
-}
-func (m *mapDb) update(TodoEntry) error{
+func (m *mapDb) update(TodoListItem) error{
 	return nil
 }
 
@@ -48,9 +44,8 @@ type app struct {
 
 type dataProvider interface {
 	readList() []TodoListItem
-	readEntry(int) *TodoEntry
-	insert(TodoEntry) error
-	update(TodoEntry) error
+	insert(TodoListItem) error
+	update(TodoListItem) error
 }
 
 type TodoListItem struct {
@@ -59,28 +54,15 @@ type TodoListItem struct {
 	Date string
 }
 
-type TodoEntry struct {
-	TodoListItem
-	Description string
-}
-
 func (a *app) readList() []TodoListItem {
 	return a.db.readList()
 }
 
-func (a *app) readEntry(id int) (*TodoEntry,error) {
-	entry := a.db.readEntry(id)
-	if entry == nil {
-		return entry, fmt.Errorf("Entity not found, id %v", id)
-	}
-	return entry, nil
-}
-
-func (a *app) createNewEntry(entry TodoEntry) error {
+func (a *app) createNewEntry(entry TodoListItem) error {
 	return a.db.insert(entry)
 }
 
-func (a *app) update(entry TodoEntry) error {
+func (a *app) update(entry TodoListItem) error {
 	return a.db.update(entry)
 }
 
@@ -130,5 +112,5 @@ func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
 		return
 	}
 
-	v.app.createNewEntry(TodoEntry{TodoListItem: newTodoEntry})
+	v.app.createNewEntry(newTodoEntry)
 }
