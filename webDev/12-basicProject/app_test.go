@@ -157,8 +157,12 @@ func TestRoutingGetEmptyList(t *testing.T) {
 }
 
 func TestRoutingGetList(t *testing.T) {
-	t.FailNow() // todo
-	srv := createServer(&mockDb{})
+	readMock := func() []TodoListItem {
+		return []TodoListItem{
+			TodoListItem{Title: "do testing", IsDone: true, Date: "2021-02-20"},
+		}
+	}
+	srv := createServer(&mockDb{readListFun: readMock})
 	defer srv.Close()
 
 	resp, _ := http.Get(srv.URL +"/list")
@@ -168,4 +172,15 @@ func TestRoutingGetList(t *testing.T) {
 	if !strings.Contains(responseBody, "To do list") {
 		t.Error("Invalid response")
 	}
+	if !strings.Contains(responseBody, "do testing") {
+		t.Error("Invalid response")
+	}
+	if !strings.Contains(responseBody, "true") {
+		t.Error("Invalid response")
+	}
+	if !strings.Contains(responseBody, "2021-02-20") {
+		t.Error("Invalid response")
+	}
 }
+
+// todo: test handleAddNew
