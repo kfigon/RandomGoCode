@@ -12,7 +12,7 @@
 
     <ul class="nav">
         <li class="nav-item">
-            <a class="nav-link active" href="#">Main</a>
+            <a class="nav-link active" href="/">Main</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/list">List</a>
@@ -22,11 +22,6 @@
         </li>
     </ul>
 
-    <main class="container">
-        <div class="starter-template text-center py-5 px-3">
-            <h1>hi there {{.}}</h1>
-            <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi esse itaque inventore similique. Quam ab nemo hic porro et nisi, exercitationem ad rerum magni quos natus voluptate aliquid, minima dolorem.</p>
-        </div>
-    </main>
+    {{template "content" .}}
 </body>
 </html>
