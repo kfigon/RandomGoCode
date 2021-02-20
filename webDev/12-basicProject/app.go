@@ -113,9 +113,13 @@ func (v *view) handleList(w http.ResponseWriter, req* http.Request) {
 }
 
 func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
+	defer http.Redirect(w,req,"/list",http.StatusSeeOther)
+	
+	if req.Method != "POST" {
+		return
+	}
 	err := req.ParseForm()
 	if err != nil {
-		http.Redirect(w,req,"/list",http.StatusSeeOther)
 		return
 	}
 	isDone := false
@@ -127,8 +131,9 @@ func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
 		Date: req.FormValue("date"),
 		IsDone: isDone,
 	}
+	if newTodoEntry.Title == "" || newTodoEntry.Date == "" {
+		return
+	}
 
 	v.app.createNewEntry(TodoEntry{TodoListItem: newTodoEntry})
-	
-	http.Redirect(w,req,"/list",http.StatusSeeOther)
 }
