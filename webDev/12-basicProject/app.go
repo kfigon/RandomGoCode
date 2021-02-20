@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"log"
 	"html/template"
@@ -95,10 +96,21 @@ func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
 	if req.Method != "POST" {
 		return
 	}
-	err := req.ParseForm()
+
+	newTodoEntry, err := v.parseForm(req)
 	if err != nil {
 		return
 	}
+
+	v.app.createNewEntry(newTodoEntry)
+}
+
+func (v *view) parseForm(req *http.Request) (TodoListItem, error) {
+	err := req.ParseForm()
+	if err != nil {
+		return TodoListItem{}, err
+	}
+
 	isDone := false
 	if value := req.FormValue("isDone"); value == "on" {
 		isDone = true
@@ -109,8 +121,7 @@ func (v *view) handleAddNew(w http.ResponseWriter, req* http.Request) {
 		IsDone: isDone,
 	}
 	if newTodoEntry.Title == "" || newTodoEntry.Date == "" {
-		return
+		return TodoListItem{}, fmt.Errorf("Invalid data provided")
 	}
-
-	v.app.createNewEntry(newTodoEntry)
+	return newTodoEntry, nil
 }

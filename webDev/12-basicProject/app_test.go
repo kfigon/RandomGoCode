@@ -210,3 +210,25 @@ func TestRoutingPostToAddNew(t *testing.T) {
 		t.Error("Invalid response")
 	}
 }
+
+func TestParseAddNewForm(t *testing.T) {
+	v := view{}
+	
+	body := strings.NewReader("title=My new Title&date=2021-02-20&isDone=on")
+	request := httptest.NewRequest("POST", "/", body)
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+
+	parsed, err := v.parseForm(request)
+	if err != nil {
+		t.Error("Got error during parsing", err)
+	}
+	if parsed.Title != "My new Title"{
+		t.Error("Invalid title parsed", parsed.Title)
+	}
+	if parsed.Date != "2021-02-20" {
+		t.Error("Invalid date parsed", parsed.Date)
+	}
+	if parsed.IsDone != true {
+		t.Error("Invalid isDone parsed", parsed.IsDone)
+	}
+}
