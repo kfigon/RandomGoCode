@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"testing"
 	"fmt"
 	"net/http/httptest"
@@ -156,8 +157,13 @@ func TestUpdateEntryButFailed(t *testing.T) {
 	}
 }
 
+type mockView struct{}
+func (m mockView) handleIndex(w http.ResponseWriter, req* http.Request) {
+	io.WriteString(w, "hi there")
+}
+
 func createServer() *httptest.Server {
-	return httptest.NewServer(createMux())
+	return httptest.NewServer(createMux(mockView{}))
 }
 
 func TestBasicWeb(t *testing.T) {

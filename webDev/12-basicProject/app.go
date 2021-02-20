@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	log.Fatal(http.ListenAndServe(":8080", createMux()))
+	log.Fatal(http.ListenAndServe(":8080", createMux(view{})))
 }
 
 func makeApp(db dataProvider) *app {
@@ -57,14 +57,19 @@ func (a *app) update(entry todoEntry) error {
 	return a.db.update(entry)
 }
 
-func createMux() *http.ServeMux {
+
+type view struct{}
+type basicView interface {
+	handleIndex(w http.ResponseWriter, req* http.Request)
+}
+
+func createMux(v basicView) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", index)
+	mux.HandleFunc("/", v.handleIndex)
 	return mux
 }
 
-func index(w http.ResponseWriter, req* http.Request) {
+func (v view) handleIndex(w http.ResponseWriter, req* http.Request) {
 	tpl := template.Must(template.ParseFiles("base.html"))
-
 	tpl.Execute(w, "ziomx")
 }
