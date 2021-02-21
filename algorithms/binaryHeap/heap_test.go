@@ -48,9 +48,9 @@ func TestBubbleUp_simpleCase(t *testing.T) {
 	heap.insert(5)
 	heap.insert(3)
 	assertNode(t, heap.root, valueNode(5))
-	assertNode(t, heap.root.right, valueNode(3))
+	assertNode(t, heap.root.left, valueNode(3))
 
-	assertNode(t, heap.root.left, emptyNode())
+	assertNode(t, heap.root.right, emptyNode())
 }
 
 func TestBubbleUp_complicated(t *testing.T) {
@@ -59,11 +59,13 @@ func TestBubbleUp_complicated(t *testing.T) {
 	heap.insert(3)
 	heap.insert(8)
 	assertNode(t, heap.root, valueNode(8))
+	assertNode(t, heap.root.left, valueNode(3))
 	assertNode(t, heap.root.right, valueNode(5))
-	assertNode(t, heap.root.right.right, valueNode(3))
 
-	assertNode(t, heap.root.left, emptyNode())
+	assertNode(t, heap.root.left.left, emptyNode())
+	assertNode(t, heap.root.left.right, emptyNode())
 	assertNode(t, heap.root.right.left, emptyNode())
+	assertNode(t, heap.root.right.right, emptyNode())
 }
 
 type opt struct {

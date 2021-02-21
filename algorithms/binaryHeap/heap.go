@@ -51,9 +51,13 @@ func (h *heap) insert(v int) {
 	}
 
 	ptr := h.root
-	// just put it to the right
+	// just put it to the first available place (
 	for ptr != nil {
-		if ptr.right == nil {
+		if ptr.left == nil {
+			ptr.left = node
+			node.parent = ptr
+			break
+		} else if ptr.right == nil {
 			ptr.right = node
 			node.parent = ptr
 			break
