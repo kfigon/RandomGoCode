@@ -51,21 +51,25 @@ func (h *heap) insert(v int) {
 	}
 
 	ptr := h.root
+	// just put it to the right
 	for ptr != nil {
-		if v < ptr.val {
-			if ptr.left == nil {
-				ptr.left = node
-				node.parent = ptr
-				break
-			}
-			ptr = ptr.left
-		} else {
-			if ptr.right == nil {
-				ptr.right = node
-				node.parent = ptr
-				break
-			}
-			ptr = ptr.right
+		if ptr.right == nil {
+			ptr.right = node
+			node.parent = ptr
+			break
 		}
+		ptr = ptr.right
+	}
+
+	// bubble up
+	ptr = node
+	parent := ptr.parent
+	for ptr != nil && parent != nil && ptr.val > parent.val {
+		tmp := ptr.val
+		ptr.val = parent.val
+		parent.val = tmp
+
+		ptr = parent
+		parent = ptr.parent
 	}
 }

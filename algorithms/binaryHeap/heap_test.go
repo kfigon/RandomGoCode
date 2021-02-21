@@ -43,6 +43,45 @@ func TestInsert(t *testing.T) {
 	}
 }
 
-func TestBubbleUp(t *testing.T) {
-	t.Fatal("todo - bubble up when adding")
+func TestBubbleUp_simpleCase(t *testing.T) {
+	heap := newHeap()
+	heap.insert(5)
+	heap.insert(3)
+	assertNode(t, heap.root, valueNode(5))
+	assertNode(t, heap.root.right, valueNode(3))
+
+	assertNode(t, heap.root.left, emptyNode())
+}
+
+func TestBubbleUp_complicated(t *testing.T) {
+	heap := newHeap()
+	heap.insert(5)
+	heap.insert(3)
+	heap.insert(8)
+	assertNode(t, heap.root, valueNode(8))
+	assertNode(t, heap.root.right, valueNode(5))
+	assertNode(t, heap.root.right.right, valueNode(3))
+
+	assertNode(t, heap.root.left, emptyNode())
+	assertNode(t, heap.root.right.left, emptyNode())
+}
+
+type opt struct {
+	val   int
+	empty bool
+}
+
+func emptyNode() opt        { return opt{empty: true} }
+func valueNode(val int) opt { return opt{empty: false, val: val} }
+
+func assertNode(t *testing.T, n *node, expectedNode opt) {
+	if expectedNode.empty && n != nil {
+		t.Errorf("Expected node to be empty, has %v", n.val)
+	} else if !expectedNode.empty {
+		if n == nil {
+			t.Error("Node empty, exp", expectedNode.val)
+		} else if n.val != expectedNode.val {
+			t.Errorf("Invalid node val got %v, exp %v", n.val, expectedNode.val)
+		}
+	}
 }
