@@ -68,6 +68,10 @@ func TestBubbleUp_complicated(t *testing.T) {
 	assertNode(t, heap.root.right.right, emptyNode())
 }
 
+func TestRemove(t *testing.T) {
+	t.Fatal("todo - remove from heap")
+}
+
 type opt struct {
 	val   int
 	empty bool
