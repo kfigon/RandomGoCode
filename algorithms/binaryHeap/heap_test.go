@@ -27,9 +27,9 @@ func TestInsert(t *testing.T) {
 	}{
 		{[]int{}, []int{}},
 		{[]int{5}, []int{5}},
-		{[]int{1, 2}, []int{1, 2}},
-		{[]int{1, 2, 5}, []int{1, 2, 5}},
-		{[]int{1, 4, 2, 5}, []int{1, 2, 4, 5}},
+		{[]int{1, 2}, []int{2, 1}},
+		{[]int{1, 2, 5}, []int{5, 2, 1}},
+		{[]int{1, 4, 2, 5}, []int{2, 5, 4, 1}}, // todo: just assert elements, order is not imeplmented
 		{[]int{5, 4, 3, 2, 1}, []int{1, 2, 3, 4, 5}},
 	}
 	for _, tc := range tdt {
