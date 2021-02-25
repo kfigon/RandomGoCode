@@ -23,11 +23,9 @@ func createMux(c *getlist.GetController, i *insert.InsertController) *http.Serve
 	mux.HandleFunc("/addNew", func(w http.ResponseWriter, req* http.Request) {
 		defer http.Redirect(w,req,"/list",http.StatusSeeOther)
 
+		// todo error handling on both methods?
 		model,_ := createModelFromRequest(req)
-		err := i.Insert(model)
-		if err != nil {
-
-		}
+		i.Insert(model)
 	})
 	return mux
 }
@@ -54,7 +52,6 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(":8080", createMux(getListController, insertController)))
 }
-
 
 
 type insertDb struct {
