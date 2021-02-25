@@ -20,11 +20,11 @@ func TestRenderThings(t *testing.T) {
 	Render(&writer, elems)
 	result := writer.String()
 
-	assert.Contains(t, result, "To do list")
+	assert.Contains(t, result, "To do list", "header not present")
 	
-	assert.Contains(t, result, "first")
-	assert.Contains(t, result, "foo")
+	assert.Contains(t, result, "first", "first elem not present")
+	assert.Contains(t, result, "foo", "first elem not present")
 
-	assert.Contains(t, result, "second")
-	assert.Contains(t, result, "bar")
+	assert.Contains(t, result, "second", "second elem not present")
+	assert.Contains(t, result, "bar", "second elem not present")
 }

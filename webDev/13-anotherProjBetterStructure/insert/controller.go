@@ -1,27 +1,27 @@
-package getlist
+package insert
 
 import (
 	"fmt"
 	"mywebapp/model"
 )
 
-type insertHandler interface {
-	insert(el model.Element)
+type InsertHandler interface {
+	Insert(el model.Element)
 }
 
 
-type insertController struct {
-	db insertHandler
+type InsertController struct {
+	db InsertHandler
 }
 
-func createInsertController(db insertHandler) *insertController {
-	return &insertController{db}
+func CreateInsertController(db InsertHandler) *InsertController {
+	return &InsertController{db}
 }
 
-func (c *insertController) insert(element model.Element) error {
+func (c *InsertController) Insert(element model.Element) error {
 	if len(element.Name) == 0 || len(element.Name) > 100 {
 		return fmt.Errorf("Invalid element given")
 	}
-	c.db.insert(element)
+	c.db.Insert(element)
 	return nil
 }

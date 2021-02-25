@@ -22,16 +22,16 @@ func (c *GetController) GetList() []model.Element {
 }
 
 type MyDb struct {
-	elems []model.Element
+	Elems []model.Element
 }
 
 func (m *MyDb) readList() []model.Element {
-	return m.elems
+	return m.Elems
 }
 
 func MakeDb() *MyDb {
 	return &MyDb{
-		elems: []model.Element {
+		Elems: []model.Element {
 			model.Element{Name: "foo", Date: "2021-02-25"},
 			model.Element{Name: "bar", Date: "2021-02-30?!"},
 		},
