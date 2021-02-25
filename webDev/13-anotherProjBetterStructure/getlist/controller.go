@@ -17,7 +17,7 @@ func CreateGetListController(db GetListProvider) *GetController {
 	return &GetController{db}
 }
 
-func (c *GetController) getList() []model.Element {
+func (c *GetController) GetList() []model.Element {
 	return c.db.readList()
 }
 

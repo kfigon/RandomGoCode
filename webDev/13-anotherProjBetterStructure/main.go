@@ -6,17 +6,16 @@ import (
 	"mywebapp/getlist"
 )
 
-func createMux(v *getlist.GetListView) *http.ServeMux {
+func createMux(c *getlist.GetController) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req* http.Request) {
-		v.Render(w)
+		getlist.Render(w, c.GetList())
 	})
 	return mux
 }
 
 func main() {
 	controller := getlist.CreateGetListController(getlist.MakeDb())
-	view := getlist.CreateView(controller)
-	log.Fatal(http.ListenAndServe(":8080", createMux(view)))
+	log.Fatal(http.ListenAndServe(":8080", createMux(controller)))
 }
 

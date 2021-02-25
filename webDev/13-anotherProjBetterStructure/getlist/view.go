@@ -3,17 +3,10 @@ package getlist
 import (
 	"io"
 	"html/template"
+	"mywebapp/model"
 )
 
-type GetListView struct {
-	controller *GetController
-}
-
-func CreateView(c *GetController) *GetListView {
-	return &GetListView{c}
-}
-
-func (v *GetListView) Render(w io.Writer) {
+func Render(w io.Writer, elements []model.Element) {
 	tpl := template.Must(template.ParseFiles("templates/base.html", "templates/list.html"))
-	tpl.Execute(w, v.controller.getList())
+	tpl.Execute(w, elements)
 }

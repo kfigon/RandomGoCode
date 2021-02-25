@@ -16,7 +16,7 @@ func (m mockDb) readList() [] model.Element{
 
 func TestReadEmptyList(t *testing.T) {
 	controller := CreateGetListController(mockDb{})
-	list := controller.getList()
+	list := controller.GetList()
 	assert.Empty(t, list)
 }
 
@@ -25,6 +25,6 @@ func TestReadNotEmptyList(t *testing.T) {
 		model.Element{Name: "First task", Date: "2021-02-25"},
 	}
 	controller := CreateGetListController(mockDb{elemenets})
-	list := controller.getList()
+	list := controller.GetList()
 	assert.Contains(t, list, model.Element{Name: "First task", Date: "2021-02-25"})
 }
