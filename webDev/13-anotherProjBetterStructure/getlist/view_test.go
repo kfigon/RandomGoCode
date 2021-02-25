@@ -6,6 +6,9 @@ import (
 	"mywebapp/model"
 	"testing"
 )
+func init() {
+	BASE_PATH = "../"
+}
 
 func TestRenderThings(t *testing.T) {
 	elems := []model.Element {
@@ -13,6 +16,7 @@ func TestRenderThings(t *testing.T) {
 		model.Element{Name: "second", Date: "bar"},
 	}
 	var writer bytes.Buffer
+
 	Render(&writer, elems)
 	result := writer.String()
 
