@@ -29,5 +29,14 @@ func TestInsert(t *testing.T) {
 	controller := createInsertController(db)
 	
 	newElement := model.Element{Name:"Asd", Date: "some date"}
-	controller.insert(newElement)
+	err := controller.insert(newElement)
+	assert.NoError(t, err)
+}
+
+func TestInsertInvalidElement(t *testing.T) {
+	controller := createInsertController(mockDb{})
+	
+	invalidElement := model.Element{Date: "some date"}
+	err := controller.insert(invalidElement)
+	assert.NotNil(t, err)
 }

@@ -1,0 +1,15 @@
+{{define "content"}}
+<main class="container">
+    <div class="starter-template text-center py-5 px-3">
+        <h1>To do list</h1>
+        
+        {{ range .}}
+        <hr>
+        {{.Name}}
+        {{.Date}}
+        {{end}}
+        <hr>
+
+    </div>
+</main>
+{{end}}
