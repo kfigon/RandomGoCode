@@ -4,11 +4,17 @@ import (
 	"net/http"
 	"log"
 	"mywebapp/getlist"
+	"mywebapp/landing"
 )
 
 func createMux(c *getlist.GetController) *http.ServeMux {
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/", func(w http.ResponseWriter, req* http.Request) {
+		landing.Render(w)
+	})
+
+	mux.HandleFunc("/list", func(w http.ResponseWriter, req* http.Request) {
 		getlist.Render(w, c.GetList())
 	})
 	return mux
