@@ -68,13 +68,13 @@ func main() {
 	flag.Parse()
 
 	userFoods := parseFoods(foods)
-	foodRecomendations := search.RecommendFoods(userFoods, *threshold)
+	foodRecommendations := search.RecommendFoods(userFoods, *threshold)
 
 	printKnownIngredients()
 	fmt.Println("\nProvided:")
 	fmt.Println(ingredientsString(userFoods))
 	fmt.Println("---------")
-	for _, v := range foodRecomendations {
+	for _, v := range foodRecommendations {
 		printFoodRecomendation(v)
 	}
 }
@@ -82,7 +82,7 @@ func main() {
 func parseFoods(foods arrayFlags) []int {
 	var out []int
 	for _, v := range foods {
-		i, err := strconv.Atoi(string(v))
+		i, err := strconv.Atoi(v)
 		if err != nil {
 			continue
 		}
