@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -46,8 +47,8 @@ func TestIngredients(t *testing.T) {
 	}{
 		{"default_EmptyIngredients_thenEmptyResult", newSet(), []food{}},
 		{"default_InvalidIngredients_thenEmptyResult", newSet(noodle, bread), []food{}},
-		{"default_IdealHit", newSet(int(salad), int(cheese), int(apple)), []food{mockedFoods[2]}},
-		{"default_IdealHit_differentOrder", newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
+		{"default_IdealHit", newSet(salad, cheese, apple), []food{mockedFoods[2]}},
+		{"default_IdealHit_differentOrder", newSet(apple, cheese, salad), []food{mockedFoods[2]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -55,21 +56,14 @@ func TestIngredients(t *testing.T) {
 			strategy := fitnessInclusionStrategy{100}
 			results := alg.findFoods(tc.ingredients, strategy)
 
-			if ln := len(results); ln != len(tc.expected) {
-				t.Fatalf("Invalid len got: %v, exp %v", ln, len(tc.expected))
-			}
-
+			assert.Equal(t, len(tc.expected), len(results))
 			for i := range results {
 				got := results[i]
 				exp := tc.expected[i]
-				if exp.name != got.name {
-					t.Errorf("Got invalid food (%v), got: %v, exp: %v", i, got.name, exp.name)
-				}
-				if got.fitnessLevel != 100 {
-					t.Errorf("100 fitness expected, got :%v", got.fitnessLevel)
-				}
-			}
 
+				assert.Equal(t, exp.name, got.name)
+				assert.Equal(t, 100, got.fitnessLevel)
+			}
 		})
 	}
 }
