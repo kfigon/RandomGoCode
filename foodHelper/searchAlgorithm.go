@@ -39,3 +39,8 @@ func (s *searchService) findFoods(ingredients *set, strategy inclusionStrategy) 
 
 	return result
 }
+
+func (s *searchService) findFoodsPercentageStrategy(ingredientIds []int) []foodRecommendation {
+	ingredients := newSet(ingredientIds...)
+	return s.findFoods(ingredients, fitnessInclusionStrategy{})
+}
