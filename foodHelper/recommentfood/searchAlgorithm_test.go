@@ -26,9 +26,9 @@ const (
 )
 
 var mockedFoods = []food{
-	food{"first", []int{egg, chicken, salmon}},
-	food{"second", []int{egg, chicken, salad}},
-	food{"third", []int{salad, cheese, apple}},
+	{"first", []int{egg, chicken, salmon}},
+	{"second", []int{egg, chicken, salad}},
+	{"third", []int{salad, cheese, apple}},
 }
 
 func createMockDb() mockDb {
