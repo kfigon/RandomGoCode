@@ -5,7 +5,6 @@ import (
 	"io"
 )
 
-
 type foodJSONProvider struct {
 	foods []food
 }
@@ -15,8 +14,8 @@ func (f foodJSONProvider) findFoods() []food {
 }
 
 type foodJSONDto struct {
-	Name string `json:"name"`
-	Ingredients []int `json:"ingredients"`
+	Name        string `json:"name"`
+	Ingredients []int  `json:"ingredients"`
 }
 
 func fromJSON(r io.Reader) foodDataProvider {
@@ -27,9 +26,9 @@ func fromJSON(r io.Reader) foodDataProvider {
 		return foodJSONProvider{}
 	}
 	var result foodJSONProvider
-	result.foods = make([]food,0)
+	result.foods = make([]food, 0)
 	for _, v := range foodDto {
-		f := food{v.Name, newSet(v.Ingredients...)}
+		f := food{v.Name, v.Ingredients}
 		result.foods = append(result.foods, f)
 	}
 	return result

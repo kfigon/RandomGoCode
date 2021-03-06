@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"strings"
 	"flag"
+	"fmt"
 	"strconv"
+	"strings"
 )
 
 var inputJson string = `[
@@ -26,14 +26,14 @@ var inputJson string = `[
     }
 ]`
 
-var knownIngredients = map[string]int {
-	"jajka" : 1,
-	"makaron" : 2,
-	"pomodory" : 3,
-	"mielone" : 4,
-	"kurczak" : 5,
-	"salata" : 6,
-	"oliwki" : 7,
+var knownIngredients = map[string]int{
+	"jajka":    1,
+	"makaron":  2,
+	"pomodory": 3,
+	"mielone":  4,
+	"kurczak":  5,
+	"salata":   6,
+	"oliwki":   7,
 }
 
 func readKeyFromValue(val int) string {
@@ -48,27 +48,26 @@ func readKeyFromValue(val int) string {
 type arrayFlags []string
 
 func (i *arrayFlags) String() string {
-    return "my string representation"
+	return "my string representation"
 }
 
 func (i *arrayFlags) Set(value string) error {
-    *i = append(*i, value)
-    return nil
+	*i = append(*i, value)
+	return nil
 }
 
 func main() {
 	foodProvider := fromJSON(strings.NewReader(inputJson))
 	search := newSearch(foodProvider)
 
-
 	var threshold = flag.Int("prog", 100, "Prog dolaczenia jedzenia <0;100>")
 	var foods arrayFlags
 	flag.Var(&foods, "f", "idx of ingredient")
-	
+
 	flag.Parse()
 
 	userFoods := parseFoods(foods)
-	foodRecomendations := search.findFoods(userFoods, fitnessInclusionStrategy{*threshold})
+	foodRecomendations := search.findFoods(newSet(userFoods...), fitnessInclusionStrategy{*threshold})
 
 	printKnownIngredients()
 	fmt.Println("\nProvided:")
@@ -79,7 +78,7 @@ func main() {
 	}
 }
 
-func parseFoods(foods arrayFlags) *set {
+func parseFoods(foods arrayFlags) []int {
 	var out []int
 	for _, v := range foods {
 		i, err := strconv.Atoi(string(v))
@@ -90,17 +89,17 @@ func parseFoods(foods arrayFlags) *set {
 			out = append(out, i)
 		}
 	}
-	return newSet(out...)
+	return out
 }
 
 func printFoodRecomendation(v foodRecommendation) {
-	fmt.Printf("%v, fit: %v, ingredients: %v\n", v.name, v.fitnessLevel, ingredientsString(v.requiredIngredients))
+	fmt.Printf("%v, fit: %v, ingredients: %v\n", v.name, v.fitnessLevel, v.requiredIngredients)
 }
 
-func ingredientsString(ing *set) string {
+func ingredientsString(ing []int) string {
 	out := ""
-	for _,v := range ing.els() {
-		out += readKeyFromValue(v)+" "
+	for _, v := range ing {
+		out += readKeyFromValue(v) + " "
 	}
 	return out
 }

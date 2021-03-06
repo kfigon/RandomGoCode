@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-type mockDb struct{
+type mockDb struct {
 	findFoodFun func() []food
 }
 
@@ -12,23 +12,22 @@ func (m mockDb) findFoods() []food {
 	return m.findFoodFun()
 }
 
-type ingredientsId int
 const (
-	egg ingredientsId = 1
-	chicken = 2
-	beef = 3
-	salmon = 4
-	salad = 5
-	cheese = 6
-	apple = 7
-	noodle = 80
-	bread = 90
+	egg     int = 1
+	chicken     = 2
+	beef        = 3
+	salmon      = 4
+	salad       = 5
+	cheese      = 6
+	apple       = 7
+	noodle      = 80
+	bread       = 90
 )
 
-var mockedFoods = []food {
-	food{"first", newSet(int(egg),int(chicken),int(salmon))},
-	food{"second", newSet(int(egg),int(chicken),int(salad))},
-	food{"third", newSet(int(salad),int(cheese),int(apple))},
+var mockedFoods = []food{
+	food{"first", []int{egg, chicken, salmon}},
+	food{"second", []int{egg, chicken, salad}},
+	food{"third", []int{salad, cheese, apple}},
 }
 
 func createMockDb() mockDb {
@@ -41,19 +40,19 @@ func createMockDb() mockDb {
 
 func TestIngredients(t *testing.T) {
 	testCases := []struct {
-		desc	string
+		desc        string
 		ingredients *set
-		expected []food
+		expected    []food
 	}{
-		{ "default_EmptyIngredients_thenEmptyResult", newSet(), []food{}},
-		{ "default_InvalidIngredients_thenEmptyResult", newSet(noodle,bread), []food{}},
-		{ "default_IdealHit", newSet(int(salad),int(cheese),int(apple)), []food{mockedFoods[2]}},
-		{ "default_IdealHit_differentOrder", newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
+		{"default_EmptyIngredients_thenEmptyResult", newSet(), []food{}},
+		{"default_InvalidIngredients_thenEmptyResult", newSet(noodle, bread), []food{}},
+		{"default_IdealHit", newSet(int(salad), int(cheese), int(apple)), []food{mockedFoods[2]}},
+		{"default_IdealHit_differentOrder", newSet(int(apple), int(cheese), int(salad)), []food{mockedFoods[2]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			alg := newSearch(createMockDb())
-			strategy := fitnessInclusionStrategy{ 100 }
+			strategy := fitnessInclusionStrategy{100}
 			results := alg.findFoods(tc.ingredients, strategy)
 
 			if ln := len(results); ln != len(tc.expected) {
@@ -70,7 +69,7 @@ func TestIngredients(t *testing.T) {
 					t.Errorf("100 fitness expected, got :%v", got.fitnessLevel)
 				}
 			}
-			
+
 		})
 	}
 }

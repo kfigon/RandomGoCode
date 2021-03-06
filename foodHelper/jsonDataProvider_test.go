@@ -1,8 +1,9 @@
 package main
 
 import (
-	"testing"
+	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 // 1 - jajka
@@ -34,21 +35,13 @@ var foodJSON string = `[
 func TestReadFoodbase(t *testing.T) {
 	provider := fromJSON(strings.NewReader(foodJSON))
 	foods := provider.findFoods()
-	if len(foods) != 4 {
-		t.Errorf("invalid food len, wanted: %v, got %v", 4, len(foods))
-	}
-	if foods[0].name != "spaghetti" {
-		t.Errorf("invalid food name received: %v", foods[0].name)
-	}
-	if foods[0].requiredIngredients.size() != 3 {
-		t.Error("Invalid ingredients received")
-	}
+	assert.Equal(t, 4, len(foods))
+	assert.Equal(t, "spaghetti", foods[0].name)
+	assert.Equal(t, 3, len(foods[0].requiredIngredients))
 }
 
 func TestReadInvalidFoodbase(t *testing.T) {
 	provider := fromJSON(strings.NewReader("[{asd}]"))
 	foods := provider.findFoods()
-	if len(foods) != 0 {
-		t.Errorf("invalid food len, wanted: %v, got %v", 0, len(foods))
-	}
+	assert.Equal(t, 0, len(foods))
 }
