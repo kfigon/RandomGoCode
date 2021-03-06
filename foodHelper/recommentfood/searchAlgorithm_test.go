@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -52,7 +52,7 @@ func TestIngredients(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			alg := newSearch(createMockDb())
+			alg := NewSearch(createMockDb())
 			strategy := fitnessInclusionStrategy{100}
 			results := alg.findFoods(tc.ingredients, strategy)
 
@@ -61,8 +61,8 @@ func TestIngredients(t *testing.T) {
 				got := results[i]
 				exp := tc.expected[i]
 
-				assert.Equal(t, exp.name, got.name)
-				assert.Equal(t, 100, got.fitnessLevel)
+				assert.Equal(t, exp.Name, got.Name)
+				assert.Equal(t, 100, got.FitnessLevel)
 			}
 		})
 	}

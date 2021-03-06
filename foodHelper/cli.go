@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"foodHelper/recommentfood"
 	"strconv"
 	"strings"
 )
@@ -57,8 +58,8 @@ func (i *arrayFlags) Set(value string) error {
 }
 
 func main() {
-	foodProvider := fromJSON(strings.NewReader(inputJson))
-	search := newSearch(foodProvider)
+	foodProvider := recommentfood.FromJSON(strings.NewReader(inputJson))
+	search := recommentfood.NewSearch(foodProvider)
 
 	var threshold = flag.Int("prog", 100, "Prog dolaczenia jedzenia <0;100>")
 	var foods arrayFlags
@@ -67,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	userFoods := parseFoods(foods)
-	foodRecomendations := search.findFoods(newSet(userFoods...), fitnessInclusionStrategy{*threshold})
+	foodRecomendations := search.RecommendFoods(userFoods, *threshold)
 
 	printKnownIngredients()
 	fmt.Println("\nProvided:")
@@ -92,8 +93,8 @@ func parseFoods(foods arrayFlags) []int {
 	return out
 }
 
-func printFoodRecomendation(v foodRecommendation) {
-	fmt.Printf("%v, fit: %v, ingredients: %v\n", v.name, v.fitnessLevel, v.requiredIngredients)
+func printFoodRecomendation(v recommentfood.FoodRecommendation) {
+	fmt.Printf("%v, fit: %v, ingredients: %v\n", v.Name, v.FitnessLevel, v.RequiredIngredients)
 }
 
 func ingredientsString(ing []int) string {

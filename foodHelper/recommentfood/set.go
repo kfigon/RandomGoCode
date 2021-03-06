@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 type set struct {
 	elements map[int]bool
@@ -7,7 +7,7 @@ type set struct {
 func newSet(vals ...int) *set {
 	els := make(map[int]bool)
 	for i := range vals {
-		els[vals[i]]=true
+		els[vals[i]] = true
 	}
 
 	return &set{
@@ -28,7 +28,7 @@ func (s *set) add(val int) {
 	s.elements[val] = true
 }
 
-func (s *set) remove(val int)  {
+func (s *set) remove(val int) {
 	delete(s.elements, val)
 }
 

@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 type inclusionStrategy interface {
 	shouldBeIncluded(usersIngredients *set, requiredIngredients *set) bool
@@ -26,6 +26,6 @@ func (f fitnessInclusionStrategy) calcCommonAndFitness(users *set, required *set
 func calcFitnessFun(commonIngredients *set, required *set) int {
 	licznik := float64((commonIngredients.size()))
 	mianownik := float64((required.size()))
-	res := licznik/mianownik
-	return int(res*100)
+	res := licznik / mianownik
+	return int(res * 100)
 }

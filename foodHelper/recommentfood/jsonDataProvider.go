@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 import (
 	"encoding/json"
@@ -18,7 +18,7 @@ type foodJSONDto struct {
 	Ingredients []int  `json:"ingredients"`
 }
 
-func fromJSON(r io.Reader) foodDataProvider {
+func FromJSON(r io.Reader) foodDataProvider {
 	dec := json.NewDecoder(r)
 	var foodDto []foodJSONDto
 	err := dec.Decode(&foodDto)

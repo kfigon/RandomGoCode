@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 import (
 	"github.com/stretchr/testify/assert"

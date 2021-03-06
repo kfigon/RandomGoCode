@@ -1,4 +1,4 @@
-package main
+package recommentfood
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -33,15 +33,15 @@ var foodJSON string = `[
 ]`
 
 func TestReadFoodbase(t *testing.T) {
-	provider := fromJSON(strings.NewReader(foodJSON))
+	provider := FromJSON(strings.NewReader(foodJSON))
 	foods := provider.findFoods()
 	assert.Equal(t, 4, len(foods))
-	assert.Equal(t, "spaghetti", foods[0].name)
-	assert.Equal(t, 3, len(foods[0].requiredIngredients))
+	assert.Equal(t, "spaghetti", foods[0].Name)
+	assert.Equal(t, 3, len(foods[0].RequiredIngredients))
 }
 
 func TestReadInvalidFoodbase(t *testing.T) {
-	provider := fromJSON(strings.NewReader("[{asd}]"))
+	provider := FromJSON(strings.NewReader("[{asd}]"))
 	foods := provider.findFoods()
 	assert.Equal(t, 0, len(foods))
 }
