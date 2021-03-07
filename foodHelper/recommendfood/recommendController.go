@@ -37,7 +37,42 @@ type adjustResult struct {
 }
 
 func (r *recommendationController) adjustName(input string) adjustResult {
-	return adjustResult{}
+	allIngredients := r.ingredientDb.getAll()
+	bestGuess := struct {
+		distance int
+		id       int
+		name     string
+	}{}
+	bestGuess.distance = 999999999999
+
+	for _, ing := range allIngredients {
+		if input == ing.Name {
+			return adjustResult{
+				foundName:   ing.Name,
+				foundId:     ing.ID,
+				matchResult: FOUND,
+			}
+		}
+		if ham := calcHammingDistance(input, ing.Name); ham < bestGuess.distance {
+			bestGuess.distance = ham
+			bestGuess.name = ing.Name
+			bestGuess.id = ing.ID
+		}
+	}
+
+	if bestGuess.distance < 2 {
+		return adjustResult{
+			foundName:   bestGuess.name,
+			foundId:     bestGuess.id,
+			matchResult: ADJUSTED,
+		}
+	}
+
+	return adjustResult{matchResult: NOT_FOUND}
+}
+
+func calcHammingDistance(input string, name string) int {
+	return -1
 }
 
 const MAX_INGREDIENTS_NUM = 20
