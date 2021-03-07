@@ -14,3 +14,8 @@ type ingredient struct {
 	ID   int
 	Name string
 }
+
+type FoodRecommendationDto struct {
+	Name            string
+	NngredientNames []string
+}
