@@ -1,4 +1,4 @@
-package recommentfood
+package recommendfood
 
 type inclusionStrategy interface {
 	shouldBeIncluded(usersIngredients *set, requiredIngredients *set) bool

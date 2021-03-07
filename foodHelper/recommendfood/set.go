@@ -1,4 +1,4 @@
-package recommentfood
+package recommendfood
 
 type set struct {
 	elements map[int]bool

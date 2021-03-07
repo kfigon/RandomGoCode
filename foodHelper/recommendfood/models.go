@@ -1,4 +1,4 @@
-package recommentfood
+package recommendfood
 
 type food struct {
 	Name                string
@@ -8,4 +8,9 @@ type food struct {
 type FoodRecommendation struct {
 	food
 	FitnessLevel int
+}
+
+type ingredient struct {
+	ID   int
+	Name string
 }

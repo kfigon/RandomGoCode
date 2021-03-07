@@ -1,4 +1,4 @@
-package recommentfood
+package recommendfood
 
 type foodDataProvider interface {
 	findFoods() []food

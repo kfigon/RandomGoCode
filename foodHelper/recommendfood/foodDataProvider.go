@@ -1,4 +1,4 @@
-package recommentfood
+package recommendfood
 
 import (
 	"encoding/json"
