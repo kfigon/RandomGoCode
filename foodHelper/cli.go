@@ -58,7 +58,7 @@ func (i *arrayFlags) Set(value string) error {
 }
 
 func main() {
-	foodProvider := recommendfood.FromJSON(strings.NewReader(inputJson))
+	foodProvider := recommendfood.FoodJSONProvider(strings.NewReader(inputJson))
 	search := recommendfood.NewSearch(foodProvider)
 
 	var threshold = flag.Int("prog", 100, "Prog dolaczenia jedzenia <0;100>")

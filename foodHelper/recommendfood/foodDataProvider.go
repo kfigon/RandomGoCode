@@ -18,7 +18,7 @@ type foodJSONDto struct {
 	Ingredients []int  `json:"ingredients"`
 }
 
-func FromJSON(r io.Reader) foodDataProvider {
+func FoodJSONProvider(r io.Reader) foodDataProvider {
 	dec := json.NewDecoder(r)
 	var foodDto []foodJSONDto
 	err := dec.Decode(&foodDto)
@@ -32,4 +32,32 @@ func FromJSON(r io.Reader) foodDataProvider {
 		result.foods = append(result.foods, f)
 	}
 	return result
+}
+
+type ingredientsDataProvider struct {
+	ingredients []ingredient
+}
+
+func (i ingredientsDataProvider) getId(name string) (int, bool) {
+	return 0, false
+}
+
+type ingredientJSONDto struct {
+	Name string `json:"name"`
+	ID   int    `json:"id"`
+}
+
+func IngedientsJSONProvider(r io.Reader) ingredientsDataProvider {
+	decoder := json.NewDecoder(r)
+	var jsonData []ingredientJSONDto
+	err := decoder.Decode(&jsonData)
+	if err != nil {
+		return ingredientsDataProvider{}
+	}
+	data := ingredientsDataProvider{}
+	data.ingredients = make([]ingredient, 0)
+	for _, v := range jsonData {
+		data.ingredients = append(data.ingredients, ingredient{v.ID, v.Name})
+	}
+	return data
 }

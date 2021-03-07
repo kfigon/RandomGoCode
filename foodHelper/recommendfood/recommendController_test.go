@@ -41,7 +41,7 @@ func TestValidateInput(t *testing.T) {
 }
 
 func TestFindFoodsInvalidInput(t *testing.T) {
-	controller := NewRecommendationController(ingredientsMock{}, NewSearch(createMockDb()))
+	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
 	result := controller.FindFoods(nil)
 	assert.Empty(t, result)
 }

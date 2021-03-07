@@ -33,7 +33,7 @@ var foodJSON string = `[
 ]`
 
 func TestReadFoodbase(t *testing.T) {
-	provider := FromJSON(strings.NewReader(foodJSON))
+	provider := FoodJSONProvider(strings.NewReader(foodJSON))
 	foods := provider.findFoods()
 	assert.Equal(t, 4, len(foods))
 	assert.Equal(t, "spaghetti", foods[0].Name)
@@ -41,7 +41,19 @@ func TestReadFoodbase(t *testing.T) {
 }
 
 func TestReadInvalidFoodbase(t *testing.T) {
-	provider := FromJSON(strings.NewReader("[{asd}]"))
+	provider := FoodJSONProvider(strings.NewReader("[{asd}]"))
 	foods := provider.findFoods()
 	assert.Equal(t, 0, len(foods))
+}
+
+func TestReadInvalidIngredientbase(t *testing.T) {
+	provider := IngedientsJSONProvider(strings.NewReader("[{asd}]"))
+	foods := provider.ingredients
+	assert.Equal(t, 0, len(foods))
+}
+
+func TestReadIngredientbase(t *testing.T) {
+	provider := IngedientsJSONProvider(strings.NewReader(ingredients))
+	foods := provider.ingredients
+	assert.Greater(t, len(foods), 5)
 }

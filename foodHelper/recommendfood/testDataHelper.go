@@ -1,46 +1,34 @@
 package recommendfood
 
-type mockDb struct {
-	findFoodFun func() []food
+import "strings"
+
+func createMockFoodDb() foodDataProvider {
+	return FoodJSONProvider(strings.NewReader(foods))
 }
 
-func (m mockDb) findFoods() []food {
-	return m.findFoodFun()
+func createMockIngredientsDb() ingredientProvider {
+	return IngedientsJSONProvider(strings.NewReader(ingredients))
 }
 
-const (
-	egg     int = 1
-	chicken     = 2
-	beef        = 3
-	salmon      = 4
-	salad       = 5
-	cheese      = 6
-	apple       = 7
-	noodle      = 80
-	bread       = 90
-)
+// language=json
+var ingredients string = `[
+	{ "id": 0, "name": "egg" },
+	{ "id": 1, "name": "chicken" },
+	{ "id": 2, "name": "beef" },
+	{ "id": 3, "name": "salmon" },
+	{ "id": 4, "name": "salad" },
+	{ "id": 5, "name": "cheese" },
+	{ "id": 6, "name": "apple" },
+	{ "id": 7, "name": "noodle" },
+	{ "id": 8, "name": "bread" },
+	{ "id": 9, "name": "tomato" },
+	{ "id": 10, "name": "feta" },
+	{ "id": 11, "name": "cucumber" }
+]`
 
-var mockedFoods = []food{
-	{"first", []int{egg, chicken, salmon}},
-	{"second", []int{egg, chicken, salad}},
-	{"third", []int{salad, cheese, apple}},
-}
-
-func createMockDb() mockDb {
-	return mockDb{
-		findFoodFun: func() []food {
-			return mockedFoods
-		},
-	}
-}
-
-type ingredientsMock struct {
-	getIdFun func(string) (int, bool)
-}
-
-func (i ingredientsMock) getId(name string) (int, bool) {
-	if i.getIdFun == nil {
-		return 0, false
-	}
-	return i.getIdFun(name)
-}
+// language=json
+var foods string = `[
+	{"name":  "first", "ingredients":[0,1,3]},
+	{"name":  "second", "ingredients":[0,1,4]},
+	{"name":  "third", "ingredients":[4,5,6]}
+]`
