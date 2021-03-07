@@ -2,14 +2,6 @@ package recommendfood
 
 import "errors"
 
-type foundState int
-
-const (
-	FOUND = iota
-	NOT_FOUND
-	GUESS
-)
-
 type ingredientProvider interface {
 	getAll() []ingredient
 }
@@ -28,6 +20,24 @@ func NewRecommendationController(ingDb ingredientProvider, service *searchServic
 
 func (r *recommendationController) FindFoods(names []string) []FoodRecommendationDto {
 	return nil
+}
+
+type foundState int
+
+const (
+	NOT_FOUND foundState = iota
+	FOUND
+	ADJUSTED
+)
+
+type adjustResult struct {
+	foundName   string
+	foundId     int
+	matchResult foundState
+}
+
+func (r *recommendationController) adjustName(input string) adjustResult {
+	return adjustResult{}
 }
 
 const MAX_INGREDIENTS_NUM = 20

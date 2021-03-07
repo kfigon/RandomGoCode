@@ -45,3 +45,35 @@ func TestFindFoodsInvalidInput(t *testing.T) {
 	result := controller.FindFoods(nil)
 	assert.Empty(t, result)
 }
+
+func TestFindFoodsNameAdjuster(t *testing.T) {
+	tdt := []struct {
+		input              string
+		expected           string
+		expectedId         int
+		expectedFoundState foundState
+	}{
+		{"egg", "egg", 0, FOUND},
+		{"eg", "egg", 0, ADJUSTED},
+		{"eggg", "egg", 0, ADJUSTED},
+		{"kegg", "egg", 0, ADJUSTED},
+		{"chicken", "chicken", 1, FOUND},
+		{"chcken", "chicken", 1, ADJUSTED},
+		{"chckn", "chicken", 1, ADJUSTED},
+		{"chickn", "chicken", 1, ADJUSTED},
+		{"cihcken", "chicken", 1, ADJUSTED},
+		{"chickens", "chicken", 1, ADJUSTED},
+		{"chicknes", "chicken", 1, ADJUSTED},
+		{"asdjkhadfs", "", 0, NOT_FOUND},
+	}
+
+	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	for _, tc := range tdt {
+		t.Run(tc.input, func(t *testing.T) {
+			result := controller.adjustName(tc.input)
+			assert.Equal(t, tc.expected, result.foundName)
+			assert.Equal(t, tc.expectedId, result.foundId)
+			assert.Equal(t, tc.expectedFoundState, result.matchResult)
+		})
+	}
+}
