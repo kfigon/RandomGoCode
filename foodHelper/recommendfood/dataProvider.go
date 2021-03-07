@@ -38,8 +38,8 @@ type ingredientsDataProvider struct {
 	ingredients []ingredient
 }
 
-func (i ingredientsDataProvider) getId(name string) (int, bool) {
-	return 0, false
+func (i ingredientsDataProvider) getAll() []ingredient {
+	return i.ingredients
 }
 
 type ingredientJSONDto struct {

@@ -2,8 +2,16 @@ package recommendfood
 
 import "errors"
 
+type foundState int
+
+const (
+	FOUND = iota
+	NOT_FOUND
+	GUESS
+)
+
 type ingredientProvider interface {
-	getId(name string) (int, bool)
+	getAll() []ingredient
 }
 
 type recommendationController struct {
@@ -25,13 +33,17 @@ func (r *recommendationController) FindFoods(names []string) []FoodRecommendatio
 const MAX_INGREDIENTS_NUM = 20
 const MAX_INGREDIENT = 20
 
+var tooMuchInputError = errors.New("TOO_MUCH_INPUT_ERROR")
+var tooBigIngredient = errors.New("TOO_BIG_INGREDIENT")
+
 func validateIngredientNames(names []string) error {
+
 	if ln := len(names); ln > MAX_INGREDIENTS_NUM || ln <= 0 {
-		return errors.New("Invalid input length")
+		return tooMuchInputError
 	}
 	for _, v := range names {
 		if ln := len(v); ln > MAX_INGREDIENT || ln <= 0 {
-			return errors.New("Invalid element lenth")
+			return tooBigIngredient
 		}
 	}
 	return nil

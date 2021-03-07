@@ -17,5 +17,5 @@ type ingredient struct {
 
 type FoodRecommendationDto struct {
 	Name            string
-	NngredientNames []string
+	IngredientNames []string
 }
