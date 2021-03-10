@@ -19,12 +19,12 @@ func TestIngredients(t *testing.T) {
 	}{
 		{"default_EmptyIngredients_thenEmptyResult", newSet(), []food{}},
 		{"default_InvalidIngredients_thenEmptyResult", newSet(noodle, bread), []food{}},
-		{"default_IdealHit", newSet(salad, cheese, apple), []food{createMockFoodDb().findFoods()[2]}},
-		{"default_IdealHit_differentOrder", newSet(apple, cheese, salad), []food{createMockFoodDb().findFoods()[2]}},
+		{"default_IdealHit", newSet(salad, cheese, apple), []food{CreateMockFoodDb().findFoods()[2]}},
+		{"default_IdealHit_differentOrder", newSet(apple, cheese, salad), []food{CreateMockFoodDb().findFoods()[2]}},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			alg := NewSearch(createMockFoodDb())
+			alg := NewSearch(CreateMockFoodDb())
 			strategy := fitnessInclusionStrategy{100}
 			results := alg.findFoods(tc.ingredients, strategy)
 

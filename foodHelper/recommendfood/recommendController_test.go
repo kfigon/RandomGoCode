@@ -42,19 +42,19 @@ func TestValidateInput(t *testing.T) {
 }
 
 func TestFindFoodsInvalidInput(t *testing.T) {
-	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	controller := NewRecommendationController(CreateMockIngredientsDb(), NewSearch(CreateMockFoodDb()))
 	result := controller.FindFoods(nil)
 	assert.Empty(t, result)
 }
 
 func TestFindFoodsInvalidInput2(t *testing.T) {
-	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	controller := NewRecommendationController(CreateMockIngredientsDb(), NewSearch(CreateMockFoodDb()))
 	result := controller.FindFoods(createEmptyTabWithLen(100))
 	assert.Empty(t, result)
 }
 
 func TestFindFoods(t *testing.T) {
-	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	controller := NewRecommendationController(CreateMockIngredientsDb(), NewSearch(CreateMockFoodDb()))
 	result := controller.FindFoods([]string{"egg"})
 	assert.Equal(t, 1, len(result))
 	assert.Equal(t, "Scrambled eggs", result[0].Name)
@@ -62,7 +62,7 @@ func TestFindFoods(t *testing.T) {
 }
 
 func TestFindFoods2(t *testing.T) {
-	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	controller := NewRecommendationController(CreateMockIngredientsDb(), NewSearch(CreateMockFoodDb()))
 	result := controller.FindFoods([]string{"egg", "chicken", "salmon"})
 	assert.Equal(t, 2, len(result))
 	assert.Equal(t, "first", result[0].Name)
@@ -93,7 +93,7 @@ func TestFindFoodsNameAdjuster(t *testing.T) {
 		{"asdjkhadfs", "", 0, NOT_FOUND},
 	}
 
-	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	controller := NewRecommendationController(CreateMockIngredientsDb(), NewSearch(CreateMockFoodDb()))
 	for _, tc := range tdt {
 		t.Run(tc.input, func(t *testing.T) {
 			result := controller.adjustName(tc.input)

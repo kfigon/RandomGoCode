@@ -2,11 +2,11 @@ package recommendfood
 
 import "strings"
 
-func createMockFoodDb() foodDataProvider {
+func CreateMockFoodDb() foodDataProvider {
 	return FoodJSONProvider(strings.NewReader(foods))
 }
 
-func createMockIngredientsDb() ingredientProvider {
+func CreateMockIngredientsDb() ingredientProvider {
 	return IngedientsJSONProvider(strings.NewReader(ingredients))
 }
 
