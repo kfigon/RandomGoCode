@@ -66,15 +66,14 @@ type adjustResult struct {
 }
 
 func (r *recommendationController) adjustName(input string) adjustResult {
-	MAX_HAMMING_DISTANCE := 2
 
 	allIngredients := r.ingredientDb.getAll()
-	bestGuess := struct {
-		distance int
-		id       int
-		name     string
-	}{}
-	bestGuess.distance = 999999999999
+	//bestGuess := struct {
+	//	distance int
+	//	id       int
+	//	name     string
+	//}{}
+	//bestGuess.distance = 999999999999
 
 	for _, ing := range allIngredients {
 		if input == ing.Name {
@@ -85,19 +84,6 @@ func (r *recommendationController) adjustName(input string) adjustResult {
 			}
 		}
 		// todo: finish the adjuster
-		if ham := calcHammingDistance(input, ing.Name); ham < bestGuess.distance {
-			bestGuess.distance = ham
-			bestGuess.name = ing.Name
-			bestGuess.id = ing.ID
-		}
-	}
-
-	if bestGuess.distance < MAX_HAMMING_DISTANCE {
-		return adjustResult{
-			foundName:   bestGuess.name,
-			foundId:     bestGuess.id,
-			matchResult: ADJUSTED,
-		}
 	}
 
 	return adjustResult{matchResult: NOT_FOUND}
