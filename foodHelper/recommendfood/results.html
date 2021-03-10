@@ -9,9 +9,11 @@
 
     {{ range .}}
     <hr>
-    {{.Name}}
+
+    <h2>{{.Name}}</h2>
+    <h4>ingredients:</h4>
     {{ range .IngredientNames}}
-        {{ . }}
+        <h3>{{ . }}</h3>
     {{end}}
 
     {{end}}

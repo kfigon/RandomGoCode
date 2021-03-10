@@ -1,8 +1,12 @@
 package recommendfood
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 func GetNamesFromRequest(request *http.Request) []string {
-	result := make([]string, 0)
-	return result
+	request.ParseForm()
+	data := request.FormValue("data")
+	return strings.Fields(data)
 }
