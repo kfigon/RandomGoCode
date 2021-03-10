@@ -42,6 +42,16 @@ func (i ingredientsDataProvider) getAll() []ingredient {
 	return i.ingredients
 }
 
+func (i ingredientsDataProvider) getName(id int) (string, bool) {
+	all := i.getAll()
+	for _, ing := range all {
+		if ing.ID == id {
+			return ing.Name, true
+		}
+	}
+	return "", false
+}
+
 type ingredientJSONDto struct {
 	Name string `json:"name"`
 	ID   int    `json:"id"`

@@ -11,7 +11,7 @@ func createMockIngredientsDb() ingredientProvider {
 }
 
 // language=json
-var ingredients string = `[
+var ingredients = `[
 	{ "id": 0, "name": "egg" },
 	{ "id": 1, "name": "chicken" },
 	{ "id": 2, "name": "beef" },
@@ -27,8 +27,9 @@ var ingredients string = `[
 ]`
 
 // language=json
-var foods string = `[
+var foods = `[
 	{"name":  "first", "ingredients":[0,1,3]},
 	{"name":  "second", "ingredients":[0,1,4]},
-	{"name":  "third", "ingredients":[4,5,6]}
+	{"name":  "third", "ingredients":[4,5,6]},
+	{"name":  "Scrambled eggs", "ingredients":[0]}
 ]`

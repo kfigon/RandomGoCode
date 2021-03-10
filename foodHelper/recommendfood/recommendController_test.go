@@ -47,6 +47,31 @@ func TestFindFoodsInvalidInput(t *testing.T) {
 	assert.Empty(t, result)
 }
 
+func TestFindFoodsInvalidInput2(t *testing.T) {
+	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	result := controller.FindFoods(createEmptyTabWithLen(100))
+	assert.Empty(t, result)
+}
+
+func TestFindFoods(t *testing.T) {
+	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	result := controller.FindFoods([]string{"egg"})
+	assert.Equal(t, 1, len(result))
+	assert.Equal(t, "Scrambled eggs", result[0].Name)
+	assert.Equal(t, []string{"egg"}, result[0].IngredientNames)
+}
+
+func TestFindFoods2(t *testing.T) {
+	controller := NewRecommendationController(createMockIngredientsDb(), NewSearch(createMockFoodDb()))
+	result := controller.FindFoods([]string{"egg", "chicken", "salmon"})
+	assert.Equal(t, 2, len(result))
+	assert.Equal(t, "first", result[0].Name)
+	assert.Equal(t, []string{"egg", "chicken", "salmon"}, result[0].IngredientNames)
+
+	assert.Equal(t, "Scrambled eggs", result[1].Name)
+	assert.Equal(t, []string{"egg"}, result[1].IngredientNames)
+}
+
 func TestFindFoodsNameAdjuster(t *testing.T) {
 	tdt := []struct {
 		input              string

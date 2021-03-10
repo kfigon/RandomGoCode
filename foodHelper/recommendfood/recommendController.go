@@ -1,9 +1,13 @@
 package recommendfood
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 type ingredientProvider interface {
 	getAll() []ingredient
+	getName(int) (string, bool)
 }
 
 type recommendationController struct {
@@ -19,7 +23,32 @@ func NewRecommendationController(ingDb ingredientProvider, service *searchServic
 }
 
 func (r *recommendationController) FindFoods(names []string) []FoodRecommendationDto {
-	return nil
+	err := validateIngredientNames(names)
+	if err != nil {
+		return []FoodRecommendationDto{}
+	}
+
+	ingredients := make([]int, 0)
+	for _, name := range names {
+		adjustResult := r.adjustName(name)
+		if adjustResult.matchResult != NOT_FOUND {
+			ingredients = append(ingredients, adjustResult.foundId)
+		}
+	}
+
+	recommendations := r.searchService.RecommendFoods(ingredients, 80)
+	return r.mapToDto(recommendations)
+}
+
+func (r *recommendationController) mapToDto(recommendations []FoodRecommendation) []FoodRecommendationDto {
+	dtos := make([]FoodRecommendationDto, len(recommendations))
+	for i, rec := range recommendations {
+		dtos[i] = FoodRecommendationDto{
+			Name:            rec.Name,
+			IngredientNames: r.getIngredientNames(rec.RequiredIngredients),
+		}
+	}
+	return dtos
 }
 
 type foundState int
@@ -55,6 +84,7 @@ func (r *recommendationController) adjustName(input string) adjustResult {
 				matchResult: FOUND,
 			}
 		}
+		// todo: finish the adjuster
 		if ham := calcHammingDistance(input, ing.Name); ham < bestGuess.distance {
 			bestGuess.distance = ham
 			bestGuess.name = ing.Name
@@ -71,6 +101,22 @@ func (r *recommendationController) adjustName(input string) adjustResult {
 	}
 
 	return adjustResult{matchResult: NOT_FOUND}
+}
+
+func (r *recommendationController) getIngredientNames(requiredIngredients []int) []string {
+	result := make([]string, len(requiredIngredients))
+	i := 0
+	for _, ing := range requiredIngredients {
+		res, ok := r.ingredientDb.getName(ing)
+		if !ok {
+			log.Println("RequiredId not found in DB!", ing)
+			continue
+		}
+
+		result[i] = res
+		i++
+	}
+	return result
 }
 
 func calcHammingDistance(a string, b string) int {
