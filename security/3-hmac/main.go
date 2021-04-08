@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"log"
 	"crypto/hmac"
-	"crypto/sha512"
+	"crypto/sha256"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func handleAuth(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Json decoded", data)
 
-	hash := hmac.New(sha512.New, secretKey)
+	hash := hmac.New(sha256.New, secretKey)
 	_, err = hash.Write([]byte(data.Password))
 	if err != nil {
 		http.Error(w, "error in writing hash", http.StatusBadRequest)
@@ -49,7 +49,7 @@ func handleAuth(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(signature))
 }
 
-// curl -i -H "MYTOKEN: 1958d869e16437892f9a8b0366889da9559b6327a880825bb18cb8401d2fc4b47ff80eeef93b7860530b22c76c4fdd258d741c9db9658f1bb37e0d08311af171" localhost:8080/resource
+// curl -i -H "MYTOKEN: de1e6ed9340473135c23247a0dc6f1f349157c48e14835d17969106ae3c98fd5" localhost:8080/resource
 func handleSecure(w http.ResponseWriter, r *http.Request) {
 	if !authorised(r) {
 		http.Error(w, "Unauthenticated", http.StatusForbidden)
