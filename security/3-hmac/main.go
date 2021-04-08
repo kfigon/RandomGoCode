@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"log"
@@ -21,7 +22,7 @@ type Auth struct {
 }
 
 var secretKey = []byte("secretKey")
-var passwords = make(map[string][]byte)
+var passwords = make(map[string]string)
 
 // curl -i -d '{ "user": "ziomx", "password": "123" }' localhost:8080
 func handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -42,13 +43,13 @@ func handleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	signature := hash.Sum(nil)
+	signature := hex.EncodeToString(hash.Sum(nil))
 	passwords[data.User] = signature
-	log.Println("Got hash for", data.User)
-	w.Write(signature)
+	log.Println("Got hash for", data.User, signature)
+	w.Write([]byte(signature))
 }
 
-// curl -i -H "MYTOKEN: tokenValue" localhost:8080/resource
+// curl -i -H "MYTOKEN: 1958d869e16437892f9a8b0366889da9559b6327a880825bb18cb8401d2fc4b47ff80eeef93b7860530b22c76c4fdd258d741c9db9658f1bb37e0d08311af171" localhost:8080/resource
 func handleSecure(w http.ResponseWriter, r *http.Request) {
 	if !authorised(r) {
 		http.Error(w, "Unauthenticated", http.StatusForbidden)
@@ -64,9 +65,10 @@ func authorised(r *http.Request) bool {
 		log.Println("No token provided")
 		return false
 	}
+
 	for userName := range passwords {
 		storedPass := passwords[userName]
-		ok := hmac.Equal([]byte(header), storedPass)
+		ok := hmac.Equal([]byte(header), []byte(storedPass))
 		if ok {
 			log.Printf("%v authorized\n", userName)
 			return true
