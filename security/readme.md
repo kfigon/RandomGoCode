@@ -15,3 +15,5 @@
 * `encryption`
     * caesar cipher (rot13)- for encryption/decryption
     * AES, RSA, DSA
+	
+Base64 - NOT an encryption, just an encoding. All characters are printable, so it's useful for sending and printing. Http is text based protocol, so we can ensure data is correctly sent
