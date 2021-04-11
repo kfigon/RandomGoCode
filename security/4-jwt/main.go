@@ -2,29 +2,29 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"log"
 	"github.com/dgrijalva/jwt-go"
+	"io"
+	"log"
+	"net/http"
 )
 
 // JWT - praktyczne wykorzystanie HMACa do autentykacji
 // {standard fields}.{custom fields}.{signature (hmac)}
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/login", handleIdx)
+	mux.HandleFunc("/login", handleLogin)
 	mux.HandleFunc("/secret", handleSecret)
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
 // basic auth
-// curl -XPOST -u ziom:asd localhost:8080/login -I
-func handleIdx(w http.ResponseWriter, r *http.Request) {
+// curl -XPOST -u ziom:asd localhost:8080/login -v
+func handleLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "invalid method", http.StatusNotFound)
 		return
 	}
 	user, pass, ok := r.BasicAuth()
-
 	if !ok {
 		http.Error(w, "basic auth not ok", http.StatusForbidden)
 		return
@@ -36,25 +36,7 @@ func handleIdx(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Login ok")
-	w.Write([]byte(createToken(`someSessionId`)))
-}
-
-type MyClaims struct {
-	jwt.Claims
-	MySessionId string
-}
-
-func createToken(data string) string {
-	c := MyClaims{
-		MySessionId: data,
-	}
-	t := jwt.NewWithClaims(jwt.SigningMethodHS512, c)
-	// todo: we should periodically rotate keys
-	token, err := t.SignedString("mySecretKey")
-	if err != nil {
-		log.Println("Got error during signing", err)
-	}
-	return token
+	io.WriteString(w, createToken(`someSessionId`))
 }
 
 // curl -XGET localhost:8080/secret -I -H "MYTOKEN: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.VFb0qJ1LRg_4ujbZoRMXnVkUgiuKq5KxWqNdbKq_G9Vvz-S1zZa9LPxtHWKa64zDl2ofkT8F6jBt_K4riU-fPg"
@@ -63,6 +45,7 @@ func handleSecret(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid method", http.StatusNotFound)
 		return
 	}
+
 	if !authenticated(r) {
 		http.Error(w, "auth error", http.StatusForbidden)
 		return
@@ -71,21 +54,64 @@ func handleSecret(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`hello mr president`))
 }
 
+func createToken(data string) string {
+	j := &jwtHelper{}
+	return j.createToken(data)
+}
+
 func authenticated(r *http.Request) bool {
-	receivedToken := r.Header.Get("MYTOKEN")
-	var claims *MyClaims
-	token, err := jwt.ParseWithClaims(receivedToken, claims, func(t *jwt.Token) (interface{}, error) {
-		if t.Method.Alg() != jwt.SigningMethodHS512.Alg() {
-			return nil, fmt.Errorf("invalid sign method")
-		}
-		return t, nil
-	})
-	if err != nil {
-		log.Println("Error during parseToken", err)
-		return false
+	j := &jwtHelper{}
+	return j.authenticated(r)
+}
+
+type jwtHelper struct{}
+
+func (j *jwtHelper) key() []byte                 { return []byte("mySecretKey") }
+func (j *jwtHelper) alg() *jwt.SigningMethodHMAC { return jwt.SigningMethodHS512 }
+func (j *jwtHelper) headerKey() string           { return "MYTOKEN" }
+func (j *jwtHelper) tokenKey() string            { return "foo" }
+
+func (j *jwtHelper) createToken(data string) string {
+	token := jwt.New(j.alg())
+	token.Claims = jwt.MapClaims{
+		"foo": data,
 	}
 
-	log.Println("got token", token)
-	log.Println("claims", claims)
-	return token.Valid
+	tokenString, err := token.SignedString(j.key())
+	if err != nil {
+		log.Println("Error during encoding", err)
+		return ""
+	}
+	log.Println("Token created", tokenString)
+	return tokenString
+}
+
+func (j *jwtHelper) authenticated(r *http.Request) bool {
+	receivedToken := r.Header.Get(j.headerKey())
+	log.Println("Got token", receivedToken)
+
+	token, err := jwt.Parse(receivedToken, func(token *jwt.Token) (interface{}, error) {
+		log.Println("Header:", token.Header)
+		claims := token.Claims.(jwt.MapClaims)
+		log.Println("payload:", claims)
+
+		if token.Header["alg"] != j.alg().Alg() {
+			log.Println("Got invalid algorithm, error!")
+			return token, fmt.Errorf("Invalid algorithm")
+		}
+
+		if val, ok := claims[j.tokenKey()]; !ok || val != "someSessionId" {
+			log.Println("Got invalid claims, error!")
+			return token, fmt.Errorf("Invalid token")
+		}
+		return token, nil
+	})
+
+	if err != nil {
+		log.Println("Got validation error:", err)
+		return false
+	}
+	valid := token.Valid
+	log.Println("Token valid:", valid)
+	return valid
 }
