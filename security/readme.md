@@ -10,7 +10,7 @@
     * Asymmetric (public for verify/decrypt, private for sign/encrypt)
         * RSA (also encryption alg), ECDSA
 
-* JWT - transport method used for authentication. Encrypted data + sign. Stored in token/cookie. Allows to have stateless security (instead of session cookie, server side stored)
+* JWT - transport method used for authentication. base64 encoded data + sign. Stored in token/cookie. Allows to have stateless security (instead of session cookie, server side stored)
 
 * `encryption`
     * caesar cipher (rot13)- for encryption/decryption

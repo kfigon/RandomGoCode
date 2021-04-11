@@ -10,6 +10,7 @@ import (
 
 // JWT - praktyczne wykorzystanie HMACa do autentykacji
 // {standard fields}.{custom fields}.{signature (hmac)}
+//these parts are base64 encoded. It's not encrypted!!!1
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", handleLogin)
@@ -90,23 +91,7 @@ func (j *jwtHelper) authenticated(r *http.Request) bool {
 	receivedToken := r.Header.Get(j.headerKey())
 	log.Println("Got token", receivedToken)
 
-	token, err := jwt.Parse(receivedToken, func(token *jwt.Token) (interface{}, error) {
-		log.Println("Header:", token.Header)
-		claims := token.Claims.(jwt.MapClaims)
-		log.Println("payload:", claims)
-
-		if token.Header["alg"] != j.alg().Alg() {
-			log.Println("Got invalid algorithm, error!")
-			return token, fmt.Errorf("Invalid algorithm")
-		}
-
-		if val, ok := claims[j.tokenKey()]; !ok || val != "someSessionId" {
-			log.Println("Got invalid claims, error!")
-			return token, fmt.Errorf("Invalid token")
-		}
-		return token, nil
-	})
-
+	token, err := jwt.Parse(receivedToken, j.validate)
 	if err != nil {
 		log.Println("Got validation error:", err)
 		return false
@@ -114,4 +99,22 @@ func (j *jwtHelper) authenticated(r *http.Request) bool {
 	valid := token.Valid
 	log.Println("Token valid:", valid)
 	return valid
+}
+
+func (j *jwtHelper) validate(token *jwt.Token) (interface{}, error) {
+	log.Println("Got Header:", token.Header)
+	claims := token.Claims.(jwt.MapClaims)
+	log.Println("Got Payload:", claims)
+
+	if token.Header["alg"] != j.alg().Alg() {
+		log.Println("Got invalid algorithm, error!")
+		return nil, fmt.Errorf("Invalid algorithm")
+	}
+
+	val, ok := claims[j.tokenKey()]
+	if !ok || val != "someSessionId" {
+		log.Println("Got invalid claims, error!")
+		return nil, fmt.Errorf("Invalid token")
+	}
+	return j.key(), nil
 }
