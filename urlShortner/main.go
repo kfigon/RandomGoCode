@@ -51,19 +51,25 @@ func newService() *service {
 
 func (s *service) save(url string) string {
 	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	for id := range s.urls {
+		if s.urls[id] == url {
+			return id
+		}
+	}
+
 	redirectId := fmt.Sprint(len(s.urls)+1)
 	s.urls[redirectId] = url
-	s.mutex.Unlock()
-	
 	return redirectId
 }
 
 func (s *service) read(id string) (string,bool) {
 	s.mutex.Lock()
-	val, ok := s.urls[id]
-	s.mutex.Unlock()
+	defer s.mutex.Unlock()
 	
-	return val,ok
+	v,ok := s.urls[id]
+	return v,ok
 }
 
 // curl -XPOST -d '{"url":"https://www.wykop.pl/"}' localhost:8080/save -i
