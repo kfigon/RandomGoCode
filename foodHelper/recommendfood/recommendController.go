@@ -28,16 +28,20 @@ func (r *recommendationController) FindFoods(names []string) []FoodRecommendatio
 		return []FoodRecommendationDto{}
 	}
 
-	ingredients := make([]int, 0)
-	for _, name := range names {
-		adjustResult := r.adjustName(name)
-		if adjustResult.matchResult != NOT_FOUND {
-			ingredients = append(ingredients, adjustResult.foundId)
-		}
-	}
+	ingredients := r.mapNamesToIds(names)
 
 	recommendations := r.searchService.RecommendFoods(ingredients, 80)
 	return r.mapToDto(recommendations)
+}
+
+func (r *recommendationController) mapNamesToIds(names []string) []int {
+	ingredients := make([]int, 0)
+	for _, name := range names {
+		if adjustResult := r.adjustName(name); adjustResult.matchResult != NOT_FOUND {
+			ingredients = append(ingredients, adjustResult.foundId)
+		}
+	}
+	return ingredients
 }
 
 func (r *recommendationController) mapToDto(recommendations []FoodRecommendation) []FoodRecommendationDto {
