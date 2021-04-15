@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"sync"
 	"fmt"
 	"encoding/json"
@@ -32,8 +33,17 @@ func logMiddleware(next http.HandlerFunc) http.HandlerFunc {
 type Request struct {
 	URL string `json:"url"`
 }
+func (r *Request) fromJson(reader io.Reader) bool {
+	err := json.NewDecoder(reader).Decode(r)
+	return err == nil && r.URL != ""
+}
+
+
 type Response struct {
 	URL string `json:"url"`
+}
+func (r *Response) toJson(writer io.Writer) {
+	json.NewEncoder(writer).Encode(r)
 }
 
 
@@ -55,12 +65,14 @@ func (s *service) save(url string) string {
 
 	for id := range s.urls {
 		if s.urls[id] == url {
+			log.Println(url,"already present")
 			return id
 		}
 	}
 
 	redirectId := fmt.Sprint(len(s.urls)+1)
 	s.urls[redirectId] = url
+	log.Println(url,"saved")
 	return redirectId
 }
 
@@ -75,15 +87,13 @@ func (s *service) read(id string) (string,bool) {
 // curl -XPOST -d '{"url":"https://www.wykop.pl/"}' localhost:8080/save -i
 func (s *service) handleSave(w http.ResponseWriter, r *http.Request) {
 	body := &Request{}
-	err := json.NewDecoder(r.Body).Decode(body)
-	if err != nil || body.URL == "" {
+	if !body.fromJson(r.Body) {
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
 
-	json.NewEncoder(w).Encode(Response{
-		URL: fmt.Sprint("http://localhost:8080/", s.save(body.URL)),
-	})
+	url := fmt.Sprint("http://localhost:8080/", s.save(body.URL))
+	(&Response{url}).toJson(w)
 }
 
 // curl localhost:8080/1 -i
