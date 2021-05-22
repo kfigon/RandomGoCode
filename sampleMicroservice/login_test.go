@@ -81,11 +81,13 @@ func TestAuthenticateWhenValidToken(t *testing.T) {
 
 	request,err := http.NewRequest(http.MethodGet, srv.URL+"/login", nil)
 	request.SetBasicAuth("John","secret")
+	assert.NoError(t, err)
 
 	response, err := srv.Client().Do(request)
+	assert.NoError(t, err)
 	var responseBody LoginResponse
 	json.NewDecoder(response.Body).Decode(&responseBody)
-
+	
 	request,err = http.NewRequest(http.MethodGet, srv.URL+"/auth", nil)
 	request.Header.Add("MY_TOKEN", responseBody.Token)
 	assert.NoError(t, err)
