@@ -38,15 +38,19 @@ func (l *login) login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (l *login) auth(w http.ResponseWriter, r *http.Request) {
+func (l *login) authHandler(w http.ResponseWriter, r *http.Request) {
+	if !l.auth(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+}
+
+func (l *login) auth(r *http.Request) bool {
 	token := r.Header.Get("MY_TOKEN")
 	l.lock.Lock()
 	_, ok := l.savedTokens[token]
 	l.lock.Unlock()
-	if  !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	return ok
 }
 
 func (l *login) checkPass(user string, pass string) bool {
