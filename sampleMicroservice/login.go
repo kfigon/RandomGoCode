@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"encoding/json"
 	"net/http"
 	"github.com/google/uuid"
@@ -9,6 +10,7 @@ type void struct{}
 var emptyVal void
 
 type login struct {
+	lock *sync.Mutex
 	savedTokens map[string]void
 }
 
@@ -19,6 +21,7 @@ type LoginResponse struct {
 func newLogin() *login {
 	return &login{
 		savedTokens: make(map[string]void),
+		lock: &sync.Mutex{},
 	}
 }
 
@@ -37,7 +40,10 @@ func (l *login) login(w http.ResponseWriter, r *http.Request) {
 
 func (l *login) auth(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("MY_TOKEN")
-	if _, ok := l.savedTokens[token]; !ok {
+	l.lock.Lock()
+	_, ok := l.savedTokens[token]
+	l.lock.Unlock()
+	if  !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -49,6 +55,10 @@ func (l *login) checkPass(user string, pass string) bool {
 
 func (l *login) createToken() string {
 	token := uuid.New().String()
+
+	l.lock.Lock()
 	l.savedTokens[token] = emptyVal
+	l.lock.Unlock()
+
 	return token
 }
