@@ -15,6 +15,8 @@ type multiplicationInput struct {
 
 func getInput() []multiplicationInput {
 	return []multiplicationInput{
+		{"","2","2"},
+		{"2","","2"},
 		{"1","2","2"},
 		{"2","3","6"},
 		{"3","2","6"},
@@ -70,12 +72,19 @@ func karatsuba(x string, y string) string {
 }
 
 func recursive(x string, y string) string {
-	if len(x) == 1 || len(y) == 1 {
-		xi,_ := strconv.Atoi(x)
-		yi,_ := strconv.Atoi(y)
-		return fmt.Sprintf("%v", xi*yi)
+	conv := func(val string) int {
+		i,err := strconv.Atoi(val)
+		if err != nil {
+			return 1
+		}
+		return i
 	}
-	
+
+	if len(x) <= 1 || len(y) <= 1 {
+		return fmt.Sprintf("%v", conv(x)*conv(y))
+	}
+	// a,b := split(x)
+	// c,d := split(y)
 
 	return "0"
 }
