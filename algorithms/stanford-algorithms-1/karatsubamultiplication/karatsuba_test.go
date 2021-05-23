@@ -23,6 +23,14 @@ func getInput() []multiplicationInput {
 		{"3","2","6"},
 		{"12","2","24"},
 		{"2","12","24"},
+		{"56","12","672"},
+		{"12","56","672"},
+		{"56","34","1904"},
+		{"34","56","1904"},	
+		{"78","12","936"},
+		{"12","78","936"},
+		{"34","78","2652"},
+		{"78","34","2652"},
 		{"1234","5678","7006652"},
 		{"5678","1234","7006652"},
 	}
@@ -73,8 +81,8 @@ func karatsuba(x string, y string) string {
 }
 
 func recursive(x string, y string) string {
-	conv := func(val string) int {
-		i,err := strconv.Atoi(val)
+	conv := func(val string) int64 {
+		i,err := strconv.ParseInt(val,10,64)
 		if err != nil {
 			return 1
 		}
@@ -90,23 +98,27 @@ func recursive(x string, y string) string {
 	tenN := fmt.Sprintf("%v", math.Pow10(len(x)))
 	tenN2 := fmt.Sprintf("%v", math.Pow10(len(x)/2))
 
-	first := recursive(tenN, recursive(a,c))
-	second := recursive(tenN2, add(recursive(a,d), recursive(b,c)))
-	third := recursive(b,d)
-	result := add(add(first, second), third)
-	return result
+	ac:=recursive(a,c)
+	ad:=recursive(a,d)
+	bc:=recursive(b,c)
+	bd:=recursive(b,d)
+
+	first := recursive(tenN, ac)
+	second := recursive(tenN2, add(ad, bc))
+	third := bd
+	return add(add(first, second), third)
 }
 
 // todo: implement addition
 func add(x, y string) string {
-	conv := func(val string) int {
-		i,err := strconv.Atoi(val)
+	conv := func(val string) int64 {
+		i,err := strconv.ParseInt(val,10,64)
 		if err != nil {
 			return 0
 		}
 		return i
 	}
-	return fmt.Sprintf("%v", conv(x)+conv(y))
+	return fmt.Sprintf("%v", (conv(x)+conv(y)))
 }
 
 func split(x string) (string, string) {
