@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"math"
 )
 
 type multiplicationInput struct {
@@ -83,10 +84,29 @@ func recursive(x string, y string) string {
 	if len(x) <= 1 || len(y) <= 1 {
 		return fmt.Sprintf("%v", conv(x)*conv(y))
 	}
-	// a,b := split(x)
-	// c,d := split(y)
+	a,b := split(x)
+	c,d := split(y)
 
-	return "0"
+	tenN := fmt.Sprintf("%v", math.Pow10(len(x)))
+	tenN2 := fmt.Sprintf("%v", math.Pow10(len(x)/2))
+
+	first := recursive(tenN, recursive(a,c))
+	second := recursive(tenN2, add(recursive(a,d), recursive(b,c)))
+	third := recursive(b,d)
+	result := add(add(first, second), third)
+	return result
+}
+
+// todo: implement addition
+func add(x, y string) string {
+	conv := func(val string) int {
+		i,err := strconv.Atoi(val)
+		if err != nil {
+			return 0
+		}
+		return i
+	}
+	return fmt.Sprintf("%v", conv(x)+conv(y))
 }
 
 func split(x string) (string, string) {
