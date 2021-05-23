@@ -45,15 +45,45 @@ func TestRecursive(t *testing.T) {
 	}
 }
 
+func TestSplit(t *testing.T) {
+	testCases := []struct {
+		in string
+		a string
+		b string
+	}{
+		{"1234", "12", "34"},
+		{"12345", "12", "345"},
+		{"1", "1", ""},
+		{"18", "1", "8"},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.in, func(t *testing.T) {
+			a,b := split(tC.in)
+			assert.Equal(t, tC.a,a)
+			assert.Equal(t, tC.b,b)
+		})
+	}
+}
+
 func karatsuba(x string, y string) string {
 	return "0"
 }
 
 func recursive(x string, y string) string {
-	if len(x) == 1 || len(x) == 1{
+	if len(x) == 1 || len(y) == 1 {
 		xi,_ := strconv.Atoi(x)
 		yi,_ := strconv.Atoi(y)
 		return fmt.Sprintf("%v", xi*yi)
 	}
+	
+
 	return "0"
+}
+
+func split(x string) (string, string) {
+	if len(x) == 1 {
+		return x,""
+	}
+	half := len(x)/2
+	return x[:half],x[half:]
 }
