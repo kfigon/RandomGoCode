@@ -16,7 +16,15 @@ const (
 	Gb Note = 10
 	G Note = 11
 )
+var vals = [...]string {
+	"Ab","A","Bb","B",
+	"C","Db","D","Eb",
+	"E","F","Gb","G",
+} 
 
 func (n *Note) String() string {
-	return ""
+	if *n > G {
+		return ""
+	}
+	return vals[*n]
 }
