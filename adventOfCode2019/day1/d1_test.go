@@ -21,6 +21,24 @@ func calcSummedFuel(masses []int) int {
 	return out
 }
 
+func calcFuel2(mass int) int {
+	out := calcFuel(mass)
+	nextStep := calcFuel(out)
+	for nextStep > 0 {
+		out += nextStep
+		nextStep = calcFuel(nextStep)
+	}
+	return out
+}
+
+func calcSummedFuel2(masses []int) int {
+	out := 0
+	for _,v := range masses	{
+		out += calcFuel2(v)
+	}
+	return out
+}
+
 func TestCalc(t *testing.T) {
 	testCases := []struct {
 		in int
@@ -34,6 +52,23 @@ func TestCalc(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(strconv.Itoa(tC.in), func(t *testing.T) {
 			assert.Equal(t, tC.exp, calcFuel(tC.in))
+		})
+	}
+}
+
+// go test ./day1 -run TestCalc2
+func TestCalc2(t *testing.T) {
+	testCases := []struct {
+		in int
+		exp int		
+	}{
+		{14, 2},
+		{1969, 966},
+		{100756, 50346},
+	}
+	for _, tC := range testCases {
+		t.Run(strconv.Itoa(tC.in), func(t *testing.T) {
+			assert.Equal(t, tC.exp, calcFuel2(tC.in))
 		})
 	}
 }
@@ -59,6 +94,12 @@ func parseFile() []int {
 }
 
 func TestCalcFromFile(t *testing.T) {
+	data := parseFile()
+	sum := calcSummedFuel2(data)
+	assert.Equal(t, 4849444, sum)
+}
+
+func TestCalc2FromFile(t *testing.T) {
 	data := parseFile()
 	sum := calcSummedFuel(data)
 	assert.Equal(t, 3234871, sum)
