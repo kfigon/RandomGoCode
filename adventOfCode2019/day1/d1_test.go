@@ -8,8 +8,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// https://adventofcode.com/2019/day/1
 func calcFuel(mass int) int {
 	return mass/3 - 2
+}
+
+func calcSummedFuel(masses []int) int {
+	out := 0
+	for _,v := range masses	{
+		out += calcFuel(v)
+	}
+	return out
 }
 
 func TestCalc(t *testing.T) {
@@ -29,18 +38,28 @@ func TestCalc(t *testing.T) {
 	}
 }
 
-func TestCalcFromFile(t *testing.T) {
+func parseFile() []int {
+	out := make([]int,0)
 	file, err := os.Open("data.txt")
-	assert.NoError(t,err)
+	if err != nil {
+		return out
+	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 
-	sum := 0
 	for scanner.Scan() {
 		v, err := strconv.Atoi(scanner.Text())
-		assert.NoError(t,err)
-		sum += calcFuel(v)
+		if err != nil {
+			continue
+		}
+		out = append(out, v)
 	}
-	assert.Equal(t, 123, sum)
+	return out
+}
+
+func TestCalcFromFile(t *testing.T) {
+	data := parseFile()
+	sum := calcSummedFuel(data)
+	assert.Equal(t, 3234871, sum)
 }
