@@ -13,7 +13,7 @@ func TestCalc(t *testing.T) {
 		in []int
 		exp []int
 	}{
-		{[]int{1,0,0,3,99}, []int{1,0,0,3,99}},
+		{[]int{1,0,0,3,99}, []int{1,0,0,2,99}},
 		{[]int{1,0,0,0,99}, []int{2,0,0,0,99}},
 		{[]int{1,9,10,3,2,3,11,0,99,30,40,50}, []int{3500,9,10,70,2,3,11,0,99,30,40,50}},
 		{[]int{2,3,0,3,99}, []int{2,3,0,6,99}},
@@ -55,9 +55,17 @@ func (c computer) handleCommand(idx int) int {
 }
 
 func (c computer) handleAdd(idx int) int {
+	idxA := c[idx+1]
+	idxB := c[idx+2]
+	idxC := c[idx+3]
+	c[idxC] = c[idxA] + c[idxB]
 	return idx+4
 }
 
 func (c computer) handleMult(idx int) int {
+	idxA := c[idx+1]
+	idxB := c[idx+2]
+	idxC := c[idx+3]
+	c[idxC] = c[idxA] * c[idxB]
 	return idx+4
 }
