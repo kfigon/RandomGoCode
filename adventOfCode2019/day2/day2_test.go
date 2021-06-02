@@ -64,10 +64,13 @@ func TestPart2(t *testing.T) {
 
 func findPart2Result() int {
 	const valueToFind int = 19690720
-
+	fileData := readFile()
 	for noun := 0; noun <= 99; noun++ {
 		for verb := 0; verb <= 99; verb++ {
-			data := readFile()
+			
+			data := make([]int, len(fileData))
+			copy(data, fileData)
+
 			data[1] = noun
 			data[2] = verb
 			out := computer(data).calc()
