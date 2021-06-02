@@ -29,7 +29,6 @@ func TestCalc(t *testing.T) {
 }
 
 type computer []int
-
 func (c computer) calc() []int {
 	var i int 
 	for i < len(c) {
@@ -54,18 +53,18 @@ func (c computer) handleCommand(idx int) int {
 	return idx
 }
 
+func (c computer) getIdxs(idx int) (int,int,int) {
+	return c[idx+1],c[idx+2],c[idx+3]
+}
+
 func (c computer) handleAdd(idx int) int {
-	idxA := c[idx+1]
-	idxB := c[idx+2]
-	idxC := c[idx+3]
+	idxA,idxB,idxC := c.getIdxs(idx)
 	c[idxC] = c[idxA] + c[idxB]
 	return idx+4
 }
 
 func (c computer) handleMult(idx int) int {
-	idxA := c[idx+1]
-	idxB := c[idx+2]
-	idxC := c[idx+3]
+	idxA,idxB,idxC := c.getIdxs(idx)
 	c[idxC] = c[idxA] * c[idxB]
 	return idx+4
 }
