@@ -31,5 +31,33 @@ func TestCalc(t *testing.T) {
 type computer []int
 
 func (c computer) calc() []int {
+	var i int 
+	for i < len(c) {
+		i = c.handleCommand(i)
+	}
 	return c
+}
+
+const (
+	ADD = 1
+	MULT = 2
+	TERMINATE = 99
+)
+func (c computer) handleCommand(idx int) int {
+	val := c[idx]
+	switch val {
+	case ADD:	return c.handleAdd(idx)
+	case MULT:	return c.handleMult(idx)
+	case TERMINATE: return idx+len(c)
+	}
+	// should not happen
+	return idx
+}
+
+func (c computer) handleAdd(idx int) int {
+	return idx+4
+}
+
+func (c computer) handleMult(idx int) int {
+	return idx+4
 }
