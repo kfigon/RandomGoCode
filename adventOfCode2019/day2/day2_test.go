@@ -58,21 +58,19 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	exp := 19690720
+	exp := 5208
 	assert.Equal(t, exp, findPart2Result())
 }
 
 func findPart2Result() int {
 	for noun := 0; noun <= 99; noun++ {
 		for verb := 0; verb <= 99; verb++ {
-			
 			data := readFile()
 			data[1] = noun
 			data[2] = verb
 			out := computer(data).calc()
-			answer := 100*out[1]+out[2]
-			if 19690720 == answer {
-				return answer
+			if 19690720 == out[0] {
+				return 100*out[1]+out[2]
 			}
 		}
 	}
