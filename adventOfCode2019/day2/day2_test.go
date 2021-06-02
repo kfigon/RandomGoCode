@@ -63,13 +63,15 @@ func TestPart2(t *testing.T) {
 }
 
 func findPart2Result() int {
+	const valueToFind int = 19690720
+
 	for noun := 0; noun <= 99; noun++ {
 		for verb := 0; verb <= 99; verb++ {
 			data := readFile()
 			data[1] = noun
 			data[2] = verb
 			out := computer(data).calc()
-			if out[0] == 19690720 {
+			if out[0] == valueToFind {
 				return 100*out[1]+out[2]
 			}
 		}
@@ -79,8 +81,8 @@ func findPart2Result() int {
 
 type computer []int
 func (c computer) calc() []int {
-	var i int 
-	for i < len(c) {
+	var i int
+	for i < len(c) && i != -1 {
 		i = c.handleCommand(i)
 	}
 	return c
@@ -96,10 +98,10 @@ func (c computer) handleCommand(idx int) int {
 	switch val {
 	case ADD:	return c.handleAdd(idx)
 	case MULT:	return c.handleMult(idx)
-	case TERMINATE: return idx+len(c)
+	case TERMINATE: return -1
 	}
 	// should not happen
-	return idx
+	return -1
 }
 
 func (c computer) getIdxs(idx int) (int,int,int) {
