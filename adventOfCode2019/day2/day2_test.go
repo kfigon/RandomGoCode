@@ -1,8 +1,10 @@
 package day2
 
 import (
-	// "bufio"
-	// "os"
+	"strings"
+	"io"
+	"strconv"
+	"os"
 	"fmt"
 	"testing"
 	"github.com/stretchr/testify/assert"
@@ -26,6 +28,33 @@ func TestCalc(t *testing.T) {
 			assert.Equal(t, tc.exp, got)
 		})
 	}
+}
+func readFile() []int {
+	file, err := os.Open("data.txt")
+	if err != nil {
+		return []int{}
+	}
+	defer file.Close()
+
+	out := make([]int,0)
+	bytes, err := io.ReadAll(file)
+	if err != nil {
+		return []int{}
+	}
+	str := string(bytes)
+	for _, v := range strings.Split(str, ",") {
+		i, _ := strconv.Atoi(v)
+		out = append(out, i)
+	}
+	return out
+}
+func TestTask1(t *testing.T) {
+	data := readFile()
+	data[1] = 12
+	data[2] = 2
+	out := computer(data).calc()
+
+	assert.Equal(t, 5866714, out[0])
 }
 
 type computer []int
