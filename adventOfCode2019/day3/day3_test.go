@@ -6,7 +6,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 )
-
+// https://adventofcode.com/2019/day/3
 func TestPointParser(t *testing.T) {
 	testCases := []struct {
 		in string
@@ -21,6 +21,9 @@ func TestPointParser(t *testing.T) {
 			assert.Equal(t, tc.exp, got)
 		})
 	}
+}
+func TestTodo(t *testing.T) {
+	assert.Fail(t, "todo")
 }
 
 type point struct {
