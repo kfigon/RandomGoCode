@@ -48,13 +48,35 @@ func readFile() []int {
 	}
 	return out
 }
-func TestTask1(t *testing.T) {
+func TestPart1(t *testing.T) {
 	data := readFile()
 	data[1] = 12
 	data[2] = 2
 	out := computer(data).calc()
 
 	assert.Equal(t, 5866714, out[0])
+}
+
+func TestPart2(t *testing.T) {
+	exp := 19690720
+	assert.Equal(t, exp, findPart2Result())
+}
+
+func findPart2Result() int {
+	for noun := 0; noun <= 99; noun++ {
+		for verb := 0; verb <= 99; verb++ {
+			
+			data := readFile()
+			data[1] = noun
+			data[2] = verb
+			out := computer(data).calc()
+			answer := 100*out[1]+out[2]
+			if 19690720 == answer {
+				return answer
+			}
+		}
+	}
+	return -1
 }
 
 type computer []int
