@@ -69,7 +69,7 @@ func findPart2Result() int {
 			data[1] = noun
 			data[2] = verb
 			out := computer(data).calc()
-			if 19690720 == out[0] {
+			if out[0] == 19690720 {
 				return 100*out[1]+out[2]
 			}
 		}
