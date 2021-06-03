@@ -1,7 +1,10 @@
 package day3
 
 import (
+	"io"
+	"os"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -152,4 +155,22 @@ func TestPart1(t *testing.T) {
 			assert.Equal(t, tc.exp, got)
 		})
 	}
+}
+
+func TestPart1_v2(t *testing.T) {
+	w1, w2 := readFile(t)
+	got := findMinDistance(w1,w2)
+	assert.Equal(t, 2, got)
+}
+
+func readFile(t *testing.T) (string, string) {
+	file, err := os.Open("data.txt")
+	require.NoError(t, err, "error in opening file")
+	defer file.Close()
+	content, err := io.ReadAll(file)
+	require.NoError(t, err, "error in reading file")
+	lines := strings.Split(string(content), "\r\n")
+
+	assert.Equal(t, 2, len(lines))
+	return lines[0],lines[1]
 }
