@@ -15,7 +15,7 @@ func (p point) String() string {
 }
 
 func (p point) calcDistance() int {
-	return int(math.Abs(float64(p.x)+ float64(p.y)))
+	return int(math.Abs(float64(p.x)) + math.Abs(float64(p.y)))
 }
 
 func newPoint(x,y int) point { return point{x,y} }
@@ -68,9 +68,7 @@ func (seg segment) intersection(other segment) *point {
 	nominator1 := (ya-yc)*(xd-xc)-(xa-xc)*(yd-yc)
 	nominator2 := (ya-yc)*(xb-xa)-(xa-xc)*(yb-ya)
 
-	if nominator1 == 0 {
-		return &seg.start
-	} else if denominator == 0 {
+	if nominator1 == 0 || denominator == 0 {
 		return nil
 	}
 

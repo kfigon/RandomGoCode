@@ -52,22 +52,12 @@ func TestSegmentIntersects(t *testing.T) {
 		exp point		
 	}{
 		{
-			newSegment(newPoint(0,3), newPoint(0,4)),
-			newSegment(newPoint(0,3), newPoint(0,4)),
-			newPoint(0,3),
-		},
-		{
-			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(1,5), newPoint(1,0)),
 			newSegment(newPoint(1,1), newPoint(3,1)),
 			newPoint(1,1),
 		},
 		{
-			newSegment(newPoint(1,5), newPoint(1,1)),
-			newSegment(newPoint(1,1), newPoint(3,1)),
-			newPoint(1,1),
-		},
-		{
-			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(1,0), newPoint(1,5)),
 			newSegment(newPoint(3,1), newPoint(1,1)),
 			newPoint(1,1),
 		},
@@ -75,11 +65,8 @@ func TestSegmentIntersects(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			got1 := tc.s1.intersection(tc.s2)
-			got2 := tc.s2.intersection(tc.s1)
 			require.NotNil(t, got1)
-			require.NotNil(t, got2)
 			assert.Equal(t, tc.exp, *got1)
-			assert.Equal(t, tc.exp, *got2)
 		})
 	}
 }
@@ -89,6 +76,14 @@ func TestSegmentNotIntersects(t *testing.T) {
 		s1 segment
 		s2 segment
 	}{
+		{
+			newSegment(newPoint(0,3), newPoint(0,4)),
+			newSegment(newPoint(0,3), newPoint(0,4)),
+		},
+		{
+			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(1,1), newPoint(3,1)),
+		},
 		{
 			newSegment(newPoint(1,3), newPoint(1,4)),
 			newSegment(newPoint(0,3), newPoint(0,4)),
@@ -160,7 +155,7 @@ func TestPart1(t *testing.T) {
 func TestPart1_v2(t *testing.T) {
 	w1, w2 := readFile(t)
 	got := findMinDistance(w1,w2)
-	assert.Equal(t, 998, got)
+	assert.Equal(t, 1337, got)
 }
 
 func readFile(t *testing.T) (string, string) {
