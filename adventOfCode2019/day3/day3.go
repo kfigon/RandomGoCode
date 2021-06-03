@@ -47,6 +47,6 @@ type segment struct {
 
 func newSegment(start, end point) segment { return segment{start,end} }
 
-func (s segment) intersection() *point {
-	return nil
+func (s segment) intersection(other segment) *point {
+	return &s.start
 }

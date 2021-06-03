@@ -43,28 +43,89 @@ func TestDistance(t *testing.T) {
 
 func TestSegmentIntersects(t *testing.T) {
 	testCases := []struct {
-		s segment
+		s1 segment
+		s2 segment
 		exp point		
 	}{
-		{newSegment(newPoint(), newPoint()), newPoint()},
+		{
+			newSegment(newPoint(0,3), newPoint(0,4)),
+			newSegment(newPoint(0,3), newPoint(0,4)),
+			newPoint(0,3),
+		},
+		{
+			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(1,1), newPoint(3,1)),
+			newPoint(1,1),
+		},
+		{
+			newSegment(newPoint(1,5), newPoint(1,1)),
+			newSegment(newPoint(1,1), newPoint(3,1)),
+			newPoint(1,1),
+		},
+		{
+			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(3,1), newPoint(1,1)),
+			newPoint(1,1),
+		},
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got := tc.s.intersection()
-			assert.Equal(t, tc.exp, *got)
+			assert.Equal(t, tc.exp, *tc.s1.intersection(tc.s2))
+			assert.Equal(t, tc.exp, *tc.s2.intersection(tc.s1))
 		})
 	}
 }
 
 func TestSegmentNotIntersects(t *testing.T) {
 	testCases := []struct {
-		s segment
+		s1 segment
+		s2 segment
 	}{
-		{newSegment(newPoint(), newPoint())},
+		{
+			newSegment(newPoint(1,3), newPoint(1,4)),
+			newSegment(newPoint(0,3), newPoint(0,4)),
+		},
+		{
+			newSegment(newPoint(1,4), newPoint(1,3)),
+			newSegment(newPoint(0,3), newPoint(0,4)),
+		},
+		{
+			newSegment(newPoint(1,4), newPoint(1,3)),
+			newSegment(newPoint(0,4), newPoint(0,3)),
+		},
+		{
+			newSegment(newPoint(1,3), newPoint(5,3)),
+			newSegment(newPoint(1,0), newPoint(5,0)),
+		},
+		{
+			newSegment(newPoint(5,3), newPoint(1,3)),
+			newSegment(newPoint(1,0), newPoint(5,0)),
+		},
+		{
+			newSegment(newPoint(5,3), newPoint(1,3)),
+			newSegment(newPoint(5,0), newPoint(1,0)),
+		},
+		{
+			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(2,3), newPoint(6,3)),
+		},
+		{
+			newSegment(newPoint(1,1), newPoint(1,5)),
+			newSegment(newPoint(6,3), newPoint(2,3)),
+		},
+		{
+			newSegment(newPoint(1,5), newPoint(1,1)),
+			newSegment(newPoint(2,3), newPoint(6,3)),
+		},
+		{
+			newSegment(newPoint(1,5), newPoint(1,1)),
+			newSegment(newPoint(6,3), newPoint(2,3)),
+		},
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			assert.Nil(t, tc.s.intersection())
+			assert.Nil(t, tc.s1.intersection(tc.s2))
+			assert.Nil(t, tc.s2.intersection(tc.s1))
 		})
 	}
 }
