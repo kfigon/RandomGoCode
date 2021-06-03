@@ -22,6 +22,23 @@ func TestPointParser(t *testing.T) {
 		})
 	}
 }
+
+func TestDistance(t *testing.T) {
+	testCases := []struct {
+		p point
+		exp int
+	}{
+		{newPoint(0,0), 0},
+		{newPoint(0,1), 1},
+		{newPoint(1,1), 2},
+		{newPoint(3,3), 6},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.p.String(), func(t *testing.T) {
+			assert.Equal(t, tc.exp, tc.p.calcDistance())
+		})
+	}
+}
 func TestTodo(t *testing.T) {
 	assert.Fail(t, "todo")
 }
@@ -31,7 +48,11 @@ type point struct {
 	y int
 }
 func (p point) String() string {
-	return strconv.Itoa(p.x) +","+strconv.Itoa(p.y)
+	return "("+strconv.Itoa(p.x)+","+strconv.Itoa(p.y)+")"
+}
+
+func (p point) calcDistance() int {
+	return p.x+p.y
 }
 
 func newPoint(x,y int) point { return point{x,y} }
@@ -55,78 +76,4 @@ func parsePointsToVectors(in string) []point {
 		out[i+1] = newPoint(x,y)
 	}
 	return out
-}
-
-type void struct{}
-type set struct {
-	vals map[string]void
-}
-func newSet() *set {
-	return &set{
-		vals: make(map[string]void),
-	}
-}
-func (s *set) add(p point) {
-	var v void
-	s.vals[p.String()] = v
-}
-
-func fromKeyToPoint(key string) point {
-	vals := strings.Split(key,",")
-	x,_:=strconv.Atoi(vals[0])
-	y,_:=strconv.Atoi(vals[1])
-	return newPoint(x,y)
-}
-
-func populateSet(points []point) *set {
-	s := newSet()
-	for i := 0; i < len(points)-1; i++ {
-		current := points[i]
-		next := points[i+1]
-		s.add(current)
-		s.add(next)
-		intermediate := getIntermediate(current, next)
-		for i := 0; i < len(intermediate); i++ {
-			s.add(intermediate[i])
-		}
-	}
-	return s
-}
-
-func parseAndCalc(in string) int {
-	vals := strings.Split(in,"\r\n")
-	if vals == nil || len(vals) != 2 {
-		return -1
-	}
-	return calcStuff(parsePointsToVectors(vals[0]), parsePointsToVectors(vals[1]))
-}
-
-func calcStuff(p1 []point, p2 []point) int {
-	s1 := populateSet(p1)
-	s2 := populateSet(p2)
-	
-	var minDistance *int
-	for key := range s1.vals {
-		if _, ok := s2.vals[key]; ok {
-			dist := calcDistance(fromKeyToPoint(key))
-			if minDistance == nil || dist < *minDistance {
-				*minDistance = dist
-			}
-		}
-	}
-
-	if minDistance == nil {
-		return -1
-	}
-	return *minDistance
-}
-
-func getIntermediate(current, next point) []point {
-	// todo
-	return nil
-}
-
-func calcDistance(p point) int {
-	// todo
-	return -1
 }
