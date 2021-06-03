@@ -41,9 +41,10 @@ func TestPasswordCheck2(t *testing.T) {
 		exp bool
 	}{
 		{"333333", false},
-		{"412233", true},
-		{"523444", false},
+		{"456677", true},
+		{"567888", false},
 		{"333344", true},
+		{"333444", false},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.in, func(t *testing.T) {
@@ -61,7 +62,7 @@ func TestPart2(t *testing.T) {
 			howManyOk++
 		}
 	}
-	assert.Equal(t, 1099, howManyOk)
+	assert.Equal(t, 710, howManyOk)
 }
 
 const min = 245182
@@ -112,5 +113,28 @@ func (p password) neverDecrease() bool {
 }
 
 func (p password) adjecentNotPartOfLargerGroup() bool { 
+	// 2 adjecent must be exactly 2
+	adjecentMap := map[rune]int{}
+	
+	for i := 0; i < len(p)-1; i++ {
+		current := rune(p[i])
+		next := rune(p[i+1])
+		if current != next {
+			continue
+		}
+
+		if _, ok := adjecentMap[current]; !ok {
+			adjecentMap[current]=2
+		} else {
+			adjecentMap[current]++
+		}
+	}
+
+	for _,v := range adjecentMap {
+		if v == 2 {
+			return true
+		}
+	}
+
 	return false
 }
