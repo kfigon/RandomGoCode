@@ -174,3 +174,7 @@ func readFile(t *testing.T) (string, string) {
 	assert.Equal(t, 2, len(lines))
 	return lines[0],lines[1]
 }
+
+func TestPart2_todo(t *testing.T) {
+	t.Fail()
+}
