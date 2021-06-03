@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // https://adventofcode.com/2019/day/3
@@ -70,8 +71,12 @@ func TestSegmentIntersects(t *testing.T) {
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			assert.Equal(t, tc.exp, *tc.s1.intersection(tc.s2))
-			assert.Equal(t, tc.exp, *tc.s2.intersection(tc.s1))
+			got1 := tc.s1.intersection(tc.s2)
+			got2 := tc.s2.intersection(tc.s1)
+			require.NotNil(t, got1)
+			require.NotNil(t, got2)
+			assert.Equal(t, tc.exp, *got1)
+			assert.Equal(t, tc.exp, *got2)
 		})
 	}
 }

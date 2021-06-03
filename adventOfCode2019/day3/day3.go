@@ -47,6 +47,28 @@ type segment struct {
 
 func newSegment(start, end point) segment { return segment{start,end} }
 
-func (s segment) intersection(other segment) *point {
-	return &s.start
+func (seg segment) intersection(other segment) *point {
+	ya := float64(seg.start.y)
+	yb := float64(seg.end.y)
+	yc := float64(other.start.y)
+	yd := float64(other.end.y)
+
+	xa := float64(seg.start.x)
+	xb := float64(seg.end.x)
+	xc := float64(other.start.x)
+	xd := float64(other.end.x)
+
+	mianownik := (xb-xa)*(yd-yc)-(yb-ya)*(xd-xc)
+	if mianownik == 0 {
+		return nil
+	}
+
+	r := ((ya-yc)*(xd-xc)-(xa-xc)*(yd-yc))/mianownik
+	s := ((ya-yc)*(xb-xa)-(xa-xc)*(yb-ya))/mianownik
+	
+	if !(r <= 1 && r >= 1 && s <= 1 && s >= 1) {
+		return nil
+	}
+	ptr := newPoint(int(xa + r*(xb-xa)), int(ya+r*(yb-ya)))
+	return &ptr
 }
