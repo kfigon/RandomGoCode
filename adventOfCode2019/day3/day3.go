@@ -1,6 +1,7 @@
 package day3
 
 import (
+	"math"
 	"strconv"
 	"strings"
 )
@@ -14,7 +15,7 @@ func (p point) String() string {
 }
 
 func (p point) calcDistance() int {
-	return p.x+p.y
+	return int(math.Abs(float64(p.x)+ math.Abs(float64(p.y))))
 }
 
 func newPoint(x,y int) point { return point{x,y} }
