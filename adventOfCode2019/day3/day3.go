@@ -148,5 +148,49 @@ func findMinSteps(in1, in2 string) int {
 	if len(wire1) < 2 || len(wire2) < 2 {
 		return -1
 	}
-	return -1
+
+
+	intersections := findIntersections(wire1,wire2)
+	intersectionRoute := make([]int, len(intersections))
+
+	for j := 0; j < len(intersections); j++ {
+		intersectionPoint := intersections[j]
+		
+		lengthToIntersection := 0
+		for i := 0; i < len(wire1)-1; i++ {
+			start,end := wire1[i],wire1[i+1]
+			seg := newSegment(start,end)
+
+			if seg.isPointWithinSegment(intersectionPoint) {
+				lengthToIntersection += intersectionPoint.calcDistanceFromPoint(start)
+				break
+			} else {
+				lengthToIntersection += start.calcDistanceFromPoint(end)
+			}
+		}
+
+		for i := 0; i < len(wire2)-1; i++ {
+			start,end := wire2[i],wire2[i+1]
+			seg := newSegment(start,end)
+
+			if seg.isPointWithinSegment(intersectionPoint) {
+				lengthToIntersection += intersectionPoint.calcDistanceFromPoint(start)
+				break
+			} else {
+				lengthToIntersection += start.calcDistanceFromPoint(end)
+			}
+		}
+		intersectionRoute[j] = lengthToIntersection
+	}
+	var minIntersectionRoute *int
+	for i := 0; i < len(intersectionRoute); i++ {
+		v := intersectionRoute[i]
+		if minIntersectionRoute == nil || v < *minIntersectionRoute {
+			minIntersectionRoute = &v
+		}
+	}
+	if minIntersectionRoute == nil {
+		return -1
+	}
+	return *minIntersectionRoute
 }

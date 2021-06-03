@@ -234,5 +234,5 @@ func TestIsPointOnTheWire(t *testing.T) {
 func TestPart2_v2(t *testing.T) {
 	w1, w2 := readFile(t)
 	got := findMinSteps(w1,w2)
-	assert.Equal(t, 123, got)
+	assert.Equal(t, 65356, got)
 }
