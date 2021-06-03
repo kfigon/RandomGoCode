@@ -1,7 +1,9 @@
 package day3
 
 import (
+	"strconv"
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,6 +41,33 @@ func TestDistance(t *testing.T) {
 	}
 }
 
+func TestSegmentIntersects(t *testing.T) {
+	testCases := []struct {
+		s segment
+		exp point		
+	}{
+		{newSegment(newPoint(), newPoint()), newPoint()},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := tc.s.intersection()
+			assert.Equal(t, tc.exp, *got)
+		})
+	}
+}
+
+func TestSegmentNotIntersects(t *testing.T) {
+	testCases := []struct {
+		s segment
+	}{
+		{newSegment(newPoint(), newPoint())},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			assert.Nil(t, tc.s.intersection())
+		})
+	}
+}
 func TestTodo(t *testing.T) {
 	assert.Fail(t, "todo")
 }
