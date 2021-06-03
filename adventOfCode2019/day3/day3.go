@@ -149,34 +149,30 @@ func findMinSteps(in1, in2 string) int {
 		return -1
 	}
 
-
-	searchWireForIntersectionRoute := func(wire []point, intersectionPoint point) int {
-		intersectionLength := 0
+	calcLengthToIntersection := func(wire []point, intersectionPoint point) int {
+		distanceToIntersection := 0
 		for i := 0; i < len(wire)-1; i++ {
 			start,end := wire[i],wire[i+1]
-			seg := newSegment(start,end)
 
-			if seg.isPointWithinSegment(intersectionPoint) {
-				intersectionLength += intersectionPoint.calcDistanceFromPoint(start)
-				break
-			} else {
-				intersectionLength += start.calcDistanceFromPoint(end)
+			if newSegment(start,end).isPointWithinSegment(intersectionPoint) {
+				return distanceToIntersection + intersectionPoint.calcDistanceFromPoint(start)
 			}
+			distanceToIntersection += start.calcDistanceFromPoint(end)
 		}
-		return intersectionLength
+		return distanceToIntersection
 	}
 
 	intersections := findIntersections(wire1,wire2)
-	intersectionRoute := make([]int, len(intersections))
+	routeToIntersection := make([]int, len(intersections))
 	
 	for j := 0; j < len(intersections); j++ {
 		intersectionPoint := intersections[j]		
-		intersectionRoute[j] = searchWireForIntersectionRoute(wire1, intersectionPoint) +  searchWireForIntersectionRoute(wire2, intersectionPoint)
+		routeToIntersection[j] = calcLengthToIntersection(wire1, intersectionPoint) +  calcLengthToIntersection(wire2, intersectionPoint)
 	}
 
 	var minIntersectionRoute *int
-	for i := 0; i < len(intersectionRoute); i++ {
-		v := intersectionRoute[i]
+	for i := 0; i < len(routeToIntersection); i++ {
+		v := routeToIntersection[i]
 		if minIntersectionRoute == nil || v < *minIntersectionRoute {
 			minIntersectionRoute = &v
 		}
