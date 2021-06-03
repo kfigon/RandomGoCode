@@ -82,16 +82,9 @@ func (seg segment) intersection(other segment) *point {
 	return &ptr
 }
 
-func findMinDistance(in1, in2 string) int {
+func findIntersections(wire1, wire2 []point) []point {
 	isZeroPoint := func(p point) bool {
 		return p.x == 0 && p.y == 0
-	}
-
-	wire1 := parsePointsToVectors(in1)
-	wire2 := parsePointsToVectors(in2)
-
-	if len(wire1) < 2 || len(wire2) < 2 {
-		return -1
 	}
 
 	intersections := make([]point,0)
@@ -104,6 +97,18 @@ func findMinDistance(in1, in2 string) int {
 			}
 		}
 	}
+	return intersections
+}
+
+func findMinDistance(in1, in2 string) int {
+	wire1 := parsePointsToVectors(in1)
+	wire2 := parsePointsToVectors(in2)
+	if len(wire1) < 2 || len(wire2) < 2 {
+		return -1
+	}
+
+	intersections := findIntersections(wire1,wire2)
+
 	var minIntersection *int
 	for i := 0; i < len(intersections); i++ {
 		v := intersections[i]
@@ -116,4 +121,14 @@ func findMinDistance(in1, in2 string) int {
 		return -1
 	}
 	return *minIntersection
+}
+
+func findMinSteps(in1, in2 string) int {
+	wire1 := parsePointsToVectors(in1)
+	wire2 := parsePointsToVectors(in2)
+
+	if len(wire1) < 2 || len(wire2) < 2 {
+		return -1
+	}
+	return -1
 }

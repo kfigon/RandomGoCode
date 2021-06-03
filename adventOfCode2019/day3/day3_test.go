@@ -170,6 +170,25 @@ func readFile(t *testing.T) (string, string) {
 	return lines[0],lines[1]
 }
 
-func TestPart2_todo(t *testing.T) {
-	t.Fail()
+func TestPart2(t *testing.T) {
+	testCases := []struct {
+		w1 string
+		w2 string
+		exp int
+	}{
+		{"R8,U5,L5,D3", "U7,R6,D4,L4", 30},
+		{"R75,D30,R83,U83,L12,D49,R71,U7,L72","U62,R66,U55,R34,D71,R55,D58,R83",610},
+		{"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51","U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",410},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			assert.Equal(t, tc.exp, findMinSteps(tc.w1, tc.w2))
+		})
+	}
+}
+
+func TestPart2_v2(t *testing.T) {
+	w1, w2 := readFile(t)
+	got := findMinSteps(w1,w2)
+	assert.Equal(t, 123, got)
 }
