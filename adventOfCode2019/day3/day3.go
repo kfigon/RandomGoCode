@@ -21,6 +21,10 @@ func newPoint(x,y int) point { return point{x,y} }
 
 func parsePointsToVectors(in string) []point {
 	splitted := strings.Split(in, ",")
+	if len(splitted) < 2 {
+		return []point{}
+	}
+
 	out := make([]point, len(splitted)+1)
 	out[0] = newPoint(0,0)
 	for i := 0; i < len(splitted); i++ {
@@ -77,4 +81,40 @@ func (seg segment) intersection(other segment) *point {
 	}
 	ptr := newPoint(int(xa + r*(xb-xa)), int(ya+r*(yb-ya)))
 	return &ptr
+}
+
+func findMinDistance(in1, in2 string) int {
+	isZeroPoint := func(p point) bool {
+		return p.x == 0 && p.y == 0
+	}
+
+	wire1 := parsePointsToVectors(in1)
+	wire2 := parsePointsToVectors(in2)
+
+	if len(wire1) < 2 || len(wire2) < 2 {
+		return -1
+	}
+
+	intersections := make([]point,0)
+	for i := 0; i < len(wire1)-1; i++ {
+		for j := 0; j < len(wire2)-1; j++ {
+			seg1 := newSegment(wire1[i], wire1[i+1])
+			seg2 := newSegment(wire2[j], wire2[j+1])
+			if intersection := seg1.intersection(seg2); intersection != nil && !isZeroPoint(*intersection) {
+				intersections = append(intersections, *intersection)
+			}
+		}
+	}
+	var minIntersection *int
+	for i := 0; i < len(intersections); i++ {
+		v := intersections[i]
+		candidate := v.calcDistance()
+		if minIntersection == nil || candidate < *minIntersection {
+			minIntersection = &candidate
+		}
+	}
+	if minIntersection == nil {
+		return -1
+	}
+	return *minIntersection
 }
