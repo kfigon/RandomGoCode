@@ -15,7 +15,11 @@ func (p point) String() string {
 }
 
 func (p point) calcDistance() int {
-	return int(math.Abs(float64(p.x)) + math.Abs(float64(p.y)))
+	return p.calcDistanceFromPoint(newPoint(0,0))
+}
+
+func (p point) calcDistanceFromPoint(other point) int {
+	return int(math.Abs(float64(p.x-other.x)) + math.Abs(float64(p.y-other.y)))
 }
 
 func newPoint(x,y int) point { return point{x,y} }
@@ -80,6 +84,20 @@ func (seg segment) intersection(other segment) *point {
 	}
 	ptr := newPoint(int(xa + r*(xb-xa)), int(ya+r*(yb-ya)))
 	return &ptr
+}
+
+func (s segment) isPointWithinSegment(p point) bool {
+	horizontalLine := s.end.y == s.start.y	
+	verticalLine := s.end.x == s.start.x
+	
+	pointOnTheHorizontalLine := p.y == s.end.y
+	pointOnTheVerticalLine := p.x == s.end.x
+
+	withinHorizontalRange := (p.x >= s.start.x && p.x <= s.end.x) || (p.x >= s.end.x && p.x <= s.start.x)
+	withinVerticalRange := (p.y >= s.start.y && p.y <= s.end.y) || (p.y >= s.end.y && p.y <= s.start.y)
+
+	return (horizontalLine && pointOnTheHorizontalLine && withinHorizontalRange) || 
+			(verticalLine && pointOnTheVerticalLine && withinVerticalRange)	
 }
 
 func findIntersections(wire1, wire2 []point) []point {

@@ -187,6 +187,50 @@ func TestPart2(t *testing.T) {
 	}
 }
 
+func TestIsPointOnTheWire(t *testing.T) {
+	testCases := []struct {
+		exp bool
+		s segment
+		p point
+	}{
+		{true, newSegment(newPoint(0,5),newPoint(10,5)), newPoint(0,5)},
+		{true, newSegment(newPoint(0,5),newPoint(10,5)), newPoint(10,5)},
+		{true, newSegment(newPoint(0,5),newPoint(10,5)), newPoint(1,5)},
+
+		{true, newSegment(newPoint(10,5),newPoint(0,5)), newPoint(0,5)},
+		{true, newSegment(newPoint(10,5),newPoint(0,5)), newPoint(10,5)},
+		{true, newSegment(newPoint(10,5),newPoint(0,5)), newPoint(1,5)},
+		
+		{true, newSegment(newPoint(5,10),newPoint(5,0)), newPoint(5,1)},
+		{true, newSegment(newPoint(5,10),newPoint(5,0)), newPoint(5,0)},
+		{true, newSegment(newPoint(5,10),newPoint(5,0)), newPoint(5,10)},
+
+		{true, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(5,1)},
+		{true, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(5,0)},
+		{true, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(5,10)},
+		
+		{false, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(4,1)},
+		{false, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(4,0)},
+		{false, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(4,10)},
+		{false, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(5,11)},
+		{false, newSegment(newPoint(5,0),newPoint(5,10)), newPoint(5,-1)},
+
+		{false, newSegment(newPoint(5,10), newPoint(5,0)), newPoint(4,1)},
+		{false, newSegment(newPoint(5,10), newPoint(5,0)), newPoint(4,0)},
+		{false, newSegment(newPoint(5,10), newPoint(5,0)), newPoint(4,10)},
+		{false, newSegment(newPoint(5,10), newPoint(5,0)), newPoint(5,11)},
+		{false, newSegment(newPoint(5,10), newPoint(5,0)), newPoint(5,-1)},
+		
+		{false, newSegment(newPoint(1,5), newPoint(1,10)), newPoint(2,3)},
+		{false, newSegment(newPoint(1,10), newPoint(1,5)), newPoint(2,3)},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			assert.Equal(t, tc.exp, tc.s.isPointWithinSegment(tc.p))
+		})
+	}
+}
+
 func TestPart2_v2(t *testing.T) {
 	w1, w2 := readFile(t)
 	got := findMinSteps(w1,w2)
