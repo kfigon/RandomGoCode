@@ -47,6 +47,7 @@ type segment struct {
 
 func newSegment(start, end point) segment { return segment{start,end} }
 
+// https://www.c-program.com/c-g-a-faq1.html#q8
 func (seg segment) intersection(other segment) *point {
 	ya := float64(seg.start.y)
 	yb := float64(seg.end.y)
@@ -58,15 +59,20 @@ func (seg segment) intersection(other segment) *point {
 	xc := float64(other.start.x)
 	xd := float64(other.end.x)
 
-	mianownik := (xb-xa)*(yd-yc)-(yb-ya)*(xd-xc)
-	if mianownik == 0 {
+	denominator := (xb-xa)*(yd-yc)-(yb-ya)*(xd-xc)
+	nominator1 := (ya-yc)*(xd-xc)-(xa-xc)*(yd-yc)
+	nominator2 := (ya-yc)*(xb-xa)-(xa-xc)*(yb-ya)
+
+	if nominator1 == 0 {
+		return &seg.start
+	} else if denominator == 0 {
 		return nil
 	}
 
-	r := ((ya-yc)*(xd-xc)-(xa-xc)*(yd-yc))/mianownik
-	s := ((ya-yc)*(xb-xa)-(xa-xc)*(yb-ya))/mianownik
+	r := nominator1/denominator
+	s := nominator2/denominator
 	
-	if !(r <= 1 && r >= 1 && s <= 1 && s >= 1) {
+	if !(r <= 1 && r >= 0 && s <= 1 && s >= 0) {
 		return nil
 	}
 	ptr := newPoint(int(xa + r*(xb-xa)), int(ya+r*(yb-ya)))
