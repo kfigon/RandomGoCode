@@ -160,8 +160,7 @@ func TestPart1(t *testing.T) {
 func TestPart1_v2(t *testing.T) {
 	w1, w2 := readFile(t)
 	got := findMinDistance(w1,w2)
-	assert.NotEqual(t, 2, got)
-	assert.Equal(t, 15, got)
+	assert.Equal(t, 998, got)
 }
 
 func readFile(t *testing.T) (string, string) {
