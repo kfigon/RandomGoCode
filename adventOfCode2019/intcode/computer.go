@@ -4,13 +4,14 @@ import "math"
 
 type Computer struct {
 	instructions []int
-	userInput    int
+	userInput    *inputHandler
 	userOutput   int
 }
 
 func NewComputer(instructions []int) *Computer {
 	return &Computer{
 		instructions: instructions,
+		userInput: newInputHandler(),
 	}
 }
 
@@ -74,7 +75,7 @@ func (c *Computer) handleAdd(idx int) int {
 
 func (c *Computer) handleInput(idx int) int {
 	param0 := c.instructions[idx+1]
-	c.instructions[param0] = c.userInput
+	c.instructions[param0] = c.userInput.next()
 	return idx + 2
 }
 
@@ -142,7 +143,7 @@ func (c *Computer) paramValue(paramMode int, value int) int {
 }
 
 func (c *Computer) SetUserInput(val int)  {
-	c.userInput = val
+	c.userInput.add(val)
 }
 
 func (c *Computer) GetOutput() int {
@@ -158,4 +159,29 @@ func (op opcode) extractOpcode() int {
 func (op opcode) modeForParam(paramIdx int) int {
 	paramFlags := int(op) / 100
 	return (paramFlags / int(math.Pow10(paramIdx))) % 10
+}
+
+type inputHandler struct {
+	inputs []int
+	counter int
+}
+
+func newInputHandler() *inputHandler {
+	return &inputHandler{
+		inputs: make([]int, 0),
+		counter: 0,
+	}
+}
+
+func (in *inputHandler) next() int {
+	if len(in.inputs) == 0 {
+		return 0
+	}
+	out := in.inputs[in.counter]
+	in.counter = (in.counter+1) % len(in.inputs)
+	return out
+}
+
+func (in *inputHandler) add(val int) {
+	in.inputs = append(in.inputs, val)
 }

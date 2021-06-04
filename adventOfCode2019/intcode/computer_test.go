@@ -73,6 +73,34 @@ func TestHandleInput(t *testing.T) {
 	require.NotNil(t, c.userOutput)
 
 	assert.Equal(t, 0, c.userOutput)
-	assert.Equal(t, 15, c.userInput)
+	assert.Equal(t, 15, c.userInput.next())
 	assert.Equal(t, []int{15,0,4,1,99}, c.instructions)
+}
+
+func TestInputWhenEmpty(t *testing.T) {
+	in := newInputHandler()
+	assert.Equal(t, 0, in.next())
+	assert.Equal(t, 0, in.next())
+	assert.Equal(t, 0, in.next())
+	assert.Equal(t, 0, in.next())
+}
+
+func TestInputWhenSingle(t *testing.T) {
+	in := newInputHandler()
+	in.add(5)
+	assert.Equal(t, 5, in.next())
+	assert.Equal(t, 5, in.next())
+	assert.Equal(t, 5, in.next())
+	assert.Equal(t, 5, in.next())
+}
+
+func TestInputWhenMultiple(t *testing.T) {
+	in := newInputHandler()
+	in.add(5)
+	in.add(1)
+	assert.Equal(t, 5, in.next())
+	assert.Equal(t, 1, in.next())
+	assert.Equal(t, 5, in.next())
+	assert.Equal(t, 1, in.next())
+	assert.Equal(t, 5, in.next())
 }
