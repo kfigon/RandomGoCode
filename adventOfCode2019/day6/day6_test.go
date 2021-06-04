@@ -20,7 +20,18 @@ func TestOrbits(t *testing.T) {
 		{"F",5},
 		{"E",4},
 	}
-	testInput := `COM)B
+	testInput := testData()
+
+	for _, tc := range testCases {
+		t.Run(tc.node, func(t *testing.T) {
+			got := buildOrbits(testInput,"\n").calcOrbits(tc.node)
+			assert.Equal(t, tc.exp, got)
+		})
+	}
+}
+
+func testData() string {
+	return `COM)B
 B)C
 C)D
 D)E
@@ -31,13 +42,12 @@ D)I
 E)J
 J)K
 K)L`
+}
 
-	for _, tc := range testCases {
-		t.Run(tc.node, func(t *testing.T) {
-			got := buildOrbits(testInput).calcOrbits(tc.node)
-			assert.Equal(t, tc.exp, got)
-		})
-	}
+func TestAllOrbits(t *testing.T) {
+	orbits := buildOrbits(testData(), "\n")
+	got := orbits.calcOrbits("")
+	assert.Equal(t, 42, got)
 }
 
 type graphNode struct {
@@ -57,12 +67,12 @@ type orbitGraph struct {
 	m map[string]*graphNode
 }
 
-func buildOrbits(input string) *orbitGraph {
+func buildOrbits(input string, lineSep string) *orbitGraph {
 	o := &orbitGraph{
 		m: map[string]*graphNode{},
 	}
 		
-	vals := strings.Split(input, "\n")
+	vals := strings.Split(input, lineSep)
 	for _, v := range vals {
 		splitted := strings.Split(v, ")")
 		node := splitted[0]
@@ -100,9 +110,12 @@ func (o *orbitGraph) addParent(node string, parent string) {
 }
 
 func (o *orbitGraph) calcOrbits(startingNode string) int {
-	// orbit, ok := o.m[startingNode]
-	// if !ok {
-	// 	return 0
-	// }
-	return -1
+	orbit, ok := o.m[startingNode]
+	if !ok {
+		return 0
+	} else if orbit.parent == "" {
+		return 0
+	}
+
+	return 1 + o.calcOrbits(orbit.parent)
 }
