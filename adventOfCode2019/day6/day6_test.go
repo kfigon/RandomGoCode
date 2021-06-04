@@ -45,21 +45,12 @@ type graphNode struct {
 	children []string
 }
 
-func (g *graphNode) addChildrenIfPresent(children string) {
-	if children == "" {
-		return
-	}
+func (g *graphNode) addChil(children string) {
 	if g.children == nil {
 		g.children = make([]string, 0)
 	}
-	
-	g.children = append(g.children, children)
-}
 
-func (g *graphNode) addParentIfPresent(parent string) {
-	if parent != "" {
-		g.parent = parent
-	}
+	g.children = append(g.children, children)
 }
 
 type orbitGraph struct {
@@ -78,7 +69,7 @@ func buildOrbits(input string) *orbitGraph {
 		orbittingObject := splitted[1]
 		
 		o.addNode(node,orbittingObject)
-		o.addChild(orbittingObject, node)
+		o.addParent(orbittingObject, node)
 	}
 
 	return o
@@ -88,22 +79,22 @@ func (o *orbitGraph) addNode(node string, children string) {
 	val, ok := o.m[node]
 	if !ok {
 		g := &graphNode{}
-		g.addChildrenIfPresent(children)
+		g.addChil(children)
 		o.m[node] = g
 	} else {
-		val.addChildrenIfPresent(children)
+		val.addChil(children)
 		o.m[node] = val
 	}
 }
 
-func (o *orbitGraph) addChild(node string, parent string) {
+func (o *orbitGraph) addParent(node string, parent string) {
 	val, ok := o.m[node]
 	if !ok {
 		g := &graphNode{}
-		g.addParentIfPresent(parent)
+		g.parent = parent
 		o.m[node] = g
 	} else {
-		val.addParentIfPresent(parent)
+		val.parent = parent
 		o.m[node] = val
 	}
 }
