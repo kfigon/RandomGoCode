@@ -75,5 +75,4 @@ func TestHandleInput(t *testing.T) {
 	assert.Equal(t, 0, c.userOutput)
 	assert.Equal(t, 15, c.userInput)
 	assert.Equal(t, []int{15,0,4,1,99}, c.instructions)
-
 }

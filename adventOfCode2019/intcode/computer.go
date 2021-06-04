@@ -19,6 +19,10 @@ const (
 	OP_MULT      = 2
 	OP_INPUT     = 3
 	OP_OUTPUT    = 4
+	OP_JMP_T = 5
+	OP_JMP_F = 6
+	OP_LT = 7
+	OP_EQ = 8
 	OP_TERMINATE = 99
 
 	IDX_TERMINATE = -1
@@ -46,6 +50,14 @@ func (c *Computer) handleCommand(idx int) int {
 		return c.handleInput(idx)
 	case OP_OUTPUT:
 		return c.handleOutput(idx)
+	case OP_JMP_T:
+		return c.handleJumpTrue(idx)
+	case OP_JMP_F:
+		return c.handleJumpFalse(idx)
+	case OP_LT:
+		return c.handleLessThan(idx)
+	case OP_EQ:
+		return c.handleEquals(idx)
 	case OP_TERMINATE:
 		return IDX_TERMINATE
 	}
@@ -79,7 +91,46 @@ func (c *Computer) handleMult(idx int) int {
 	c.instructions[param2] = c.paramValue(op.modeForParam(0),param0) * c.paramValue(op.modeForParam(1),param1)
 	return idx + 4
 }
-
+func (c *Computer) handleJumpTrue(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
+	if c.paramValue(op.modeForParam(0), param0) != 0 {
+		return c.paramValue(op.modeForParam(1), param1)
+	}
+	return idx + 3
+}
+func (c *Computer) handleJumpFalse(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
+	if c.paramValue(op.modeForParam(0), param0) == 0 {
+		return c.paramValue(op.modeForParam(1), param1)
+	}
+	return idx + 3
+}
+func (c *Computer) handleLessThan(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
+	v0 := c.paramValue(op.modeForParam(0), param0)
+	v1 := c.paramValue(op.modeForParam(1), param1)
+	if v0 < v1 {
+		c.instructions[param2] = 1
+	} else {
+		c.instructions[param2] = 0
+	}
+	return idx + 4
+}
+func (c *Computer) handleEquals(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
+	v0 := c.paramValue(op.modeForParam(0), param0)
+	v1 := c.paramValue(op.modeForParam(1), param1)
+	if v0 == v1 {
+		c.instructions[param2] = 1
+	} else {
+		c.instructions[param2] = 0
+	}
+	return idx + 4
+}
 func (c *Computer) paramValue(paramMode int, value int) int {
 	if paramMode == MODE_POSITION {
 		return c.instructions[value]

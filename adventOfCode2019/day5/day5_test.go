@@ -22,6 +22,15 @@ func TestPart1(t *testing.T) {
 	assert.Equal(t, 9431221, c.GetOutput())
 }
 
+func TestPart2(t *testing.T) {
+	data := readFile(t)
+	c := intcode.NewComputer(data)
+	c.SetUserInput(5)
+	c.Calc()
+
+	assert.Equal(t, 1409363, c.GetOutput())
+}
+
 func readFile(t *testing.T) []int {
 	file, err := os.Open("data.txt")
 	require.NoError(t, err)
