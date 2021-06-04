@@ -48,7 +48,8 @@ K)L`
 }
 
 func testData2() string {
-	return testData() + `K)YOU
+	return testData() + `
+K)YOU
 I)SAN`
 }
 
@@ -81,10 +82,9 @@ func TestPart2Example(t *testing.T) {
 }
 
 func TestPart2File(t *testing.T) {
-	t.Fatal()
 	orbits := buildOrbits(readFile(t), "\r\n")
 	got := orbits.findPath("YOU", "SAN")
-	assert.Equal(t, 4, got)
+	assert.Equal(t, 382, got)
 }
 
 type graphNode struct {
@@ -92,7 +92,7 @@ type graphNode struct {
 	children []string
 }
 
-func (g *graphNode) addChil(children string) {
+func (g *graphNode) addChild(children string) {
 	if g.children == nil {
 		g.children = make([]string, 0)
 	}
@@ -125,10 +125,10 @@ func (o *orbitGraph) addNode(node string, children string) {
 	val, ok := o.m[node]
 	if !ok {
 		g := &graphNode{}
-		g.addChil(children)
+		g.addChild(children)
 		o.m[node] = g
 	} else {
-		val.addChil(children)
+		val.addChild(children)
 		o.m[node] = val
 	}
 }
@@ -172,5 +172,36 @@ func (o *orbitGraph) calcAllOrbits() int {
 }
 
 func (o *orbitGraph) findPath(start, end string) int {
-	return -1
+	startingNode := o.m[start].parent
+	targetNode := o.m[end].parent
+
+	buildHistory := func(node string) map[string]int {
+		parentsOfStartingNode := map[string]int{}
+		steps := 0
+		for node != "" {
+			parentsOfStartingNode[node]=steps
+			steps++
+			node = o.m[node].parent
+		}
+		return parentsOfStartingNode
+	}
+	fromStart := buildHistory(startingNode)
+	fromEnd := buildHistory(targetNode)
+
+	var minNumberOfSteps *int
+	for key,stepsFromStart := range fromStart {
+		stepsFromEnd, ok := fromEnd[key]
+		if !ok {
+			continue
+		}
+
+		steps := stepsFromStart + stepsFromEnd
+		if minNumberOfSteps == nil || steps < *minNumberOfSteps {
+			minNumberOfSteps = &steps
+		}
+	}
+	if minNumberOfSteps == nil {
+		return -1
+	}
+	return *minNumberOfSteps
 }
