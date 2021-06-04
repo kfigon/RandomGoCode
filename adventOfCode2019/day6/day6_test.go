@@ -47,6 +47,11 @@ J)K
 K)L`
 }
 
+func testData2() string {
+	return testData() + `K)YOU
+I)SAN`
+}
+
 func TestAllOrbits(t *testing.T) {
 	orbits := buildOrbits(testData(), "\n")
 	got := orbits.calcAllOrbits()
@@ -67,6 +72,19 @@ func readFile(t *testing.T) string {
 	content, err := io.ReadAll(file)
 	require.NoError(t,err)
 	return string(content)
+}
+
+func TestPart2Example(t *testing.T) {
+	orbits := buildOrbits(testData2(), "\n")
+	got := orbits.findPath("YOU", "SAN")
+	assert.Equal(t, 4, got)
+}
+
+func TestPart2File(t *testing.T) {
+	t.Fatal()
+	orbits := buildOrbits(readFile(t), "\r\n")
+	got := orbits.findPath("YOU", "SAN")
+	assert.Equal(t, 4, got)
 }
 
 type graphNode struct {
@@ -151,4 +169,8 @@ func (o *orbitGraph) calcAllOrbits() int {
 		sum += o.calcOrbits(key)
 	}
 	return sum
+}
+
+func (o *orbitGraph) findPath(start, end string) int {
+	return -1
 }
