@@ -1,10 +1,13 @@
 package day6
 
 import (
+	"io"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 
@@ -46,8 +49,24 @@ K)L`
 
 func TestAllOrbits(t *testing.T) {
 	orbits := buildOrbits(testData(), "\n")
-	got := orbits.calcOrbits("")
+	got := orbits.calcAllOrbits()
 	assert.Equal(t, 42, got)
+}
+
+func TestAllOrbitsPart1(t *testing.T) {
+	orbits := buildOrbits(readFile(t), "\r\n")
+	got := orbits.calcAllOrbits()
+	assert.Equal(t, 261306, got)
+}
+
+func readFile(t *testing.T) string {
+	file, err := os.Open("data.txt")
+	require.NoError(t,err)
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	require.NoError(t,err)
+	return string(content)
 }
 
 type graphNode struct {
@@ -59,7 +78,6 @@ func (g *graphNode) addChil(children string) {
 	if g.children == nil {
 		g.children = make([]string, 0)
 	}
-
 	g.children = append(g.children, children)
 }
 
@@ -118,4 +136,19 @@ func (o *orbitGraph) calcOrbits(startingNode string) int {
 	}
 
 	return 1 + o.calcOrbits(orbit.parent)
+}
+
+func (o *orbitGraph) calcAllOrbits() int {
+	visitedNodes := make(map[string]struct{})
+
+	sum := 0
+	for key := range o.m {
+		if _, visited := visitedNodes[key]; visited{
+			continue
+		}
+		visitedNodes[key] = struct{}{}
+
+		sum += o.calcOrbits(key)
+	}
+	return sum
 }
