@@ -3,14 +3,14 @@ package day5
 import (
 	"aoc2019/intcode"
 	"strconv"
-	// "io"
-	// "os"
-	// "strconv"
-	// "strings"
+
+	"io"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	// "github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/require"
 )
 
 // https://adventofcode.com/2019/day/7
@@ -31,6 +31,34 @@ func TestPart1Examples(t *testing.T) {
 	}
 }
 
+func TestPart1(t *testing.T) {
+	file := readFile(t)
+	assert.Equal(t, 844468, doPart1(file))
+}
+
+func TestPart2(t *testing.T) {
+	t.Fail() // todo
+}
+
+func readFile(t *testing.T) []int{
+	file,err := os.Open("data.txt")
+	require.NoError(t, err)
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	require.NoError(t, err)
+	data := string(content)
+	splitted := strings.Split(data, ",")
+	out := make([]int,len(splitted))
+	
+	for i := 0; i < len(splitted); i++ {
+		v,err := strconv.Atoi(splitted[i])	
+		require.NoError(t,err)
+		out[i] = v
+	}
+	return out
+}
+
 func doPart1(code []int) int {
 	newCode := func(in []int) []int {
 		out := make([]int,len(in))
@@ -40,13 +68,20 @@ func doPart1(code []int) int {
 		return out
 	}
 
-	var maxSignal *int
+	var maxSignal int
 	for a := 0; a < 5; a++ {
 		for b := 0; b < 5; b++ {
 			for c := 0; c < 5; c++ {
 				for d := 0; d < 5; d++ {
 					for e := 0; e < 5; e++ {
 	
+						if a==b || a==c || a==d || a==e || 
+							b==c || b==d || b==e ||
+							c==d || c==e || 
+							d == e {
+							continue
+						}
+
 						comp1:=intcode.NewComputer(newCode(code))
 						comp2:=intcode.NewComputer(newCode(code))
 						comp3:=intcode.NewComputer(newCode(code))
@@ -72,20 +107,17 @@ func doPart1(code []int) int {
 						comp5.SetUserInput(e)
 						comp5.SetUserInput(comp4.GetOutput())
 						comp5.Calc()
-						
+
 						outSignal := comp5.GetOutput()
-						if maxSignal == nil || outSignal > *maxSignal{
-							maxSignal = &outSignal
+						if outSignal > maxSignal {
+							maxSignal = outSignal
 						}
 					}
 				}
 			}
 		}
 	}
-	if maxSignal == nil {
-		return -1
-	}
-	return *maxSignal
+	return maxSignal
 }
 
 
