@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"aoc2019/intcode"
 )
 
 func TestCalc(t *testing.T) {
@@ -24,7 +25,7 @@ func TestCalc(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v", tc.in), func(t *testing.T) {
-			got := computer(tc.in).calc()
+			got := intcode.Computer(tc.in).Calc()
 			assert.Equal(t, tc.exp, got)
 		})
 	}
@@ -52,7 +53,7 @@ func TestPart1(t *testing.T) {
 	data := readFile()
 	data[1] = 12
 	data[2] = 2
-	out := computer(data).calc()
+	out := intcode.Computer(data).Calc()
 
 	assert.Equal(t, 5866714, out[0])
 }
@@ -73,52 +74,11 @@ func findPart2Result() int {
 
 			data[1] = noun
 			data[2] = verb
-			out := computer(data).calc()
+			out := intcode.Computer(data).Calc()
 			if out[0] == valueToFind {
 				return 100*out[1]+out[2]
 			}
 		}
 	}
 	return -1
-}
-
-type computer []int
-func (c computer) calc() []int {
-	var i int
-	for i < len(c) && i != -1 {
-		i = c.handleCommand(i)
-	}
-	return c
-}
-
-const (
-	ADD = 1
-	MULT = 2
-	TERMINATE = 99
-)
-func (c computer) handleCommand(idx int) int {
-	val := c[idx]
-	switch val {
-	case ADD:	return c.handleAdd(idx)
-	case MULT:	return c.handleMult(idx)
-	case TERMINATE: return -1
-	}
-	// should not happen
-	return -1
-}
-
-func (c computer) getIdxs(idx int) (int,int,int) {
-	return c[idx+1],c[idx+2],c[idx+3]
-}
-
-func (c computer) handleAdd(idx int) int {
-	idxA,idxB,idxC := c.getIdxs(idx)
-	c[idxC] = c[idxA] + c[idxB]
-	return idx+4
-}
-
-func (c computer) handleMult(idx int) int {
-	idxA,idxB,idxC := c.getIdxs(idx)
-	c[idxC] = c[idxA] * c[idxB]
-	return idx+4
 }
