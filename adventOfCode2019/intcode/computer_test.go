@@ -2,6 +2,7 @@ package intcode
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,6 +23,26 @@ func TestCalc(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v", tc.in), func(t *testing.T) {
 			got := NewComputer(tc.in).Calc()
+			assert.Equal(t, tc.exp, got)
+		})
+	}
+}
+
+func TestOpcodeExtraction(t *testing.T) {
+	testCases := []struct {
+		val int
+		exp int		
+	}{
+		{1002, 2},
+		{2, 2},
+		{1112, 12},
+		{1199, 99},
+		{99, 99},
+	}
+	for _, tc := range testCases {
+		t.Run(strconv.Itoa(tc.val), func(t *testing.T) {
+			c := NewComputer(nil)
+			got := c.extractOpcode(tc.val)
 			assert.Equal(t, tc.exp, got)
 		})
 	}

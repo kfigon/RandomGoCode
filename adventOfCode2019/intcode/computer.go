@@ -2,20 +2,14 @@ package intcode
 
 type Computer struct {
 	instructions []int
+	userInput *int
+	userOutput *int
 }
 
 func NewComputer(instructions []int) *Computer {
 	return &Computer{
 		instructions: instructions,
 	}
-}
-
-func (c *Computer) Calc() []int {
-	var i int
-	for i < len(c.instructions) && i != IDX_TERMINATE {
-		i = c.handleCommand(i)
-	}
-	return c.instructions
 }
 
 const (
@@ -30,9 +24,18 @@ const (
 	MODE_POSITION = 0
 	MODE_IMMEDIATE = 1
 )
+
+func (c *Computer) Calc() []int {
+	var i int
+	for i < len(c.instructions) && i != IDX_TERMINATE {
+		i = c.handleCommand(i)
+	}
+	return c.instructions
+}
+
 func (c *Computer) handleCommand(idx int) int {
-	val := c.instructions[idx]
-	switch val {
+	opcode := c.extractOpcode(c.instructions[idx])
+	switch opcode {
 	case OP_ADD:	return c.handleAdd(idx)
 	case OP_MULT:	return c.handleMult(idx)
 	case OP_TERMINATE: return IDX_TERMINATE
@@ -55,4 +58,8 @@ func (c *Computer) handleMult(idx int) int {
 	idxA,idxB,idxC := c.getIdxs(idx)
 	c.instructions[idxC] = c.instructions[idxA] * c.instructions[idxB]
 	return idx+4
+}
+
+func (c *Computer) extractOpcode(val int) int {
+	return val % 100
 }
