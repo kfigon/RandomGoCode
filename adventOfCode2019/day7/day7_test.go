@@ -39,6 +39,7 @@ func doPart1(code []int) int {
 		}
 		return out
 	}
+
 	var maxSignal *int
 	for a := 0; a < 5; a++ {
 		for b := 0; b < 5; b++ {
@@ -54,18 +55,23 @@ func doPart1(code []int) int {
 				
 						comp1.SetUserInput(a)
 						comp1.SetUserInput(0)
-						
+						comp1.Calc()		
+
 						comp2.SetUserInput(b)
 						comp2.SetUserInput(comp1.GetOutput())
-						
+						comp2.Calc()
+
 						comp3.SetUserInput(c)
 						comp3.SetUserInput(comp2.GetOutput())
-						
+						comp3.Calc()
+
 						comp4.SetUserInput(d)
 						comp4.SetUserInput(comp3.GetOutput())
-						
+						comp4.Calc()
+
 						comp5.SetUserInput(e)
 						comp5.SetUserInput(comp4.GetOutput())
+						comp5.Calc()
 						
 						outSignal := comp5.GetOutput()
 						if maxSignal == nil || outSignal > *maxSignal{
