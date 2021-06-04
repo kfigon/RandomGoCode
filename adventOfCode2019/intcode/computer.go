@@ -4,8 +4,8 @@ import "math"
 
 type Computer struct {
 	instructions []int
-	userInput    *int
-	userOutput   *int
+	userInput    int
+	userOutput   int
 }
 
 func NewComputer(instructions []int) *Computer {
@@ -42,6 +42,10 @@ func (c *Computer) handleCommand(idx int) int {
 		return c.handleAdd(idx)
 	case OP_MULT:
 		return c.handleMult(idx)
+	case OP_INPUT:
+		return c.handleInput(idx)
+	case OP_OUTPUT:
+		return c.handleOutput(idx)
 	case OP_TERMINATE:
 		return IDX_TERMINATE
 	}
@@ -54,6 +58,19 @@ func (c *Computer) handleAdd(idx int) int {
 	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2], c.instructions[idx+3]
 	c.instructions[param2] = c.paramValue(op.modeForParam(0),param0) + c.paramValue(op.modeForParam(1),param1)
 	return idx + 4
+}
+
+func (c *Computer) handleInput(idx int) int {
+	param0 := c.instructions[idx+1]
+	c.instructions[param0] = c.userInput
+	return idx + 2
+}
+
+func (c *Computer) handleOutput(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0 := c.instructions[idx+1]
+	c.userOutput = c.paramValue(op.modeForParam(0),param0)
+	return idx + 2
 }
 
 func (c *Computer) handleMult(idx int) int {
@@ -71,6 +88,10 @@ func (c *Computer) paramValue(paramMode int, value int) int {
 	}
 	// should never happen
 	return -1
+}
+
+func (c *Computer) setUserInput(val int)  {
+	c.userInput = val
 }
 
 type opcode int

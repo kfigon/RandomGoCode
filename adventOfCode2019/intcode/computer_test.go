@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCalc(t *testing.T) {
@@ -60,4 +61,19 @@ func TestModeExtraction(t *testing.T) {
 	assert.Equal(t, 0, op.modeForParam(5))
 	assert.Equal(t, 0, op.modeForParam(6))
 	assert.Equal(t, 0, op.modeForParam(7))
+}
+
+func TestHandleInput(t *testing.T) {
+	in := []int{3,0,4,1,99}
+	c := NewComputer(in)
+	c.setUserInput(15)
+	c.Calc()
+	
+	require.NotNil(t, c.userInput)
+	require.NotNil(t, c.userOutput)
+
+	assert.Equal(t, 0, c.userOutput)
+	assert.Equal(t, 15, c.userInput)
+	assert.Equal(t, []int{15,0,4,1,99}, c.instructions)
+
 }
