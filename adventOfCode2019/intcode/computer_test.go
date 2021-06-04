@@ -66,7 +66,7 @@ func TestModeExtraction(t *testing.T) {
 func TestHandleInput(t *testing.T) {
 	in := []int{3,0,4,1,99}
 	c := NewComputer(in)
-	c.setUserInput(15)
+	c.SetUserInput(15)
 	c.Calc()
 	
 	require.NotNil(t, c.userInput)

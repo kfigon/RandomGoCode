@@ -90,8 +90,12 @@ func (c *Computer) paramValue(paramMode int, value int) int {
 	return -1
 }
 
-func (c *Computer) setUserInput(val int)  {
+func (c *Computer) SetUserInput(val int)  {
 	c.userInput = val
+}
+
+func (c *Computer) GetOutput() int {
+	return c.userOutput
 }
 
 type opcode int
