@@ -159,6 +159,10 @@ func (c *Computer) SetUserInput(val int)  {
 	c.userInput.add(val)
 }
 
+func (c *Computer) ClearUserInput() {
+	c.userInput = newInputHandler()
+}
+
 func (c *Computer) GetOutput() int {
 	return c.userOutput
 }
