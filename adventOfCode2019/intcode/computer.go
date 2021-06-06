@@ -40,12 +40,13 @@ func (c *Computer) Calc() []int {
 	return c.instructions
 }
 
-func (c *Computer) CalcTilInput() bool {
+func (c *Computer) CalcTilOutput() bool {
+
 	for c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE {
-		lastOpcode := opcode(c.instructions[c.instructionCounter])
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 		
-		if lastOpcode.extractOpcode() == OP_INPUT {
+		if c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE &&
+			opcode(c.instructions[c.instructionCounter]).extractOpcode() == OP_INPUT {
 			break
 		}
 	}
