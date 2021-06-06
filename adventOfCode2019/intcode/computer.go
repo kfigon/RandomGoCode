@@ -6,6 +6,7 @@ type Computer struct {
 	instructions []int
 	userInput    *inputHandler
 	userOutput   int
+	instructionCounter int
 }
 
 func NewComputer(instructions []int) *Computer {
@@ -33,11 +34,22 @@ const (
 )
 
 func (c *Computer) Calc() []int {
-	var i int
-	for i < len(c.instructions) && i != IDX_TERMINATE {
-		i = c.handleCommand(i)
+	for c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE {
+		c.instructionCounter = c.handleCommand(c.instructionCounter)
 	}
 	return c.instructions
+}
+
+func (c *Computer) CalcTilInput() bool {
+	for c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE {
+		lastOpcode := opcode(c.instructions[c.instructionCounter])
+		c.instructionCounter = c.handleCommand(c.instructionCounter)
+		
+		if lastOpcode.extractOpcode() == OP_INPUT {
+			break
+		}
+	}
+	return c.instructionCounter == IDX_TERMINATE
 }
 
 func (c *Computer) handleCommand(idx int) int {

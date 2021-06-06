@@ -36,8 +36,25 @@ func TestPart1(t *testing.T) {
 	assert.Equal(t, 844468, doPart1(file))
 }
 
+func TestPart2Examples(t *testing.T) {
+	testCases := []struct {
+		exp int
+		code []int
+	}{
+		{139629729, []int{3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5}},
+		{18216, []int{3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10}},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := doPart2(tc.code)	
+			assert.Equal(t, tc.exp, got)
+		})
+	}
+}
+
 func TestPart2(t *testing.T) {
-	t.Fail() // todo
+	file := readFile(t)
+	assert.Equal(t, 123, doPart2(file))
 }
 
 func readFile(t *testing.T) []int{
@@ -120,21 +137,6 @@ func doPart1(code []int) int {
 	return maxSignal
 }
 
-
-// func readFile(t *testing.T) []int {
-// 	file, err := os.Open("data.txt")
-// 	require.NoError(t, err)
-// 	defer file.Close()
-
-// 	content, err := io.ReadAll(file)
-// 	require.NoError(t, err)
-// 	data := string(content)
-// 	splitted := strings.Split(data, ",")
-// 	out := make([]int, len(splitted))
-// 	for i := 0; i < len(out); i++ {
-// 		v, err := strconv.Atoi(splitted[i])
-// 		require.NoError(t, err)
-// 		out[i] = v
-// 	}
-// 	return out
-// }
+func doPart2(code []int) int {
+	return doPart1(code)
+}
