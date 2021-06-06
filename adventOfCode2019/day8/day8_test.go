@@ -62,13 +62,9 @@ func TestPart1(t *testing.T) {
 
 	image := parseInput(file, width, height)
 	layer := image.findLayerWithSmallestNumberOf(0)
-	num := countNumberOfMultiplied(layer, 1,2)
+	num := findOccurences(layer, 1*2)
 
-	assert.Equal(t, 123,num)
-}
-
-func countNumberOfMultiplied(layerData []int, first, second int) int {
-	return -1
+	assert.Greater(t, 129,num)
 }
 
 type size struct {
@@ -111,6 +107,32 @@ func (i *image) extractLayer(layerNum int) []int {
 	return i.in[start:stop]
 }
 
+func findOccurences(arr []int, toFind int) int {
+	occurences := 0
+	for i := 0; i < len(arr); i++ {
+		if toFind == arr[i]{
+			occurences++
+		}
+	}
+	return occurences
+}
+
 func (i *image) findLayerWithSmallestNumberOf(numToFind int) []int {
-	return []int{}
+
+	var min *int
+	layerIdx := 0
+	for layerNum := 0; layerNum < i.numberOfLayers(); layerNum++ {
+		layerData := i.extractLayer(layerNum)
+		occurences := findOccurences(layerData, numToFind)
+		
+		if min == nil || occurences < *min {
+			min = &occurences
+			layerIdx = layerNum
+		}
+	}
+
+	if min == nil {
+		return []int{}
+	}
+	return i.extractLayer(layerIdx)
 }
