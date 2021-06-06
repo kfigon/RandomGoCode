@@ -34,7 +34,7 @@ const (
 )
 
 func (c *Computer) Calc() []int {
-	for c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE {
+	for c.isMoreComputations() {
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 	}
 	return c.instructions
@@ -42,15 +42,18 @@ func (c *Computer) Calc() []int {
 
 func (c *Computer) CalcTilOutput() bool {
 
-	for c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE {
+	for c.isMoreComputations() {
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 		
-		if c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE &&
-			opcode(c.instructions[c.instructionCounter]).extractOpcode() == OP_INPUT {
+		if c.isMoreComputations() && opcode(c.instructions[c.instructionCounter]).extractOpcode() == OP_INPUT {
 			break
 		}
 	}
 	return c.instructionCounter == IDX_TERMINATE
+}
+
+func (c *Computer) isMoreComputations() bool {
+	return c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE
 }
 
 func (c *Computer) handleCommand(idx int) int {
@@ -105,6 +108,7 @@ func (c *Computer) handleMult(idx int) int {
 	c.instructions[param2] = c.paramValue(op.modeForParam(0),param0) * c.paramValue(op.modeForParam(1),param1)
 	return idx + 4
 }
+
 func (c *Computer) handleJumpTrue(idx int) int {
 	op := opcode(c.instructions[idx])
 	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
@@ -113,6 +117,7 @@ func (c *Computer) handleJumpTrue(idx int) int {
 	}
 	return idx + 3
 }
+
 func (c *Computer) handleJumpFalse(idx int) int {
 	op := opcode(c.instructions[idx])
 	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
@@ -121,6 +126,7 @@ func (c *Computer) handleJumpFalse(idx int) int {
 	}
 	return idx + 3
 }
+
 func (c *Computer) handleLessThan(idx int) int {
 	op := opcode(c.instructions[idx])
 	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
@@ -133,6 +139,7 @@ func (c *Computer) handleLessThan(idx int) int {
 	}
 	return idx + 4
 }
+
 func (c *Computer) handleEquals(idx int) int {
 	op := opcode(c.instructions[idx])
 	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
@@ -145,6 +152,7 @@ func (c *Computer) handleEquals(idx int) int {
 	}
 	return idx + 4
 }
+
 func (c *Computer) paramValue(paramMode int, value int) int {
 	if paramMode == MODE_POSITION {
 		return c.instructions[value]
@@ -168,7 +176,6 @@ func (c *Computer) GetOutput() int {
 }
 
 type opcode int
-
 func (op opcode) extractOpcode() int {
 	return int(op) % 100
 }
