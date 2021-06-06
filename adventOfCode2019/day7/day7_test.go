@@ -76,21 +76,21 @@ func readFile(t *testing.T) []int{
 	return out
 }
 
-func doPart1(code []int) int {
-	newCode := func(in []int) []int {
-		out := make([]int,len(in))
-		for i := 0; i < len(out); i++ {
-			out[i]=in[i]
-		}
-		return out
+func newCode(in []int) []int {
+	out := make([]int,len(in))
+	for i := 0; i < len(out); i++ {
+		out[i]=in[i]
 	}
+	return out
+}
 
+func doLoop(min, max int, singleIteration func(a,b,c,d,e int) int) int {
 	var maxSignal int
-	for a := 0; a < 5; a++ {
-		for b := 0; b < 5; b++ {
-			for c := 0; c < 5; c++ {
-				for d := 0; d < 5; d++ {
-					for e := 0; e < 5; e++ {
+	for a := min; a < max; a++ {
+		for b := min; b < max; b++ {
+			for c := min; c < max; c++ {
+				for d := min; d < max; d++ {
+					for e := min; e < max; e++ {
 	
 						if a==b || a==c || a==d || a==e || 
 							b==c || b==d || b==e ||
@@ -98,34 +98,7 @@ func doPart1(code []int) int {
 							d == e {
 							continue
 						}
-
-						comp1:=intcode.NewComputer(newCode(code))
-						comp2:=intcode.NewComputer(newCode(code))
-						comp3:=intcode.NewComputer(newCode(code))
-						comp4:=intcode.NewComputer(newCode(code))
-						comp5:=intcode.NewComputer(newCode(code))
-				
-						comp1.SetUserInput(a)
-						comp1.SetUserInput(0)
-						comp1.Calc()		
-
-						comp2.SetUserInput(b)
-						comp2.SetUserInput(comp1.GetOutput())
-						comp2.Calc()
-
-						comp3.SetUserInput(c)
-						comp3.SetUserInput(comp2.GetOutput())
-						comp3.Calc()
-
-						comp4.SetUserInput(d)
-						comp4.SetUserInput(comp3.GetOutput())
-						comp4.Calc()
-
-						comp5.SetUserInput(e)
-						comp5.SetUserInput(comp4.GetOutput())
-						comp5.Calc()
-
-						outSignal := comp5.GetOutput()
+						outSignal := singleIteration(a,b,c,d,e)
 						if outSignal > maxSignal {
 							maxSignal = outSignal
 						}
@@ -134,7 +107,34 @@ func doPart1(code []int) int {
 			}
 		}
 	}
-	return maxSignal
+	return maxSignal	
+}
+
+func doPart1(code []int) int {
+
+	processSingleComputer := func(c *intcode.Computer, in1, in2 int) {
+		c.SetUserInput(in1)
+		c.SetUserInput(in2)
+		c.Calc()
+	}
+
+	singleIteration := func(a,b,c,d,e int) int {
+		comp1:=intcode.NewComputer(newCode(code))
+		comp2:=intcode.NewComputer(newCode(code))
+		comp3:=intcode.NewComputer(newCode(code))
+		comp4:=intcode.NewComputer(newCode(code))
+		comp5:=intcode.NewComputer(newCode(code))
+
+		processSingleComputer(comp1, a,0)
+		processSingleComputer(comp2, b,comp1.GetOutput())
+		processSingleComputer(comp3, c,comp2.GetOutput())
+		processSingleComputer(comp4, d,comp3.GetOutput())
+		processSingleComputer(comp5, e,comp4.GetOutput())
+
+		return comp5.GetOutput()
+	}
+
+	return doLoop(0,5, singleIteration)
 }
 
 func doPart2(code []int) int {
