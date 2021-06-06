@@ -62,9 +62,12 @@ func TestPart1(t *testing.T) {
 
 	image := parseInput(file, width, height)
 	layer := image.findLayerWithSmallestNumberOf(0)
-	num := findOccurences(layer, 1*2)
+	num := findOccurences(layer,1)*findOccurences(layer,2)
+	assert.Equal(t, 1806,num)
+}
 
-	assert.Greater(t, 129,num)
+func TestPart2(t *testing.T) {
+	t.Fail()
 }
 
 type size struct {
