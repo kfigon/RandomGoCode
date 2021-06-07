@@ -38,10 +38,8 @@ func TestParsingLayers(t *testing.T) {
 	image := parseInput(in, width, height)
 
 	assert.Equal(t, 2, image.numberOfLayers())
-	assert.Equal(t, []int{1,2,3}, image.extractRow(0,0))
-	assert.Equal(t, []int{4,5,6}, image.extractRow(0,1))
-	assert.Equal(t, []int{7,8,9}, image.extractRow(1,0))
-	assert.Equal(t, []int{0,1,2}, image.extractRow(1,1))
+	assert.Equal(t, []int{1,2,3,4,5,6}, image.extractLayer(0))
+	assert.Equal(t, []int{7,8,9,0,1,2}, image.extractLayer(1))
 }
 
 func TestParsingLayers2(t *testing.T) {
@@ -66,8 +64,45 @@ func TestPart1(t *testing.T) {
 	assert.Equal(t, 1806,num)
 }
 
+func TestLayeringPart2(t *testing.T) {
+	input := []int{0,2,2,2,1,1,2,2,2,2,1,2,0,0,0,0}
+	img := parseInput(input,2,2)
+
+	assert.Equal(t, 4, img.numberOfLayers())
+	assert.Equal(t, 4, img.layerSize())
+	assert.Equal(t, []int{0,2,2,2}, img.extractLayer(0))
+	assert.Equal(t, []int{1,1,2,2}, img.extractLayer(1))
+	assert.Equal(t, []int{2,2,1,2}, img.extractLayer(2))
+	assert.Equal(t, []int{0,0,0,0}, img.extractLayer(3))
+}
+
+func TestPart2Example(t *testing.T) {
+	input := []int{0,2,2,2,1,1,2,2,2,2,1,2,0,0,0,0}
+	img := parseInput(input,2,2)
+
+	assert.Equal(t, []int{0,1,1,0}, img.getFinalImage())
+}
+
 func TestPart2(t *testing.T) {
-	t.Fail()
+	file := readFile(t)
+	const width int = 25
+	const height int = 6
+
+	img := parseInput(file,width,height)
+
+	got := img.getFinalImage()
+	assert.NotEqual(t, []int{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 
+		1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 
+		1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 
+		1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 
+		0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 
+		0, 1, 0, 0, 1, 0}, got)
+
+	str := ""
+	for _, v := range got {
+		str += strconv.Itoa(v)
+	}
+	assert.NotEqual(t, "001100110011110111000110000010100101000010010100100001010010111001001010010000101111010000111001111010010100101000010100100100110010010100001001010010", str)
 }
 
 type size struct {
@@ -89,16 +124,6 @@ type image struct {
 
 func (i *image) numberOfLayers() int { return len(i.in)/i.layerSize() }
 func (i *image) layerSize() int { return i.s.width*i.s.height }
-
-func (i *image) extractRow(layerNum, rowNum int) []int {
-	if layerNum >= i.numberOfLayers() || rowNum >= i.s.height {
-		return []int{}
-	}
-
-	start := layerNum * i.layerSize() + rowNum*i.s.width
-	stop := start+i.s.width
-	return i.in[start:stop]
-}
 
 func (i *image) extractLayer(layerNum int) []int {
 	if layerNum >= i.numberOfLayers(){
@@ -138,4 +163,33 @@ func (i *image) findLayerWithSmallestNumberOf(numToFind int) []int {
 		return []int{}
 	}
 	return i.extractLayer(layerIdx)
+}
+
+func (i *image) getFinalImage() []int {
+	out := make([]int,0)
+	for pixel := 0; pixel < i.layerSize(); pixel++ {
+		out = append(out, 2)
+	}
+
+	for layerIdx := 0; layerIdx < i.numberOfLayers(); layerIdx++ {
+		layer := i.extractLayer(layerIdx)
+
+		for pixel := 0; pixel < len(layer); pixel++ {
+			out[pixel] = determineTopVisiblePixel(out[pixel], layer[pixel])
+		}
+	}
+	return out
+}
+
+const (
+	BLACK = 0
+	WHITE = 1
+	TRANSPARENT = 2
+)
+
+func determineTopVisiblePixel(currentPixel, nextLayerPixel int) int {
+	if currentPixel == TRANSPARENT {
+		return nextLayerPixel
+	}
+	return currentPixel
 }
