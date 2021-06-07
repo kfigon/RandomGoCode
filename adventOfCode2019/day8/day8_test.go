@@ -91,18 +91,27 @@ func TestPart2(t *testing.T) {
 	img := parseInput(file,width,height)
 
 	got := img.getFinalImage()
-	assert.NotEqual(t, []int{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 
+	assert.Equal(t, []int{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 
 		1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 
 		1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 
 		1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 
 		0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 
 		0, 1, 0, 0, 1, 0}, got)
 
-	str := ""
-	for _, v := range got {
-		str += strconv.Itoa(v)
+	formattedMsg := ""
+	for i := 0; i < len(got); i++ {
+		v := got[i]
+		if i != 0 && i % width == 0 {
+			formattedMsg += "\n"
+		}
+		if v == 1 {
+			formattedMsg+="8"
+		} else {
+			formattedMsg+=" "
+		}
 	}
-	assert.NotEqual(t, "001100110011110111000110000010100101000010010100100001010010111001001010010000101111010000111001111010010100101000010100100100110010010100001001010010", str)
+	// JAFRA
+	// assert.Equal(t,"asd", formattedMsg)
 }
 
 type size struct {
