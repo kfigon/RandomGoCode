@@ -1,4 +1,4 @@
-package day5
+package day7
 
 import (
 	"aoc2019/intcode"
