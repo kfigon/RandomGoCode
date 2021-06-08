@@ -21,6 +21,7 @@ func TestCalc(t *testing.T) {
 		{[]int{2,4,4,5,99,0}, []int{2,4,4,5,99,9801}},
 		{[]int{1,1,1,4,99,5,6,0,99}, []int{30,1,1,4,2,5,6,0,99}},
 		{[]int{1002,5,3,5,99,33}, []int{1002,5,3,5,99,99}},
+		{[]int{109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99}, []int{109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99}},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v", tc.in), func(t *testing.T) {
@@ -103,4 +104,21 @@ func TestInputWhenMultiple(t *testing.T) {
 	assert.Equal(t, 5, in.next())
 	assert.Equal(t, 1, in.next())
 	assert.Equal(t, 5, in.next())
+}
+
+func TestOutputBigNums(t *testing.T) {
+	testCases := []struct {
+		in []int
+		exp int		
+	}{
+		{[]int{1102,34915192,34915192,7,4,7,99,0}, 1219070632396864},
+		{[]int{104,1125899906842624,99}, 1125899906842624},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {		
+			comp := NewComputer(tc.in)
+			comp.Calc()
+			assert.Equal(t, tc.exp, comp.GetOutput())
+		})
+	}
 }
