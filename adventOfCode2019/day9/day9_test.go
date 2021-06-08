@@ -36,6 +36,7 @@ func readFile(t *testing.T) []int {
 func TestPart1(t *testing.T) {
 	file := readFile(t)
 	c := intcode.NewComputer(file)
+	c.SetUserInput(1)
 	c.Calc()
 	assert.Equal(t, 123, c.GetOutput())
 }
