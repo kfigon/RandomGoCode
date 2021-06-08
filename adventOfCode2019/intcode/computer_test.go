@@ -106,6 +106,8 @@ func TestInputWhenMultiple(t *testing.T) {
 	assert.Equal(t, 5, in.next())
 }
 
+
+
 func TestOutputBigNums(t *testing.T) {
 	testCases := []struct {
 		in []int
@@ -113,6 +115,27 @@ func TestOutputBigNums(t *testing.T) {
 	}{
 		{[]int{1102,34915192,34915192,7,4,7,99,0}, 1219070632396864},
 		{[]int{104,1125899906842624,99}, 1125899906842624},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {		
+			comp := NewComputer(tc.in)
+			comp.Calc()
+			assert.Equal(t, tc.exp, comp.GetOutput())
+		})
+	}
+}
+
+func TestMoreOutputCases(t *testing.T) {
+	testCases := []struct {
+		in []int
+		exp int		
+	}{
+		{[]int{109, -1, 4, 1, 99}, -1},
+		{[]int{109, -1, 104, 1, 99}, 1},
+		{[]int{109, -1, 204, 1, 99}, 109},
+		{[]int{109, 1, 9, 2, 204, -6, 99}, 204},
+		{[]int{109, 1, 109, 9, 204, -6, 99}, 204},
+		{[]int{109, 1, 209, -1, 204, -106, 99}, 204},
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {		
