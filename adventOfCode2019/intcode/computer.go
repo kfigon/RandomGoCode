@@ -8,12 +8,14 @@ type Computer struct {
 	userOutput   int
 	instructionCounter int
 	relativeBase int
+	extendedMemory map[int]int
 }
 
 func NewComputer(instructions []int) *Computer {
 	return &Computer{
 		instructions: instructions,
 		userInput: newInputHandler(),
+		extendedMemory: map[int]int{},
 	}
 }
 
@@ -43,12 +45,27 @@ func (c *Computer) Calc() []int {
 	return c.instructions
 }
 
+func (c *Computer) getValue(idx int) int {
+	if idx < len(c.instructions) {
+		return c.instructions[idx]
+	}
+	return c.extendedMemory[idx]
+}
+
+func (c *Computer) setValue(idx, val int) {
+	if idx < len(c.instructions) {
+		c.instructions[idx] = val
+	} else {
+		c.extendedMemory[idx] = val
+	}
+}
+
 func (c *Computer) CalcTilOutput() bool {
 
 	for c.isMoreComputations() {
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 		
-		if c.isMoreComputations() && opcode(c.instructions[c.instructionCounter]).extractOpcode() == OP_INPUT {
+		if c.isMoreComputations() && opcode(c.getValue(c.instructionCounter)).extractOpcode() == OP_INPUT {
 			break
 		}
 	}
@@ -60,7 +77,7 @@ func (c *Computer) isMoreComputations() bool {
 }
 
 func (c *Computer) handleCommand(idx int) int {
-	opcode := opcode(c.instructions[idx])
+	opcode := opcode(c.getValue(idx))
 	switch opcode.extractOpcode() {
 	case OP_ADD:
 		return c.handleAdd(idx)
@@ -88,35 +105,35 @@ func (c *Computer) handleCommand(idx int) int {
 }
 
 func (c *Computer) handleAdd(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2], c.instructions[idx+3]
-	c.instructions[param2] = c.paramValue(op.modeForParam(0),param0) + c.paramValue(op.modeForParam(1),param1)
+	op := opcode(c.getValue(idx))
+	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2), c.getValue(idx+3)
+	c.setValue(param2, c.paramValue(op.modeForParam(0),param0) + c.paramValue(op.modeForParam(1),param1))
 	return idx + 4
 }
 
 func (c *Computer) handleInput(idx int) int {
-	param0 := c.instructions[idx+1]
-	c.instructions[param0] = c.userInput.next()
+	param0 := c.getValue(idx+1)
+	c.setValue(param0, c.userInput.next())
 	return idx + 2
 }
 
 func (c *Computer) handleOutput(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0 := c.instructions[idx+1]
+	op := opcode(c.getValue(idx))
+	param0 := c.getValue(idx+1)
 	c.userOutput = c.paramValue(op.modeForParam(0),param0)
 	return idx + 2
 }
 
 func (c *Computer) handleMult(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2], c.instructions[idx+3]
-	c.instructions[param2] = c.paramValue(op.modeForParam(0),param0) * c.paramValue(op.modeForParam(1),param1)
+	op := opcode(c.getValue(idx))
+	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2), c.getValue(idx+3)
+	c.setValue(param2, c.paramValue(op.modeForParam(0),param0) * c.paramValue(op.modeForParam(1),param1))
 	return idx + 4
 }
 
 func (c *Computer) handleJumpTrue(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
+	op := opcode(c.getValue(idx))
+	param0, param1 := c.getValue(idx+1), c.getValue(idx+2)
 	if c.paramValue(op.modeForParam(0), param0) != 0 {
 		return c.paramValue(op.modeForParam(1), param1)
 	}
@@ -124,8 +141,8 @@ func (c *Computer) handleJumpTrue(idx int) int {
 }
 
 func (c *Computer) handleJumpFalse(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1 := c.instructions[idx+1], c.instructions[idx+2]
+	op := opcode(c.getValue(idx))
+	param0, param1 := c.getValue(idx+1), c.getValue(idx+2)
 	if c.paramValue(op.modeForParam(0), param0) == 0 {
 		return c.paramValue(op.modeForParam(1), param1)
 	}
@@ -133,45 +150,45 @@ func (c *Computer) handleJumpFalse(idx int) int {
 }
 
 func (c *Computer) handleLessThan(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
+	op := opcode(c.getValue(idx))
+	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2),c.getValue(idx+3)
 	v0 := c.paramValue(op.modeForParam(0), param0)
 	v1 := c.paramValue(op.modeForParam(1), param1)
 	if v0 < v1 {
-		c.instructions[param2] = 1
+		c.setValue(param2, 1)
 	} else {
-		c.instructions[param2] = 0
+		c.setValue(param2, 0)
 	}
 	return idx + 4
 }
 
 func (c *Computer) handleEquals(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0, param1,param2 := c.instructions[idx+1], c.instructions[idx+2],c.instructions[idx+3]
+	op := opcode(c.getValue(idx))
+	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2),c.getValue(idx+3)
 	v0 := c.paramValue(op.modeForParam(0), param0)
 	v1 := c.paramValue(op.modeForParam(1), param1)
 	if v0 == v1 {
-		c.instructions[param2] = 1
+		c.setValue(param2, 1)
 	} else {
-		c.instructions[param2] = 0
+		c.setValue(param2, 0)
 	}
 	return idx + 4
 }
 
 func (c *Computer) handleSetRelative(idx int) int {
-	op := opcode(c.instructions[idx])
-	param0 := c.instructions[idx+1]
+	op := opcode(c.getValue(idx))
+	param0 := c.getValue(idx+1)
 	c.relativeBase = c.paramValue(op.modeForParam(0), param0)
 	return idx + 2
 }
 
 func (c *Computer) paramValue(paramMode int, value int) int {
 	if paramMode == MODE_POSITION {
-		return c.instructions[value]
+		return c.getValue(value)
 	} else if paramMode == MODE_IMMEDIATE {
 		return value
 	} else if paramMode == MODE_RELATIVE {
-		return c.instructions[value + c.relativeBase]
+		return c.getValue(value + c.relativeBase)
 	}
 	// should never happen
 	return -1
