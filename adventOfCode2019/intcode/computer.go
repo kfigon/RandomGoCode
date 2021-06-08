@@ -7,6 +7,7 @@ type Computer struct {
 	userInput    *inputHandler
 	userOutput   int
 	instructionCounter int
+	relativeBase int
 }
 
 func NewComputer(instructions []int) *Computer {
@@ -25,12 +26,14 @@ const (
 	OP_JMP_F = 6
 	OP_LT = 7
 	OP_EQ = 8
+	OP_SET_RELATIVE = 9
 	OP_TERMINATE = 99
 
 	IDX_TERMINATE = -1
 
 	MODE_POSITION  = 0
 	MODE_IMMEDIATE = 1
+	MODE_RELATIVE = 2
 )
 
 func (c *Computer) Calc() []int {
@@ -75,6 +78,8 @@ func (c *Computer) handleCommand(idx int) int {
 		return c.handleLessThan(idx)
 	case OP_EQ:
 		return c.handleEquals(idx)
+	case OP_SET_RELATIVE:
+		return c.handleSetRelative(idx)
 	case OP_TERMINATE:
 		return IDX_TERMINATE
 	}
@@ -153,11 +158,20 @@ func (c *Computer) handleEquals(idx int) int {
 	return idx + 4
 }
 
+func (c *Computer) handleSetRelative(idx int) int {
+	op := opcode(c.instructions[idx])
+	param0 := c.instructions[idx+1]
+	c.relativeBase = c.paramValue(op.modeForParam(0), param0)
+	return idx + 2
+}
+
 func (c *Computer) paramValue(paramMode int, value int) int {
 	if paramMode == MODE_POSITION {
 		return c.instructions[value]
 	} else if paramMode == MODE_IMMEDIATE {
 		return value
+	} else if paramMode == MODE_RELATIVE {
+		return c.instructions[value + c.relativeBase]
 	}
 	// should never happen
 	return -1
