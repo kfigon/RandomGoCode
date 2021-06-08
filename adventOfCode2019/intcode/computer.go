@@ -39,7 +39,7 @@ const (
 )
 
 func (c *Computer) Calc() []int {
-	for c.isMoreComputations() {
+	for c.moreComputations() {
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 	}
 	return c.instructions
@@ -62,17 +62,17 @@ func (c *Computer) setValue(idx, val int) {
 
 func (c *Computer) CalcTilOutput() bool {
 
-	for c.isMoreComputations() {
+	for c.moreComputations() {
 		c.instructionCounter = c.handleCommand(c.instructionCounter)
 		
-		if c.isMoreComputations() && opcode(c.getValue(c.instructionCounter)).extractOpcode() == OP_INPUT {
+		if c.moreComputations() && opcode(c.getValue(c.instructionCounter)).extractOpcode() == OP_INPUT {
 			break
 		}
 	}
 	return c.instructionCounter == IDX_TERMINATE
 }
 
-func (c *Computer) isMoreComputations() bool {
+func (c *Computer) moreComputations() bool {
 	return c.instructionCounter < len(c.instructions) && c.instructionCounter != IDX_TERMINATE
 }
 
@@ -178,7 +178,7 @@ func (c *Computer) handleEquals(idx int) int {
 func (c *Computer) handleSetRelative(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0 := c.getValue(idx+1)
-	c.relativeBase = c.paramValue(op.modeForParam(0), param0)
+	c.relativeBase += c.paramValue(op.modeForParam(0), param0)
 	return idx + 2
 }
 
