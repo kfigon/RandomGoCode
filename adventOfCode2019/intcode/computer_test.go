@@ -18,6 +18,7 @@ func TestCalc(t *testing.T) {
 		{[]int{1,0,0,0,99}, []int{2,0,0,0,99}},
 		{[]int{1,9,10,3,2,3,11,0,99,30,40,50}, []int{3500,9,10,70,2,3,11,0,99,30,40,50}},
 		{[]int{2,3,0,3,99}, []int{2,3,0,6,99}},
+		{[]int{1002,4,3,4,33}, []int{1002,4,3,4,99}},
 		{[]int{2,4,4,5,99,0}, []int{2,4,4,5,99,9801}},
 		{[]int{1,1,1,4,99,5,6,0,99}, []int{30,1,1,4,2,5,6,0,99}},
 		{[]int{1002,5,3,5,99,33}, []int{1002,5,3,5,99,99}},
@@ -53,15 +54,15 @@ func TestOpcodeExtraction(t *testing.T) {
 func TestModeExtraction(t *testing.T) {
 	op := opcode(12398)
 	assert.Equal(t, 98, op.extractOpcode())
-	assert.Equal(t, 3, op.modeForParam(0))
-	assert.Equal(t, 2, op.modeForParam(1))
-	assert.Equal(t, 1, op.modeForParam(2))
+	assert.Equal(t, 3, op.mode(0))
+	assert.Equal(t, 2, op.mode(1))
+	assert.Equal(t, 1, op.mode(2))
 	
-	assert.Equal(t, 0, op.modeForParam(3))
-	assert.Equal(t, 0, op.modeForParam(4))
-	assert.Equal(t, 0, op.modeForParam(5))
-	assert.Equal(t, 0, op.modeForParam(6))
-	assert.Equal(t, 0, op.modeForParam(7))
+	assert.Equal(t, 0, op.mode(3))
+	assert.Equal(t, 0, op.mode(4))
+	assert.Equal(t, 0, op.mode(5))
+	assert.Equal(t, 0, op.mode(6))
+	assert.Equal(t, 0, op.mode(7))
 }
 
 func TestHandleInput(t *testing.T) {
@@ -106,8 +107,6 @@ func TestInputWhenMultiple(t *testing.T) {
 	assert.Equal(t, 5, in.next())
 }
 
-
-
 func TestOutputBigNums(t *testing.T) {
 	testCases := []struct {
 		in []int
@@ -124,7 +123,6 @@ func TestOutputBigNums(t *testing.T) {
 		})
 	}
 }
-
 func TestMoreOutputCases(t *testing.T) {
 	testCases := []struct {
 		in []int
@@ -140,6 +138,24 @@ func TestMoreOutputCases(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {		
 			comp := NewComputer(tc.in)
+			comp.Calc()
+			assert.Equal(t, tc.exp, comp.GetOutput())
+		})
+	}
+}
+
+func TestMoreOutputCasesWithInputs(t *testing.T) {
+	testCases := []struct {
+		in []int
+		exp int		
+	}{
+		{[]int{109, 1, 3, 3, 204, 2, 99}, 5},
+		{[]int{109, 1, 203, 2, 204, 2, 99}, 5},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {		
+			comp := NewComputer(tc.in)
+			comp.SetUserInput(tc.exp)
 			comp.Calc()
 			assert.Equal(t, tc.exp, comp.GetOutput())
 		})

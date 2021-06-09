@@ -107,7 +107,7 @@ func (c *Computer) handleCommand(idx int) int {
 func (c *Computer) handleAdd(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2), c.getValue(idx+3)
-	c.setValue(param2, c.paramValue(op.modeForParam(0),param0) + c.paramValue(op.modeForParam(1),param1))
+	c.setValue(param2, c.paramValue(op.mode(0),param0) + c.paramValue(op.mode(1),param1))
 	return idx + 4
 }
 
@@ -120,22 +120,22 @@ func (c *Computer) handleInput(idx int) int {
 func (c *Computer) handleOutput(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0 := c.getValue(idx+1)
-	c.userOutput = c.paramValue(op.modeForParam(0),param0)
+	c.userOutput = c.paramValue(op.mode(0),param0)
 	return idx + 2
 }
 
 func (c *Computer) handleMult(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2), c.getValue(idx+3)
-	c.setValue(param2, c.paramValue(op.modeForParam(0),param0) * c.paramValue(op.modeForParam(1),param1))
+	c.setValue(param2, c.paramValue(op.mode(0),param0) * c.paramValue(op.mode(1),param1))
 	return idx + 4
 }
 
 func (c *Computer) handleJumpTrue(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1 := c.getValue(idx+1), c.getValue(idx+2)
-	if c.paramValue(op.modeForParam(0), param0) != 0 {
-		return c.paramValue(op.modeForParam(1), param1)
+	if c.paramValue(op.mode(0), param0) != 0 {
+		return c.paramValue(op.mode(1), param1)
 	}
 	return idx + 3
 }
@@ -143,8 +143,8 @@ func (c *Computer) handleJumpTrue(idx int) int {
 func (c *Computer) handleJumpFalse(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1 := c.getValue(idx+1), c.getValue(idx+2)
-	if c.paramValue(op.modeForParam(0), param0) == 0 {
-		return c.paramValue(op.modeForParam(1), param1)
+	if c.paramValue(op.mode(0), param0) == 0 {
+		return c.paramValue(op.mode(1), param1)
 	}
 	return idx + 3
 }
@@ -152,8 +152,8 @@ func (c *Computer) handleJumpFalse(idx int) int {
 func (c *Computer) handleLessThan(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2),c.getValue(idx+3)
-	v0 := c.paramValue(op.modeForParam(0), param0)
-	v1 := c.paramValue(op.modeForParam(1), param1)
+	v0 := c.paramValue(op.mode(0), param0)
+	v1 := c.paramValue(op.mode(1), param1)
 	if v0 < v1 {
 		c.setValue(param2, 1)
 	} else {
@@ -165,8 +165,8 @@ func (c *Computer) handleLessThan(idx int) int {
 func (c *Computer) handleEquals(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0, param1,param2 := c.getValue(idx+1), c.getValue(idx+2),c.getValue(idx+3)
-	v0 := c.paramValue(op.modeForParam(0), param0)
-	v1 := c.paramValue(op.modeForParam(1), param1)
+	v0 := c.paramValue(op.mode(0), param0)
+	v1 := c.paramValue(op.mode(1), param1)
 	if v0 == v1 {
 		c.setValue(param2, 1)
 	} else {
@@ -178,7 +178,7 @@ func (c *Computer) handleEquals(idx int) int {
 func (c *Computer) handleSetRelative(idx int) int {
 	op := opcode(c.getValue(idx))
 	param0 := c.getValue(idx+1)
-	c.relativeBase += c.paramValue(op.modeForParam(0), param0)
+	c.relativeBase += c.paramValue(op.mode(0), param0)
 	return idx + 2
 }
 
@@ -211,7 +211,7 @@ func (op opcode) extractOpcode() int {
 	return int(op) % 100
 }
 
-func (op opcode) modeForParam(paramIdx int) int {
+func (op opcode) mode(paramIdx int) int {
 	paramFlags := int(op) / 100
 	return (paramFlags / int(math.Pow10(paramIdx))) % 10
 }
