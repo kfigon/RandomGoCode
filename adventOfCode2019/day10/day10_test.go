@@ -99,6 +99,17 @@ func TestPart1File(t *testing.T) {
 	assert.Equal(t, result{1,1,-1}, got)
 }
 
+func TestPointOnLine(t *testing.T) {
+	p1 := point{0,0}
+	p2 := point{3,1}
+	p3 := point{6,2}
+
+	f := buildFunction(p1,p2)
+	
+	got := f.isPointOnTheLine(p3)
+	assert.True(t, got)
+}
+
 func isAsteroid(c rune) bool { return c =='#' }
 type spaceMap []string
 
@@ -116,4 +127,19 @@ func (s spaceMap) findBestPlace() result {
 	return result{}
 }
 
+type point struct { x,y float64 }
+type fun struct { a,b float64 }
+
+func buildFunction(p1,p2 point) fun {
+	a := (p1.y - p2.y)/(p1.x-p2.x)
+	b := p1.y - p1.x*a
+	return fun{
+		a: a,
+		b: b,
+	}
+}
+
+func (f fun) isPointOnTheLine(p point) bool {
+	return p.y == f.a*p.x + f.b
+}
 
