@@ -93,6 +93,12 @@ func TestPart1(t *testing.T) {
 	}
 }
 
+func TestPart1File(t *testing.T) {
+	s := spaceMap(readFile(t))
+	got := s.findBestPlace()
+	assert.Equal(t, result{1,1,-1}, got)
+}
+
 func isAsteroid(c rune) bool { return c =='#' }
 type spaceMap []string
 
