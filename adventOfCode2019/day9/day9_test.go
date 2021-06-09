@@ -40,3 +40,11 @@ func TestPart1(t *testing.T) {
 	c.Calc()
 	assert.Equal(t, 3601950151, c.GetOutput())
 }
+
+func TestPart2(t *testing.T) {
+	file := readFile(t)
+	c := intcode.NewComputer(file)
+	c.SetUserInput(2)
+	c.Calc()
+	assert.Equal(t, 64236, c.GetOutput())
+}
