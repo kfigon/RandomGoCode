@@ -38,5 +38,5 @@ func TestPart1(t *testing.T) {
 	c := intcode.NewComputer(file)
 	c.SetUserInput(1)
 	c.Calc()
-	assert.Equal(t, 123, c.GetOutput())
+	assert.Equal(t, 3601950151, c.GetOutput())
 }

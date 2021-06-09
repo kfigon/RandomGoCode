@@ -161,3 +161,12 @@ func TestMoreOutputCasesWithInputs(t *testing.T) {
 		})
 	}
 }
+
+func TestRelativeCase(t *testing.T) {
+	in := []int{109, 1, 203, 2, 204, 2, 99}
+	comp := NewComputer(in)
+	comp.SetUserInput(15)
+	outputCode := comp.Calc()
+	assert.Equal(t, 15, comp.GetOutput())
+	assert.Equal(t, []int{109,1,203,15,204,2,99}, outputCode)
+}
