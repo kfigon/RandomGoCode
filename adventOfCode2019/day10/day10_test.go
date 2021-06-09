@@ -72,7 +72,16 @@ func TestCharAt(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	assert.Fail(t, "todo")
+	data := `.#..#
+.....
+#####
+....#
+...##`
+	s := spaceMap(split(data, "\n"))
+	res := s.findBestPlace()
+	assert.Equal(t, 3, res.x)
+	assert.Equal(t, 4, res.y)
+	assert.Equal(t, 8, res.visibility)
 }
 
 func isAsteroid(c rune) bool { return c =='#' }
@@ -84,5 +93,12 @@ func (s spaceMap) charAt(x,y int) rune {
 
 func (s spaceMap) rows() int { return len(s) }
 func (s spaceMap) cols() int { return len(s[0]) }
+
+type result struct {
+	x,y,visibility int
+}
+func (s spaceMap) findBestPlace() result { 
+	return result{}
+}
 
 
