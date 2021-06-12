@@ -102,6 +102,12 @@ func TestPart1File(t *testing.T) {
 	assert.Equal(t, result{x:23, y:20, visibility:334}, got)
 }
 
+// https://adventofcode.com/2019/day/10#part2
+func TestPart2File(t *testing.T) {
+	// s := spaceMap(readFile(t))
+	assert.Fail(t,"todo")
+}
+
 func TestPositionAnalysis(t *testing.T) {
 	testCases := []struct {
 		x,y int
