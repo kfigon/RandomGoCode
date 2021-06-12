@@ -136,3 +136,25 @@ func TestPositionAnalysis(t *testing.T) {
 		})
 	}
 }
+
+func TestTrigonometry(t *testing.T) {
+	testCases := []struct {
+		start point
+		end point
+		expDegree float64
+		expLen float64
+	}{
+		{point{0,0}, point{0,0}, 0,0},
+		{point{0,0}, point{1,0}, 0,1},
+		{point{0,0}, point{2,0}, 0,2},
+		{point{0,0}, point{0,2}, 3.14156/2,2},
+		{point{1,1}, point{0,3}, 3.14156/2,2},
+	}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := tc.start.trigonometryVersion(tc.end)
+			assert.Equal(t, tc.expDegree, got.degree)
+			assert.Equal(t, tc.expLen, got.length)
+		})
+	}
+}

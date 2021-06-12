@@ -58,6 +58,6 @@ func (p point) eq(other point) bool {
 type trigonometryPoint struct {
 	degree, length float64
 }
-func (p point) trigonometryVersion() trigonometryPoint {
+func (p point) trigonometryVersion(end point) trigonometryPoint {
 	return trigonometryPoint{}
 }
