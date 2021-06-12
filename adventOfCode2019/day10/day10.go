@@ -75,19 +75,22 @@ func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	return pointsToOrder.points
 }
 
-
 type orderByAngle struct {
 	points	[]point
 	startingPoint point
 }
+
 func (a orderByAngle) Len() int           { return len(a.points) }
 func (a orderByAngle) Swap(i, j int)      { 
 	a.points[i], a.points[j] = a.points[j], a.points[i] 
 }
 
 func (a orderByAngle) Less(i, j int) bool { 
-	trigI := a.startingPoint.trigonometryVersion(a.points[i])
-	trigJ := a.startingPoint.trigonometryVersion(a.points[j])
+	pi := a.points[i]
+	pj := a.points[j]
+
+	trigI := a.startingPoint.trigonometryVersion(pi)
+	trigJ := a.startingPoint.trigonometryVersion(pj)
 	
 	if trigI.degree < trigJ.degree {
 		return true
