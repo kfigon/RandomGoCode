@@ -43,7 +43,22 @@ func (s spaceMap) buildAsteroidSet() *set {
 }
 
 func (s spaceMap) analyzePosition(a asteroidPosition, asteroidSet *set) int {
-	return -1
+	if !asteroidSet.contains(a) {
+		return 0
+	}
+	var out int
+	for coord := range asteroidSet.data {
+		f := buildFunction(point{float64(a.x), float64(a.y)}, 
+						   point{float64(coord.x), float64(coord.y)})
+	
+		for tmp := range asteroidSet.data {
+			if f.isPointOnTheLine(point{float64(tmp.x), float64(tmp.y)}) {
+				out++
+			}	
+		}
+		
+	}
+	return out
 }
 
 type asteroidPosition struct { x,y int }
