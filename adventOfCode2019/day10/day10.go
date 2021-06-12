@@ -50,11 +50,6 @@ func (s spaceMap) filterAsteroids() []point {
 
 // returns number of points visible form the starting point
 func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
-	visiblePoints := s.buildAngularMap(startingPoint, asteroids)
-	return len(visiblePoints)
-}
-
-func (s spaceMap) buildAngularMap(startingPoint point, asteroids []point) map[float64]float64 {
 	visiblePoints := map[float64]float64{}
 
 	for _,v := range asteroids {
@@ -70,7 +65,7 @@ func (s spaceMap) buildAngularMap(startingPoint point, asteroids []point) map[fl
 			visiblePoints[trig.degree] = trig.length
 		}
 	}
-	return visiblePoints
+	return len(visiblePoints)
 }
 
 func (s spaceMap) findVaporizedCoordinate(startingPoint point, nthAsteroid int) point {
@@ -89,6 +84,7 @@ func (a orderByAngle) Len() int           { return len(a.points) }
 func (a orderByAngle) Swap(i, j int)      { 
 	a.points[i], a.points[j] = a.points[j], a.points[i] 
 }
+
 func (a orderByAngle) Less(i, j int) bool { 
 	trigI := a.startingPoint.trigonometryVersion(a.points[i])
 	trigJ := a.startingPoint.trigonometryVersion(a.points[j])
