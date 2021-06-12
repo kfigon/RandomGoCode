@@ -45,7 +45,13 @@ func (s spaceMap) filterAsteroids() []point {
 // returns number of points visible form the starting point
 func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 	var out int
+	// todo
+	// iter through all points
+	// build a map[degree]=length
+	// if theres already such degree - check length and choose min()
+
 	// for _,v := range asteroids {
+		// if startingPoint.eq(v) {continue}
 	// }
 	return out
 }
