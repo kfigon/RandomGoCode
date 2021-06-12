@@ -106,7 +106,7 @@ func TestPart1File(t *testing.T) {
 func TestPart2File(t *testing.T) {
 	theMap := spaceMap(readFile(t))
 	station := point{x:23, y:20}
-	coord := theMap.findVaporizedCoordinate(station, 200)
+	coord := theMap.orderByVaporization(station)[200-1]
 	assert.Equal(t, 1, coord.x)
 	assert.Equal(t, 2, coord.y)
 	assert.Less(t, 1620, coord.x*100+coord.y)
@@ -166,4 +166,41 @@ func TestTrigonometry(t *testing.T) {
 			assert.Equal(t, tc.expLen, got.length)
 		})
 	}
+}
+
+func TestOrderAsteroids(t *testing.T) {
+	data := `.#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##`
+	s := buildMap(data)
+	ordered := s.orderByVaporization(point{11,13})
+
+	assert.Equal(t, point{11,12}, ordered[0])
+	assert.Equal(t, point{12,1}, ordered[1])
+	assert.Equal(t, point{12,2}, ordered[2])
+	assert.Equal(t, point{12,8}, ordered[9])
+	assert.Equal(t, point{16,0}, ordered[19])
+	assert.Equal(t, point{16,9}, ordered[49])
+	assert.Equal(t, point{10,16}, ordered[99])
+	assert.Equal(t, point{9,6}, ordered[198])
+	assert.Equal(t, point{8,2}, ordered[199])
+	assert.Equal(t, point{10,9}, ordered[200])
+	assert.Equal(t, point{11,1}, ordered[298])
 }

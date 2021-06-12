@@ -68,11 +68,11 @@ func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 	return len(visiblePoints)
 }
 
-func (s spaceMap) findVaporizedCoordinate(startingPoint point, nthAsteroid int) point {
+func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	asteroids := s.filterAsteroids()
 	pointsToOrder := orderByAngle{asteroids, startingPoint}
 	sort.Sort(pointsToOrder)
-	return pointsToOrder.points[nthAsteroid]
+	return pointsToOrder.points
 }
 
 
