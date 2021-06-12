@@ -99,7 +99,7 @@ func TestPart1(t *testing.T) {
 func TestPart1File(t *testing.T) {
 	s := spaceMap(readFile(t))
 	got := s.findBestPlace()
-	assert.Equal(t, result{1,1,-1}, got)
+	assert.Equal(t, result{x:23, y:20, visibility:334}, got)
 }
 
 func TestPositionAnalysis(t *testing.T) {
@@ -107,7 +107,6 @@ func TestPositionAnalysis(t *testing.T) {
 		x,y int
 		exp int
 	}{
-		{0,0,0},
 		{1,0,7},
 		{4,0,7},
 		

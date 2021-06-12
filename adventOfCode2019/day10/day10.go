@@ -46,16 +46,27 @@ func (s spaceMap) filterAsteroids() []point {
 
 // returns number of points visible form the starting point
 func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
-	var out int
 	// todo
 	// iter through all points
 	// build a map[degree]=length
 	// if theres already such degree - check length and choose min()
+	visiblePoints := map[float64]float64{}
 
-	// for _,v := range asteroids {
-		// if startingPoint.eq(v) {continue}
-	// }
-	return out
+	for _,v := range asteroids {
+		if startingPoint.eq(v) {
+			continue
+		}
+
+		trig := startingPoint.trigonometryVersion(v)
+		angle, ok := visiblePoints[trig.degree]
+		if !ok {
+			visiblePoints[trig.degree] = trig.length
+		} else if trig.degree < angle{
+			visiblePoints[trig.degree] = trig.length
+		}
+
+	}
+	return len(visiblePoints)
 }
 
 type point struct { x,y int }
