@@ -36,23 +36,24 @@ func (s spaceMap) buildAsteroidSet() *set {
 				continue
 			}
 
-			asteroidSet.add(asteroidPosition{x,y})
+			asteroidSet.add(point{x,y})
 		}
 	}
 	return asteroidSet
 }
 
-func (s spaceMap) analyzePosition(a asteroidPosition, asteroidSet *set) int {
+func (s spaceMap) analyzePosition(a point, asteroidSet *set) int {
 	if !asteroidSet.contains(a) {
 		return 0
 	}
+
 	var out int
 	for coord := range asteroidSet.data {
-		f := buildFunction(point{float64(a.x), float64(a.y)}, 
-						   point{float64(coord.x), float64(coord.y)})
+		f := buildFunction(point{a.x, a.y}, 
+						   point{coord.x, coord.y})
 	
 		for tmp := range asteroidSet.data {
-			if f.isPointOnTheLine(point{float64(tmp.x), float64(tmp.y)}) {
+			if f.isPointOnTheLine(point{tmp.x, tmp.y}) {
 				out++
 			}	
 		}
@@ -61,31 +62,34 @@ func (s spaceMap) analyzePosition(a asteroidPosition, asteroidSet *set) int {
 	return out
 }
 
-type asteroidPosition struct { x,y int }
+type point struct { x,y int }
 type void struct{}
 type set struct{
-	data map[asteroidPosition]void
+	data map[point]void
+}
+
+func (p point) eq(other point) bool {
+	return p.x == other.x && p.y == other.y
 }
 
 func newSet() *set {
 	return &set{
-		data: map[asteroidPosition]void{},
+		data: map[point]void{},
 	}
 }
 
-func (s *set) add(a asteroidPosition) {
+func (s *set) add(a point) {
 	var v void
 	s.data[a] = v
 }
 
-func (s *set) contains(a asteroidPosition) bool {
+func (s *set) contains(a point) bool {
 	_, ok := s.data[a]
 	return ok
 }
 
 func (s *set) len() int { return len(s.data) }
 
-type point struct { x,y float64 }
 type fun struct { 
 	p1,p2 point
 }
@@ -98,11 +102,16 @@ func buildFunction(p1,p2 point) fun {
 }
 
 func (f fun) isPointOnTheLine(p point) bool {
-	if (f.p1.x == p.x && f.p1.y == p.y) || 
-	   (f.p2.x == p.x && f.p2.y == p.y) {
-			return true
+	isPointOnEndge := f.p1.eq(p) || f.p2.eq(p)
+	isSingularity := f.p1.eq(f.p2)
+
+	if isSingularity {
+		return isPointOnEndge
+	} else if isPointOnEndge {
+		return true
 	}
 
+	// todo - float?
 	a := (f.p1.y - f.p2.y)/(f.p1.x-f.p2.x)
 	b := f.p1.y - f.p1.x*a
 	return p.y == a*p.x + b
