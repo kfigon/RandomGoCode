@@ -34,13 +34,17 @@ func split(data, separator string) []string {
 	return out
 }
 
+func buildMap(data string) spaceMap {
+	return spaceMap(split(data,"\n"))
+}
+
 func TestUtils(t *testing.T) {
 	data := `.#..#.
 ......
 #####.
 ....#.
 ...##.`
-	s := spaceMap(split(data,"\n"))
+	s := buildMap(data)
 	assert.Equal(t, 5, s.rows())
 	assert.Equal(t, 6, s.cols())
 }
@@ -64,7 +68,7 @@ func TestCharAt(t *testing.T) {
 .....
 #####
 ....#`
-	s := spaceMap(split(data,"\n"))
+	s := buildMap(data)
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v-%v",tc.x,tc.y), func(t *testing.T) {
 			assert.Equal(t, tc.exp, s.charAt(tc.x, tc.y))
@@ -85,7 +89,7 @@ func TestPart1(t *testing.T) {
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			s := spaceMap(split(tc.data, "\n"))
+			s := buildMap(tc.data)
 			got := s.findBestPlace()
 			assert.Equal(t, tc.expected, got)
 		})
@@ -107,4 +111,52 @@ func TestPointOnLine(t *testing.T) {
 
 	got := f.isPointOnTheLine(p3)
 	assert.True(t, got)
+}
+
+func TestAsteroidSetContains(t *testing.T) {
+	testCases := []struct {
+		x,y int
+		exp bool		
+	}{
+		{0,0,false},
+		{1,0,true},
+		{2,0,false},
+		{3,0,false},
+		{4,0,true},
+		{5,0,false},
+		
+		{0,1,false},
+		{1,1,false},
+		{2,1,false},
+		{3,1,false},
+		{4,1,false},
+		{5,1,false},
+
+		{0,2,true},
+		{1,2,true},
+		{2,2,true},
+		{3,2,true},
+		{4,2,true},
+		{5,2,false},
+
+		{0,3,false},
+		{1,3,false},
+		{2,3,false},
+		{3,3,false},
+		{4,3,true},
+		{5,3,false},
+	}
+	data:=`.#..#.
+......
+#####.
+....#.
+...##.`
+	s := buildMap(data)
+	asteroidSet := s.buildAsteroidSet()
+	assert.Equal(t, 10, asteroidSet.len())
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("%v-%v", tc.x, tc.y), func(t *testing.T) {
+			assert.Equal(t, tc.exp, asteroidSet.contains(asteroidPosition{tc.x,tc.y}))
+		})
+	}
 }
