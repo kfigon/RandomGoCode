@@ -1,5 +1,7 @@
 package day10
 
+import "math"
+
 func isAsteroid(c rune) bool { return c =='#' }
 type spaceMap []string
 
@@ -65,5 +67,15 @@ type trigonometryPoint struct {
 	degree, length float64
 }
 func (p point) trigonometryVersion(end point) trigonometryPoint {
-	return trigonometryPoint{}
+	deltaX := math.Pow((float64(end.x) - float64(p.x)), 2); 
+	deltaY := math.Pow((float64(end.y) - float64(p.y)), 2);
+
+	distance := math.Sqrt(deltaY + deltaX);
+
+	radians := math.Atan2((float64(end.y) - float64(p.y)), (float64(end.x) - float64(p.x)));
+	// angle := radians * (180 / math.Pi);
+	return trigonometryPoint{
+		degree: radians,
+		length: distance,
+	}
 }

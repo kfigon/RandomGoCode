@@ -147,8 +147,8 @@ func TestTrigonometry(t *testing.T) {
 		{point{0,0}, point{0,0}, 0,0},
 		{point{0,0}, point{1,0}, 0,1},
 		{point{0,0}, point{2,0}, 0,2},
-		{point{0,0}, point{0,2}, 3.14156/2,2},
-		{point{1,1}, point{0,3}, 3.14156/2,2},
+		{point{0,0}, point{0,2}, 1.5707963267948966,2},
+		{point{1,1}, point{0,3}, 2.0344439357957027,2.23606797749979},
 	}
 	for i, tc := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
