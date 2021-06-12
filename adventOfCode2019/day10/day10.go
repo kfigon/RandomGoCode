@@ -86,18 +86,24 @@ func (s *set) contains(a asteroidPosition) bool {
 func (s *set) len() int { return len(s.data) }
 
 type point struct { x,y float64 }
-type fun struct { a,b float64 }
+type fun struct { 
+	p1,p2 point
+}
 
 func buildFunction(p1,p2 point) fun {
-	a := (p1.y - p2.y)/(p1.x-p2.x)
-	b := p1.y - p1.x*a
 	return fun{
-		a: a,
-		b: b,
+		p1: p1,
+		p2: p2,
 	}
 }
 
 func (f fun) isPointOnTheLine(p point) bool {
-	return p.y == f.a*p.x + f.b
-}
+	if (f.p1.x == p.x && f.p1.y == p.y) || 
+	   (f.p2.x == p.x && f.p2.y == p.y) {
+			return true
+	}
 
+	a := (f.p1.y - f.p2.y)/(f.p1.x-f.p2.x)
+	b := f.p1.y - f.p1.x*a
+	return p.y == a*p.x + b
+}
