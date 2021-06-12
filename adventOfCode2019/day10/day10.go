@@ -1,6 +1,10 @@
 package day10
 
-import "math"
+import (
+	"math"
+	"sort"
+)
+
 
 func isAsteroid(c rune) bool { return c =='#' }
 type spaceMap []string
@@ -46,10 +50,11 @@ func (s spaceMap) filterAsteroids() []point {
 
 // returns number of points visible form the starting point
 func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
-	// todo
-	// iter through all points
-	// build a map[degree]=length
-	// if theres already such degree - check length and choose min()
+	visiblePoints := s.buildAngularMap(startingPoint, asteroids)
+	return len(visiblePoints)
+}
+
+func (s spaceMap) buildAngularMap(startingPoint point, asteroids []point) map[float64]float64 {
 	visiblePoints := map[float64]float64{}
 
 	for _,v := range asteroids {
@@ -64,9 +69,34 @@ func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 		} else if trig.degree < angle{
 			visiblePoints[trig.degree] = trig.length
 		}
-
 	}
-	return len(visiblePoints)
+	return visiblePoints
+}
+
+func (s spaceMap) findVaporizedCoordinate(startingPoint point, nthAsteroid int) point {
+	asteroids := s.filterAsteroids()
+	pointsToOrder := orderByAngle{asteroids, startingPoint}
+	sort.Sort(pointsToOrder)
+	return pointsToOrder.points[nthAsteroid]
+}
+
+
+type orderByAngle struct {
+	points	[]point
+	startingPoint point
+}
+func (a orderByAngle) Len() int           { return len(a.points) }
+func (a orderByAngle) Swap(i, j int)      { 
+	a.points[i], a.points[j] = a.points[j], a.points[i] 
+}
+func (a orderByAngle) Less(i, j int) bool { 
+	trigI := a.startingPoint.trigonometryVersion(a.points[i])
+	trigJ := a.startingPoint.trigonometryVersion(a.points[j])
+	
+	if trigI.degree < trigJ.degree {
+		return true
+	}
+	return trigI.length < trigJ.length
 }
 
 type point struct { x,y int }

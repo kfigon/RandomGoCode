@@ -104,8 +104,12 @@ func TestPart1File(t *testing.T) {
 
 // https://adventofcode.com/2019/day/10#part2
 func TestPart2File(t *testing.T) {
-	// s := spaceMap(readFile(t))
-	assert.Fail(t,"todo")
+	theMap := spaceMap(readFile(t))
+	station := point{x:23, y:20}
+	coord := theMap.findVaporizedCoordinate(station, 200)
+	assert.Equal(t, 1, coord.x)
+	assert.Equal(t, 2, coord.y)
+	assert.Less(t, 1620, coord.x*100+coord.y)
 }
 
 func TestPositionAnalysis(t *testing.T) {
