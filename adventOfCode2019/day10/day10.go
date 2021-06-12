@@ -14,8 +14,18 @@ type result struct {
 	x,y,visibility int
 }
 
-func (s spaceMap) findBestPlace() result { 
-	return result{}
+func (s spaceMap) findBestPlace() result {
+	asteroidSet := s.buildAsteroidSet()
+	candidate := result{}
+	for coord := range asteroidSet.data {
+		v := s.analyzePosition(coord, asteroidSet)
+		if v > candidate.visibility {
+			candidate.visibility = v
+			candidate.x = coord.x
+			candidate.y = coord.y
+		}
+	}
+	return candidate
 }
 
 func (s spaceMap) buildAsteroidSet() *set {
@@ -30,6 +40,10 @@ func (s spaceMap) buildAsteroidSet() *set {
 		}
 	}
 	return asteroidSet
+}
+
+func (s spaceMap) analyzePosition(a asteroidPosition, asteroidSet *set) int {
+	return -1
 }
 
 type asteroidPosition struct { x,y int }
