@@ -102,83 +102,24 @@ func TestPart1File(t *testing.T) {
 	assert.Equal(t, result{1,1,-1}, got)
 }
 
-func TestPointOnLine(t *testing.T) {
-	p1 := point{0,0}
-	p2 := point{3,1}
-	p3 := point{6,2}
-
-	f := buildFunction(p1,p2)
-
-	got := f.isPointOnTheLine(p3)
-	assert.True(t, got)
-}
-
-func TestAsteroidSetContains(t *testing.T) {
-	testCases := []struct {
-		x,y int
-		exp bool		
-	}{
-		{0,0,false},
-		{1,0,true},
-		{2,0,false},
-		{3,0,false},
-		{4,0,true},
-		{5,0,false},
-		
-		{0,1,false},
-		{1,1,false},
-		{2,1,false},
-		{3,1,false},
-		{4,1,false},
-		{5,1,false},
-
-		{0,2,true},
-		{1,2,true},
-		{2,2,true},
-		{3,2,true},
-		{4,2,true},
-		{5,2,false},
-
-		{0,3,false},
-		{1,3,false},
-		{2,3,false},
-		{3,3,false},
-		{4,3,true},
-		{5,3,false},
-	}
-	data:=`.#..#.
-......
-#####.
-....#.
-...##.`
-	s := buildMap(data)
-	asteroidSet := s.buildAsteroidSet()
-	assert.Equal(t, 10, asteroidSet.len())
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%v-%v", tc.x, tc.y), func(t *testing.T) {
-			assert.Equal(t, tc.exp, asteroidSet.contains(point{tc.x,tc.y}))
-		})
-	}
-}
-
 func TestPositionAnalysis(t *testing.T) {
 	testCases := []struct {
 		x,y int
 		exp int
 	}{
-		// {0,0,0},
+		{0,0,0},
 		{1,0,7},
-		// {4,0,7},
+		{4,0,7},
 		
-		// {0,2,6},
-		// {1,2,7},
-		// {2,2,7},
-		// {3,2,7},
-		// {4,2,5},
+		{0,2,6},
+		{1,2,7},
+		{2,2,7},
+		{3,2,7},
+		{4,2,5},
 		
-		// {4,3,7},
-		// {3,4,8},
-		// {4,4,7},
+		{4,3,7},
+		{3,4,8},
+		{4,4,7},
 	}
 	data:=`.#..#.
 ......
@@ -186,8 +127,8 @@ func TestPositionAnalysis(t *testing.T) {
 ....#.
 ...##.`
 	s := buildMap(data)
-	asteroidSet := s.buildAsteroidSet()
-	assert.Equal(t, 10, asteroidSet.len())
+	asteroidSet := s.filterAsteroids()
+	assert.Equal(t, 10, len(asteroidSet))
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v-%v", tc.x, tc.y), func(t *testing.T) {
 			got := s.analyzePosition(point{tc.x,tc.y}, asteroidSet)
