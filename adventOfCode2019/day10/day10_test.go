@@ -110,7 +110,7 @@ func TestPart2File(t *testing.T) {
 	coord := theMap.orderByVaporization(station)[200-1]
 	assert.Equal(t, 1, coord.x)
 	assert.Equal(t, 2, coord.y)
-	assert.Less(t, 1620, coord.x*100+coord.y)
+	assert.Equal(t, 123, coord.x*100+coord.y)
 }
 
 func TestPositionAnalysis(t *testing.T) {
@@ -197,6 +197,18 @@ func TestOrderAsteroids(t *testing.T) {
 		v:=ordered[i]
 		log.Println(i,"---->",v.x,",",v.y)
 	}
+	startingIdx := 0
+	for i := 0; i < len(ordered); i++ {
+		if ordered[i].x == 11 && ordered[i].y==12 {
+			startingIdx = i
+			break
+		}
+	}
+
+	require.Equal(t, point{11,12}, ordered[startingIdx])
+	require.Equal(t, point{12,1}, ordered[startingIdx+1], "invalid second element")
+	require.Equal(t, point{12,2}, ordered[startingIdx+1], "invalid third element")
+
 	assert.Equal(t, point{11,12}, ordered[0])
 	assert.Equal(t, point{12,1}, ordered[1])
 	assert.Equal(t, point{12,2}, ordered[2])
