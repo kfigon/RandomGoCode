@@ -68,35 +68,70 @@ func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 	return len(visiblePoints)
 }
 
+// veeeeery bad, does not work yet
 func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	asteroids := s.filterAsteroids()
-	pointsToOrder := orderByAngle{asteroids, startingPoint}
-	sort.Sort(pointsToOrder)
-	return pointsToOrder.points
-}
-
-type orderByAngle struct {
-	points	[]point
-	startingPoint point
-}
-
-func (a orderByAngle) Len() int           { return len(a.points) }
-func (a orderByAngle) Swap(i, j int)      { 
-	a.points[i], a.points[j] = a.points[j], a.points[i] 
-}
-
-func (a orderByAngle) Less(i, j int) bool { 
-	pi := a.points[i]
-	pj := a.points[j]
-
-	trigI := a.startingPoint.trigonometryVersion(pi)
-	trigJ := a.startingPoint.trigonometryVersion(pj)
-	
-	if trigI.degree < trigJ.degree {
-		return true
+	sortedByAngle := []orderingData{}
+	for i := 0; i < len(asteroids); i++ {
+		if startingPoint.eq(asteroids[i]) {
+			continue
+		}
+		sortedByAngle = append(sortedByAngle, newOrderingObj(startingPoint, asteroids[i]))
 	}
-	return trigI.length < trigJ.length
+	sort.Slice(sortedByAngle, func(i, j int) bool {
+		return sortedByAngle[i].angle < sortedByAngle[j].angle
+	})
+	
+	groupedByAngle := map[float64][]orderingData{}
+	for i := 0; i < len(sortedByAngle); i++ {
+		v := sortedByAngle[i]
+		if _, ok := groupedByAngle[v.angle]; !ok {
+			groupedByAngle[v.angle] = []orderingData{}	
+		}
+		groupedByAngle[v.angle] = append(groupedByAngle[v.angle], v)
+	}
+	for key := range groupedByAngle {
+		sort.Slice(groupedByAngle[key], func(i, j int) bool {
+			return groupedByAngle[key][i].length < groupedByAngle[key][j].length
+		})
+	}
+
+	out := []point{}
+	for len(groupedByAngle) > 0 {
+		for i := 0; i < len(sortedByAngle); i++ {
+			pt := sortedByAngle[i]
+			v := groupedByAngle[pt.angle]
+			if len(v) == 0 {
+				delete(groupedByAngle, pt.angle)
+			} else if len(v) == 1 {
+				tmp := groupedByAngle[pt.angle][0]
+				out = append(out, tmp.pt)
+				delete(groupedByAngle, pt.angle)
+			} else {
+				tmp := groupedByAngle[pt.angle][0]
+				out = append(out, tmp.pt)
+				groupedByAngle[pt.angle] = groupedByAngle[pt.angle][1:]
+			}
+		}
+	}
+
+	return out
 }
+
+type orderingData struct {
+	pt	point
+	angle, length float64
+}
+
+func newOrderingObj(starting point, pt point) orderingData {
+	trig := starting.trigonometryVersion(pt)
+	return orderingData{
+		pt: pt,
+		angle: trig.degree,
+		length: trig.length,
+	}
+}
+
 
 type point struct { x,y int }
 func (p point) eq(other point) bool {

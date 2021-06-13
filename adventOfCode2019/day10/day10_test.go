@@ -3,6 +3,7 @@ package day10
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -192,6 +193,10 @@ func TestOrderAsteroids(t *testing.T) {
 	s := buildMap(data)
 	ordered := s.orderByVaporization(point{11,13})
 
+	for i := 0; i < len(ordered); i++ {
+		v:=ordered[i]
+		log.Println(i,"---->",v.x,",",v.y)
+	}
 	assert.Equal(t, point{11,12}, ordered[0])
 	assert.Equal(t, point{12,1}, ordered[1])
 	assert.Equal(t, point{12,2}, ordered[2])
