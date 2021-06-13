@@ -147,10 +147,10 @@ func (p point) trigonometryVersion(end point) trigonometryPoint {
 
 	distance := math.Sqrt(deltaY + deltaX);
 
-	radians := math.Atan2((float64(end.y) - float64(p.y)), (float64(end.x) - float64(p.x)));
-	// angle := radians * (180 / math.Pi);
+	const RADIAN_TO_DEGREE = 180 / math.Pi
+	angle := 180 - (RADIAN_TO_DEGREE * math.Atan2(float64(end.y) - float64(p.y), float64(end.x) - float64(p.x)))
 	return trigonometryPoint{
-		degree: radians,
+		degree: angle,
 		length: distance,
 	}
 }

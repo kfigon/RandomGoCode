@@ -3,7 +3,6 @@ package day10
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -108,9 +107,9 @@ func TestPart2File(t *testing.T) {
 	theMap := spaceMap(readFile(t))
 	station := point{x:23, y:20}
 	coord := theMap.orderByVaporization(station)[200-1]
-	assert.Equal(t, 1, coord.x)
-	assert.Equal(t, 2, coord.y)
-	assert.Equal(t, 123, coord.x*100+coord.y)
+	assert.Equal(t, 11, coord.x)
+	assert.Equal(t, 19, coord.y)
+	assert.Equal(t, 1119, coord.x*100+coord.y)
 }
 
 func TestPositionAnalysis(t *testing.T) {
@@ -147,27 +146,6 @@ func TestPositionAnalysis(t *testing.T) {
 	}
 }
 
-func TestTrigonometry(t *testing.T) {
-	testCases := []struct {
-		start point
-		end point
-		expDegree float64
-		expLen float64
-	}{
-		{point{0,0}, point{0,0}, 0,0},
-		{point{0,0}, point{1,0}, 0,1},
-		{point{0,0}, point{2,0}, 0,2},
-		{point{0,0}, point{0,2}, 1.5707963267948966,2},
-		{point{1,1}, point{0,3}, 2.0344439357957027,2.23606797749979},
-	}
-	for i, tc := range testCases {
-		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			got := tc.start.trigonometryVersion(tc.end)
-			assert.Equal(t, tc.expDegree, got.degree)
-			assert.Equal(t, tc.expLen, got.length)
-		})
-	}
-}
 
 func TestOrderAsteroids(t *testing.T) {
 	data := `.#..##.###...#######
@@ -193,10 +171,6 @@ func TestOrderAsteroids(t *testing.T) {
 	s := buildMap(data)
 	ordered := s.orderByVaporization(point{11,13})
 
-	for i := 0; i < len(ordered); i++ {
-		v:=ordered[i]
-		log.Println(i,"---->",v.x,",",v.y)
-	}
 	startingIdx := 0
 	for i := 0; i < len(ordered); i++ {
 		if ordered[i].x == 11 && ordered[i].y==12 {
