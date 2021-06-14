@@ -159,7 +159,7 @@ func (p point) trigonometryVersion(end point) trigonometryPoint {
 	const RADIAN_TO_DEGREE = 180 / math.Pi
 	radians := math.Atan2(float64(end.y) - float64(p.y), float64(end.x) - float64(p.x))
 	
-	angle := 180 - (RADIAN_TO_DEGREE * radians)
+	angle := (RADIAN_TO_DEGREE * radians) + 90
 	return trigonometryPoint{
 		degree: angle,
 		length: distance,

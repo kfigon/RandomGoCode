@@ -146,6 +146,27 @@ func TestPositionAnalysis(t *testing.T) {
 	}
 }
 
+func TestTrigonometry(t *testing.T) {
+	testCases := []struct {
+		endPoint point
+		expAngle float64
+	}{
+		{point{8,1},0},
+		{point{8,0},0},
+		{point{9,2},45},
+		{point{9,3},90},
+		{point{10,3},90},
+		{point{8,4},180},
+		{point{5,3},270},
+	}
+	start := point{8,3}
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			got := start.trigonometryVersion(tc.endPoint)
+			assert.Equal(t, tc.expAngle, got.degree)
+		})
+	}
+}
 
 func TestOrderAsteroids(t *testing.T) {
 	data := `.#..##.###...#######
