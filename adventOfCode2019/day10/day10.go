@@ -71,30 +71,8 @@ func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 // veeeeery bad, does not work yet
 func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	asteroids := s.filterAsteroids()
-	sortedByAngle := []orderingData{}
-	for i := 0; i < len(asteroids); i++ {
-		if startingPoint.eq(asteroids[i]) {
-			continue
-		}
-		sortedByAngle = append(sortedByAngle, newOrderingObj(startingPoint, asteroids[i]))
-	}
-	sort.Slice(sortedByAngle, func(i, j int) bool {
-		return sortedByAngle[i].angle < sortedByAngle[j].angle
-	})
-	
-	groupedByAngle := map[float64][]orderingData{}
-	for i := 0; i < len(sortedByAngle); i++ {
-		v := sortedByAngle[i]
-		if _, ok := groupedByAngle[v.angle]; !ok {
-			groupedByAngle[v.angle] = []orderingData{}	
-		}
-		groupedByAngle[v.angle] = append(groupedByAngle[v.angle], v)
-	}
-	for key := range groupedByAngle {
-		sort.Slice(groupedByAngle[key], func(i, j int) bool {
-			return groupedByAngle[key][i].length < groupedByAngle[key][j].length
-		})
-	}
+	sortedByAngle := sortByAngle(startingPoint, asteroids)
+	groupedByAngle := groupByAngleAndSort(sortedByAngle)
 
 	out := []point{}
 	for len(groupedByAngle) > 0 {
@@ -116,6 +94,37 @@ func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	}
 
 	return out
+}
+
+func sortByAngle(startingPoint point, pts []point) []orderingData {
+	sortedByAngle := []orderingData{}
+	for i := 0; i < len(pts); i++ {
+		if startingPoint.eq(pts[i]) {
+			continue
+		}
+		sortedByAngle = append(sortedByAngle, newOrderingObj(startingPoint, pts[i]))
+	}
+	sort.Slice(sortedByAngle, func(i, j int) bool {
+		return sortedByAngle[i].angle < sortedByAngle[j].angle
+	})
+	return sortedByAngle
+}
+
+func groupByAngleAndSort(sorted []orderingData) map[float64][]orderingData {
+	groupedByAngle := map[float64][]orderingData{}
+	for i := 0; i < len(sorted); i++ {
+		v := sorted[i]
+		if _, ok := groupedByAngle[v.angle]; !ok {
+			groupedByAngle[v.angle] = []orderingData{}	
+		}
+		groupedByAngle[v.angle] = append(groupedByAngle[v.angle], v)
+	}
+	for key := range groupedByAngle {
+		sort.Slice(groupedByAngle[key], func(i, j int) bool {
+			return groupedByAngle[key][i].length < groupedByAngle[key][j].length
+		})
+	}
+	return groupedByAngle
 }
 
 type orderingData struct {
@@ -148,7 +157,9 @@ func (p point) trigonometryVersion(end point) trigonometryPoint {
 	distance := math.Sqrt(deltaY + deltaX);
 
 	const RADIAN_TO_DEGREE = 180 / math.Pi
-	angle := 180 - (RADIAN_TO_DEGREE * math.Atan2(float64(end.y) - float64(p.y), float64(end.x) - float64(p.x)))
+	radians := math.Atan2(float64(end.y) - float64(p.y), float64(end.x) - float64(p.x))
+	
+	angle := 180 - (RADIAN_TO_DEGREE * radians)
 	return trigonometryPoint{
 		degree: angle,
 		length: distance,
