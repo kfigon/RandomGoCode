@@ -73,28 +73,22 @@ func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	sortedByAngle := sortByAngle(startingPoint, asteroids)
 	groupedByAngle := groupByAngleAndSort(sortedByAngle)
 
-	uniqueAngles := []float64{}
+	uniqueSortedAngles := []float64{}
 	for ang := range groupedByAngle {
-		uniqueAngles = append(uniqueAngles, ang)
+		uniqueSortedAngles = append(uniqueSortedAngles, ang)
 	}
-	sort.Float64s(uniqueAngles)
+	sort.Float64s(uniqueSortedAngles)
 
 	out := []point{}
 	for len(groupedByAngle) > 0 {
-		for i := 0; i < len(uniqueAngles); i++ {
-			angle := uniqueAngles[i]
-			v := groupedByAngle[angle]
-			if len(v) == 0 {
+		for _, angle := range uniqueSortedAngles {
+			pointsOnAngle := groupedByAngle[angle]
+			if len(pointsOnAngle) == 0 {
 				delete(groupedByAngle, angle)
-			} else if len(v) == 1 {
-				tmp := groupedByAngle[angle][0]
-				out = append(out, tmp.pt)
-				delete(groupedByAngle, angle)
-			} else {
-				tmp := groupedByAngle[angle][0]
-				out = append(out, tmp.pt)
-				groupedByAngle[angle] = groupedByAngle[angle][1:]
-			}
+				continue
+			} 
+			out = append(out, pointsOnAngle[0].pt)
+			groupedByAngle[angle] = pointsOnAngle[1:]
 		}
 	}
 
