@@ -73,22 +73,27 @@ func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	sortedByAngle := sortByAngle(startingPoint, asteroids)
 	groupedByAngle := groupByAngleAndSort(sortedByAngle)
 
+	uniqueAngles := []float64{}
+	for ang := range groupedByAngle {
+		uniqueAngles = append(uniqueAngles, ang)
+	}
+	sort.Float64s(uniqueAngles)
+
 	out := []point{}
 	for len(groupedByAngle) > 0 {
-		for i := 0; i < len(sortedByAngle); i++ {
-			// wrong - first elements will be with angle 0, no rotation involved :(
-			pt := sortedByAngle[i]
-			v := groupedByAngle[pt.angle]
+		for i := 0; i < len(uniqueAngles); i++ {
+			angle := uniqueAngles[i]
+			v := groupedByAngle[angle]
 			if len(v) == 0 {
-				delete(groupedByAngle, pt.angle)
+				delete(groupedByAngle, angle)
 			} else if len(v) == 1 {
-				tmp := groupedByAngle[pt.angle][0]
+				tmp := groupedByAngle[angle][0]
 				out = append(out, tmp.pt)
-				delete(groupedByAngle, pt.angle)
+				delete(groupedByAngle, angle)
 			} else {
-				tmp := groupedByAngle[pt.angle][0]
+				tmp := groupedByAngle[angle][0]
 				out = append(out, tmp.pt)
-				groupedByAngle[pt.angle] = groupedByAngle[pt.angle][1:]
+				groupedByAngle[angle] = groupedByAngle[angle][1:]
 			}
 		}
 	}
@@ -101,7 +106,7 @@ func sortByAngle(startingPoint point, pts []point) []orderingData {
 	for i := 0; i < len(pts); i++ {
 		if startingPoint.eq(pts[i]) {
 			continue
-		}
+		} 
 		sortedByAngle = append(sortedByAngle, newOrderingObj(startingPoint, pts[i]))
 	}
 	sort.Slice(sortedByAngle, func(i, j int) bool {

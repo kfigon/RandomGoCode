@@ -193,18 +193,6 @@ func TestOrderAsteroids(t *testing.T) {
 	s := buildMap(data)
 	ordered := s.orderByVaporization(point{11,13})
 
-	startingIdx := 0
-	for i := 0; i < len(ordered); i++ {
-		if ordered[i].x == 11 && ordered[i].y==12 {
-			startingIdx = i
-			break
-		}
-	}
-
-	require.Equal(t, point{11,12}, ordered[startingIdx])
-	require.Equal(t, point{12,1}, ordered[startingIdx+1], "invalid second element")
-	require.Equal(t, point{12,2}, ordered[startingIdx+1], "invalid third element")
-
 	assert.Equal(t, point{11,12}, ordered[0])
 	assert.Equal(t, point{12,1}, ordered[1])
 	assert.Equal(t, point{12,2}, ordered[2])
