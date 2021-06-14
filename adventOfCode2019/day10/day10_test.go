@@ -158,6 +158,7 @@ func TestTrigonometry(t *testing.T) {
 		{point{10,3},90},
 		{point{8,4},180},
 		{point{5,3},270},
+		{point{9,0},18.43494882292201},
 	}
 	start := point{8,3}
 	for i, tc := range testCases {
@@ -224,10 +225,18 @@ func TestOrdering2(t *testing.T) {
 ..#.....#...###..
 ..#.#.....#....##`
 
+//.#....###24...#..
+//##...##.13#67..9#
+//##...#...5.8####.
+//..#.....X...###..
+//..#.#.....#....##
 	base := point{8,3}
 
 	s := buildMap(data)
 	ordered := s.orderByVaporization(base)
 
 	assert.Equal(t, point{8,1}, ordered[0])
+	assert.Equal(t, point{9,0}, ordered[1])
+	assert.Equal(t, point{9,1}, ordered[2])
+	assert.Equal(t, point{10,0}, ordered[3])
 }

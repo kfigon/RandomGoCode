@@ -68,7 +68,6 @@ func (s spaceMap) analyzePosition(startingPoint point, asteroids []point) int {
 	return len(visiblePoints)
 }
 
-// veeeeery bad, does not work yet
 func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	asteroids := s.filterAsteroids()
 	sortedByAngle := sortByAngle(startingPoint, asteroids)
@@ -77,6 +76,7 @@ func (s spaceMap) orderByVaporization(startingPoint point) []point {
 	out := []point{}
 	for len(groupedByAngle) > 0 {
 		for i := 0; i < len(sortedByAngle); i++ {
+			// wrong - first elements will be with angle 0, no rotation involved :(
 			pt := sortedByAngle[i]
 			v := groupedByAngle[pt.angle]
 			if len(v) == 0 {
