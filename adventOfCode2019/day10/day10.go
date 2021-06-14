@@ -160,6 +160,9 @@ func (p point) trigonometryVersion(end point) trigonometryPoint {
 	radians := math.Atan2(float64(end.y) - float64(p.y), float64(end.x) - float64(p.x))
 	
 	angle := (RADIAN_TO_DEGREE * radians) + 90
+	if angle < 0 {
+		angle += 360
+	}
 	return trigonometryPoint{
 		degree: angle,
 		length: distance,

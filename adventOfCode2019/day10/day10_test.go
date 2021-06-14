@@ -216,3 +216,18 @@ func TestOrderAsteroids(t *testing.T) {
 	assert.Equal(t, point{10,9}, ordered[200])
 	assert.Equal(t, point{11,1}, ordered[298])
 }
+
+func TestOrdering2(t *testing.T) {
+	data := `.#....#####...#..
+##...##.#####..##
+##...#...#.#####.
+..#.....#...###..
+..#.#.....#....##`
+
+	base := point{8,3}
+
+	s := buildMap(data)
+	ordered := s.orderByVaporization(base)
+
+	assert.Equal(t, point{8,1}, ordered[0])
+}
