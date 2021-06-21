@@ -29,34 +29,35 @@ func readFile(t *testing.T) []int {
 		
 		out = append(out, v)
 	}
-	return out	
+	return out
 }
 
 func TestRobot(t *testing.T) {
-	controller := newController()
+	controller := newRobot()
 
 	controller.process(1,0)
-	assert.Equal(t, position{-1,0},controller.robot.position)
+	assert.Equal(t, position{-1,0},controller.position)
 
 	controller.process(0,0)
-	assert.Equal(t, position{-1,-1},controller.robot.position)
+	assert.Equal(t, position{-1,-1},controller.position)
 
 	controller.process(1,0)
 	controller.process(1,0)
-	assert.Equal(t, position{0,0},controller.robot.position)
+	assert.Equal(t, position{0,0},controller.position)
 	assert.Equal(t, COLOR_WHITE, controller.currentColor())
 
 	controller.process(0,1)
 	controller.process(1,0)
 	controller.process(1,0)
-	assert.Equal(t, position{0,1},controller.robot.position)
 
-	assert.Equal(t, 6, len(controller.grid.m))
+	assert.Equal(t, position{0,1},controller.position)
+
+	assert.Equal(t, 6, len(controller.grid))
 }
 
 func TestPart1(t *testing.T) {
 	computer := intcode.NewComputer(readFile(t))
-	controller := newController()
+	controller := newRobot()
 
 	for !computer.SingleInstruction() {
 
@@ -67,35 +68,29 @@ func TestPart1(t *testing.T) {
 			computer.SingleInstruction()
 			nextMove := computer.GetOutput()
 			controller.process(nextColor, nextMove)
-			computer.ClearUserInput()
+			// computer.ClearUserInput()
 		}
 	}
-	assert.Less(t, len(controller.grid.m), 6016)
-	assert.NotEqual(t, 1248, len(controller.grid.m))
-	assert.NotEqual(t, 8218, len(controller.grid.m))
-	assert.Equal(t, 6, len(controller.grid.m))
+	result := len(controller.grid)
+	assert.Less(t, result, 6016)
+	assert.NotEqual(t, 1248, result)
+	assert.NotEqual(t, 8218, result)
+	assert.Equal(t, 6, result)
 }
 
 
 type position struct { x,y int }
 
-type grid struct {
-	m map[position]int
-}
-
-func newGrid() *grid {
-	return &grid{
-		m: map[position]int{},
-	}
-}
-
 type robot struct {
 	position
 	direction int
+	grid map[position]int
 }
 
 func newRobot() *robot {
-	return &robot{}
+	return &robot{
+		grid: map[position]int{},
+	}
 }
 
 
@@ -143,32 +138,20 @@ func (this *robot) right() {
 	}
 }
 
-type robotController struct {
-	robot *robot
-	grid *grid
-}
-
-func newController() *robotController {
-	return &robotController{
-		robot: newRobot(),
-		grid: newGrid(),
-	}
-}
-
 const (
 	MOVE_LEFT = iota
 	MOVE_RIGHT
 )
-func (this *robotController) process(paintInstruction, moveInstruction int) {
-	this.grid.m[this.robot.position] = paintInstruction
+func (this *robot) process(paintInstruction, moveInstruction int) {
+	this.grid[this.position] = paintInstruction
 
 	if moveInstruction == MOVE_LEFT {
-		this.robot.left()
+		this.left()
 	} else if moveInstruction == MOVE_RIGHT {
-		this.robot.right()
+		this.right()
 	}
 }
 
-func (this *robotController) currentColor() int {
-	return this.grid.m[this.robot.position]
+func (this *robot) currentColor() int {
+	return this.grid[this.position]
 }
