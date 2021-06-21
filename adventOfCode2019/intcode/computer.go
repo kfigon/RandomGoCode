@@ -51,6 +51,16 @@ func (c *Computer) SingleInstruction() bool {
 	return c.instructionCounter == IDX_TERMINATE
 }
 
+func (c *Computer) NextInput() bool {
+	opcode := opcode(c.getValue(c.instructionCounter))
+	return opcode.extractOpcode() == OP_INPUT
+}
+
+func (c *Computer) NextOuput() bool {
+	opcode := opcode(c.getValue(c.instructionCounter))
+	return opcode.extractOpcode() == OP_OUTPUT
+}
+
 func (c *Computer) getValue(idx int) int {
 	if idx < len(c.instructions) {
 		return c.instructions[idx]

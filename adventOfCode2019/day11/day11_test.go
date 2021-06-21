@@ -1,6 +1,7 @@
 package day11
 
 import (
+	"aoc2019/intcode"
 	"io"
 	"os"
 	"strconv"
@@ -43,6 +44,26 @@ func TestRobot(t *testing.T) {
 	controller.process(1,0)
 	controller.process(1,0)
 
+	assert.Equal(t, 6, len(controller.grid.m))
+}
+
+func TestPart1(t *testing.T) {
+	computer := intcode.NewComputer(readFile(t))
+	controller := newController()
+
+	for {
+		if computer.SingleInstruction() {
+			break
+		}
+		if computer.NextInput() {
+			computer.SetUserInput(controller.currentColor())
+		} else if computer.NextOuput() {
+			nextColor := computer.GetOutput()
+			nextMove := computer.GetOutput()
+			controller.process(nextColor, nextMove)
+		}
+	}
+	assert.Less(t, 8707, len(controller.grid.m))
 	assert.Equal(t, 6, len(controller.grid.m))
 }
 
