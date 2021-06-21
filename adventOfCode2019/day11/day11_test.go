@@ -49,7 +49,6 @@ func TestRobot(t *testing.T) {
 	controller.process(0,1)
 	controller.process(1,0)
 	controller.process(1,0)
-
 	assert.Equal(t, position{0,1},controller.robot.position)
 
 	assert.Equal(t, 6, len(controller.grid.m))
@@ -59,10 +58,8 @@ func TestPart1(t *testing.T) {
 	computer := intcode.NewComputer(readFile(t))
 	controller := newController()
 
-	for {
-		if computer.SingleInstruction() {
-			break
-		}
+	for !computer.SingleInstruction() {
+
 		if computer.NextInput() {
 			computer.SetUserInput(controller.currentColor())
 		} else if computer.NextOuput() {
@@ -70,10 +67,12 @@ func TestPart1(t *testing.T) {
 			computer.SingleInstruction()
 			nextMove := computer.GetOutput()
 			controller.process(nextColor, nextMove)
+			computer.ClearUserInput()
 		}
 	}
 	assert.Less(t, len(controller.grid.m), 6016)
 	assert.NotEqual(t, 1248, len(controller.grid.m))
+	assert.NotEqual(t, 8218, len(controller.grid.m))
 	assert.Equal(t, 6, len(controller.grid.m))
 }
 
