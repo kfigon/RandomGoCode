@@ -56,33 +56,40 @@ func TestRobot(t *testing.T) {
 }
 
 func TestPart1(t *testing.T) {
-	computer := intcode.NewComputer(readFile(t))
-	controller := newRobot()
+	result := part1(readFile(t))
 
-	twoOutputs := []int{}
+	require.NotEqual(t, 1521, result)
+	require.NotEqual(t, 6016, result)
+	require.NotEqual(t, 1248, result)
+	require.NotEqual(t, 8218, result)
+	require.NotEqual(t, 2194, result)
+	require.NotEqual(t, 2380, result)
+	
+	assert.Equal(t, 6, result)
+}
+
+func part1(input []int) int {
+	computer := intcode.NewComputer(input)
+	controller := newRobot()
+	lastTwoOutputs := []int{}
 
 	for !computer.SingleInstruction() {
 
 		if computer.NextInput() {
 			computer.SetUserInput(controller.currentColor())
+			computer.SingleInstruction()
 		} else if computer.NextOuput() {
 			computer.SingleInstruction()
-			nextColor := computer.GetOutput()
-			twoOutputs = append(twoOutputs, nextColor)
+			ouputVal := computer.GetOutput()
+			lastTwoOutputs = append(lastTwoOutputs, ouputVal)
 		}
 
-		if len(twoOutputs) == 2 {
-			controller.process(twoOutputs[0], twoOutputs[1])
-			twoOutputs = []int{}
+		if len(lastTwoOutputs) == 2 {
+			controller.process(lastTwoOutputs[0], lastTwoOutputs[1])
+			lastTwoOutputs = []int{}
 		}
 	}
-	result := len(controller.grid)
-	assert.NotEqual(t, 1521, result)
-	assert.NotEqual(t, 6016, result)
-	assert.NotEqual(t, 1248, result)
-	assert.NotEqual(t, 8218, result)
-	assert.NotEqual(t, 2194, result)
-	assert.Equal(t, 6, result)
+	return len(controller.grid)
 }
 
 
