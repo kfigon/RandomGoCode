@@ -65,7 +65,7 @@ func part1(input []int) int {
 	computer := intcode.NewComputer(input)
 	controller := newRobot()
 	lastTwoOutputs := []int{}
-
+	
 	for !computer.SingleInstruction() {
 
 		if computer.NextInput() {
@@ -113,50 +113,50 @@ const (
 	MOVE_RIGHT
 )
 
-func (this *robot) left() {
-	switch this.direction {
+func (r *robot) left() {
+	switch r.direction {
 	case DIRECTION_UP: 
-		this.direction = DIRECTION_LEFT
-		this.x--
+		r.direction = DIRECTION_LEFT
+		r.x--
 	case DIRECTION_DOWN: 
-		this.direction = DIRECTION_RIGHT
-		this.x++
+		r.direction = DIRECTION_RIGHT
+		r.x++
 	case DIRECTION_LEFT:
-		this.direction = DIRECTION_DOWN
-		this.y--
+		r.direction = DIRECTION_DOWN
+		r.y--
 	case DIRECTION_RIGHT:
-		this.direction = DIRECTION_UP
-		this.y++
+		r.direction = DIRECTION_UP
+		r.y++
 	}
 }
 
-func (this *robot) right() {
-	switch this.direction {
+func (r *robot) right() {
+	switch r.direction {
 	case DIRECTION_UP: 
-		this.direction = DIRECTION_RIGHT
-		this.x++
+		r.direction = DIRECTION_RIGHT
+		r.x++
 	case DIRECTION_DOWN: 
-		this.direction = DIRECTION_LEFT
-		this.x--
+		r.direction = DIRECTION_LEFT
+		r.x--
 	case DIRECTION_LEFT:
-		this.direction = DIRECTION_UP
-		this.y++
+		r.direction = DIRECTION_UP
+		r.y++
 	case DIRECTION_RIGHT:
-		this.direction = DIRECTION_DOWN
-		this.y--
+		r.direction = DIRECTION_DOWN
+		r.y--
 	}
 }
 
-func (this *robot) process(paintInstruction, moveInstruction int) {
-	this.grid[this.position] = paintInstruction
+func (r *robot) process(paintInstruction, moveInstruction int) {
+	r.grid[r.position] = paintInstruction
 
 	if moveInstruction == MOVE_LEFT {
-		this.left()
+		r.left()
 	} else if moveInstruction == MOVE_RIGHT {
-		this.right()
+		r.right()
 	}
 }
 
-func (this *robot) currentColor() int {
-	return this.grid[this.position]
+func (r *robot) currentColor() int {
+	return r.grid[r.position]
 }
