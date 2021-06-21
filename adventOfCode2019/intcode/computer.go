@@ -46,6 +46,11 @@ func (c *Computer) Calc() []int {
 	return c.instructions
 }
 
+func (c *Computer) SingleInstruction() bool {
+	c.instructionCounter = c.handleCommand(c.instructionCounter)
+	return c.instructionCounter == IDX_TERMINATE
+}
+
 func (c *Computer) getValue(idx int) int {
 	if idx < len(c.instructions) {
 		return c.instructions[idx]
