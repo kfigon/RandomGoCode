@@ -34,31 +34,39 @@ func readFile(t *testing.T) []int {
 
 func TestRobot(t *testing.T) {
 	controller := newRobot()
+	assertPositionColor := func(expectedColor, x,y int) {
+		assert.Equal(t, expectedColor, controller.grid[position{x,y}])
+	}
+	assertControllersPosition := func(x,y int) {
+		assert.Equal(t, position{x,y}, controller.position)
+	}
+
+	assertPositionColor(COLOR_BLACK, 0,0)
 
 	controller.process(1,0)
-	assert.Equal(t, position{-1,0},controller.position)
+	assertPositionColor(COLOR_WHITE, 0,0)
+	assertControllersPosition(-1,0)
 
 	controller.process(0,0)
-	assert.Equal(t, position{-1,-1},controller.position)
+	assertControllersPosition(-1,-1)
 
 	controller.process(1,0)
 	controller.process(1,0)
-	assert.Equal(t, position{0,0},controller.position)
+	assertControllersPosition(0,0)
+
 	assert.Equal(t, COLOR_WHITE, controller.currentColor())
 
 	controller.process(0,1)
 	controller.process(1,0)
 	controller.process(1,0)
 
-	assert.Equal(t, position{0,1},controller.position)
+	assertControllersPosition(0,1)
 
 	assert.Equal(t, 6, len(controller.grid))
 }
 
 func TestPart1(t *testing.T) {
-	result := part1(readFile(t))
-	
-	assert.Equal(t, 2415, result)
+	assert.Equal(t, 2415, part1(readFile(t)))
 }
 
 func part1(input []int) int {
