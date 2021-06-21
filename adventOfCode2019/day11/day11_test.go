@@ -94,7 +94,6 @@ func part1(input []int) int {
 
 
 type position struct { x,y int }
-
 type robot struct {
 	position
 	direction int
@@ -102,9 +101,7 @@ type robot struct {
 }
 
 func newRobot() *robot {
-	return &robot{
-		grid: map[position]int{},
-	}
+	return &robot{ grid: map[position]int{}}
 }
 
 
@@ -117,6 +114,10 @@ const (
 const (
 	COLOR_BLACK = iota
 	COLOR_WHITE
+)
+const (
+	MOVE_LEFT = iota
+	MOVE_RIGHT
 )
 
 func (this *robot) left() {
@@ -153,10 +154,6 @@ func (this *robot) right() {
 	}
 }
 
-const (
-	MOVE_LEFT = iota
-	MOVE_RIGHT
-)
 func (this *robot) process(paintInstruction, moveInstruction int) {
 	this.grid[this.position] = paintInstruction
 
