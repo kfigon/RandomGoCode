@@ -59,11 +59,12 @@ func TestPart1(t *testing.T) {
 			computer.SetUserInput(controller.currentColor())
 		} else if computer.NextOuput() {
 			nextColor := computer.GetOutput()
+			computer.SingleInstruction()
 			nextMove := computer.GetOutput()
 			controller.process(nextColor, nextMove)
 		}
 	}
-	assert.Less(t, 8707, len(controller.grid.m))
+	assert.Less(t, 6016, len(controller.grid.m))
 	assert.Equal(t, 6, len(controller.grid.m))
 }
 
