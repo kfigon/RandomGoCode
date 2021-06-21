@@ -2,7 +2,6 @@ package intcode
 
 import "math"
 
-
 type Computer struct {
 	instructions []int
 	userInput    *inputHandler

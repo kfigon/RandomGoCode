@@ -59,22 +59,29 @@ func TestPart1(t *testing.T) {
 	computer := intcode.NewComputer(readFile(t))
 	controller := newRobot()
 
+	twoOutputs := []int{}
+
 	for !computer.SingleInstruction() {
 
 		if computer.NextInput() {
 			computer.SetUserInput(controller.currentColor())
 		} else if computer.NextOuput() {
-			nextColor := computer.GetOutput()
 			computer.SingleInstruction()
-			nextMove := computer.GetOutput()
-			controller.process(nextColor, nextMove)
-			// computer.ClearUserInput()
+			nextColor := computer.GetOutput()
+			twoOutputs = append(twoOutputs, nextColor)
+		}
+
+		if len(twoOutputs) == 2 {
+			controller.process(twoOutputs[0], twoOutputs[1])
+			twoOutputs = []int{}
 		}
 	}
 	result := len(controller.grid)
-	assert.Less(t, result, 6016)
+	assert.NotEqual(t, 1521, result)
+	assert.NotEqual(t, 6016, result)
 	assert.NotEqual(t, 1248, result)
 	assert.NotEqual(t, 8218, result)
+	assert.NotEqual(t, 2194, result)
 	assert.Equal(t, 6, result)
 }
 
@@ -104,6 +111,7 @@ const (
 	COLOR_BLACK = iota
 	COLOR_WHITE
 )
+
 func (this *robot) left() {
 	switch this.direction {
 	case DIRECTION_UP: 
