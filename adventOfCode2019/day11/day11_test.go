@@ -76,8 +76,8 @@ func part1(input []int) int {
 	for !computer.SingleInstruction() {
 
 		if computer.NextInput() {
+			computer.ClearUserInput()
 			computer.SetUserInput(controller.currentColor())
-			computer.SingleInstruction()
 		} else if computer.NextOuput() {
 			computer.SingleInstruction()
 			ouputVal := computer.GetOutput()
