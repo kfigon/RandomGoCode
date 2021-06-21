@@ -36,13 +36,21 @@ func TestRobot(t *testing.T) {
 	controller := newController()
 
 	controller.process(1,0)
+	assert.Equal(t, position{-1,0},controller.robot.position)
+
 	controller.process(0,0)
+	assert.Equal(t, position{-1,-1},controller.robot.position)
+
 	controller.process(1,0)
 	controller.process(1,0)
-	
+	assert.Equal(t, position{0,0},controller.robot.position)
+	assert.Equal(t, COLOR_WHITE, controller.currentColor())
+
 	controller.process(0,1)
 	controller.process(1,0)
 	controller.process(1,0)
+
+	assert.Equal(t, position{0,1},controller.robot.position)
 
 	assert.Equal(t, 6, len(controller.grid.m))
 }
