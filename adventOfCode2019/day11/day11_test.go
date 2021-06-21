@@ -64,23 +64,14 @@ func TestPart1(t *testing.T) {
 			controller.process(nextColor, nextMove)
 		}
 	}
-	assert.Less(t, 6016, len(controller.grid.m))
+	assert.Less(t, len(controller.grid.m), 6016)
+	assert.NotEqual(t, 1248, len(controller.grid.m))
 	assert.Equal(t, 6, len(controller.grid.m))
 }
 
-const (
-	DIRECTION_UP = iota
-	DIRECTION_DOWN
-	DIRECTION_LEFT
-	DIRECTION_RIGHT
-)
 
 type position struct { x,y int }
 
-const (
-	COLOR_BLACK = iota
-	COLOR_WHITE
-)
 type grid struct {
 	m map[position]int
 }
@@ -100,6 +91,17 @@ func newRobot() *robot {
 	return &robot{}
 }
 
+
+const (
+	DIRECTION_UP = iota
+	DIRECTION_DOWN
+	DIRECTION_LEFT
+	DIRECTION_RIGHT
+)
+const (
+	COLOR_BLACK = iota
+	COLOR_WHITE
+)
 func (this *robot) left() {
 	switch this.direction {
 	case DIRECTION_UP: 
