@@ -57,15 +57,8 @@ func TestRobot(t *testing.T) {
 
 func TestPart1(t *testing.T) {
 	result := part1(readFile(t))
-
-	require.NotEqual(t, 1521, result)
-	require.NotEqual(t, 6016, result)
-	require.NotEqual(t, 1248, result)
-	require.NotEqual(t, 8218, result)
-	require.NotEqual(t, 2194, result)
-	require.NotEqual(t, 2380, result)
 	
-	assert.Equal(t, 6, result)
+	assert.Equal(t, 2415, result)
 }
 
 func part1(input []int) int {
