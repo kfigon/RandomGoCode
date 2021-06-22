@@ -44,25 +44,33 @@ func TestApplyVelocity(t *testing.T) {
 	assert.Equal(t, position{4,1,5}, m.position)
 }
 
-func applyGravity(m1 *moon, m2 *moon) {
-	applyPosition := func(coord1 *int, coord2 *int) {
-		if *coord1 < *coord2 {
-			*coord1++
-			*coord2--
-		} else if *coord1 > *coord2 {
-			*coord1--
-			*coord2++
-		}
+func TestStep(t *testing.T) {
+	assertPosition := func(exp, p position) {
+		assert.Equal(t, exp, p, "invalid position")
 	}
-	applyPosition(&m1.position.x, &m2.position.x)
-	applyPosition(&m1.position.y, &m2.position.y)
-	applyPosition(&m1.position.z, &m2.position.z)
-}
 
-func applyVelocity(m *moon) {
-	m.position.x += m.velocity.x
-	m.position.y += m.velocity.y
-	m.position.z += m.velocity.z
+	assertVelocity := func(exp, p position) {
+		assert.Equal(t, exp, p, "invalid velocity")
+	}
+
+	initPositions := []position{
+		{-1,0,2},
+		{2,10,-7},
+		{4,-8,8},
+		{3,5,-1},
+	}
+	s := newSystem(initPositions)
+	s.step()
+
+	assertPosition(position{2,-1,1}, s.moons[0].position)
+	assertPosition(position{3,-7,-4}, s.moons[1].position)
+	assertPosition(position{1,-7,5}, s.moons[2].position)
+	assertPosition(position{2,2,0}, s.moons[3].position)
+
+	assertVelocity(position{3,-1,-1}, s.moons[0].velocity)
+	assertVelocity(position{1,3,3}, s.moons[1].velocity)
+	assertVelocity(position{-3,1,-3}, s.moons[2].velocity)
+	assertVelocity(position{-1,-3,1}, s.moons[3].velocity)
 }
 
 func TestPart1(t *testing.T) {
@@ -97,4 +105,52 @@ func newMoon(position position) *moon {
 	return &moon{position: position}
 }
 
+func applyGravity(m1 *moon, m2 *moon) {
+	applyPosition := func(coord1 *int, coord2 *int) {
+		if *coord1 < *coord2 {
+			*coord1++
+			*coord2--
+		} else if *coord1 > *coord2 {
+			*coord1--
+			*coord2++
+		}
+	}
+	applyPosition(&m1.position.x, &m2.position.x)
+	applyPosition(&m1.position.y, &m2.position.y)
+	applyPosition(&m1.position.z, &m2.position.z)
+}
 
+func applyVelocity(m *moon) {
+	m.position.x += m.velocity.x
+	m.position.y += m.velocity.y
+	m.position.z += m.velocity.z
+}
+
+type system struct {
+	moons []moon
+}
+
+func newSystem(positions []position) *system {
+	moons := []moon{}
+	for i := 0; i < len(positions); i++ {
+		moons = append(moons, *newMoon(positions[i]))
+	}
+	return &system{moons}
+}
+
+func (s *system) step() {
+	m := s.moons
+	applyGravity(&m[0], &m[1])
+	applyGravity(&m[0], &m[2])
+	applyGravity(&m[0], &m[3])
+
+	applyGravity(&m[1], &m[2])
+	applyGravity(&m[1], &m[3])
+
+	applyGravity(&m[2], &m[3])
+
+	for i := 0; i < len(m); i++ {
+		v := m[i]
+		applyVelocity(&v)
+	}
+}
