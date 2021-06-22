@@ -81,12 +81,15 @@ func TestPart1Example0(t *testing.T) {
 		{4,-8,8},
 		{3,5,-1},
 	}
-	s := newSystem(initPositions)
-	for i := 0; i < 10; i++ {
+	assert.Equal(t, 179, part1(initPositions, 10))
+}
+
+func part1(pos []position, steps int) int {
+	s := newSystem(pos)
+	for i := 0; i < steps; i++ {
 		s.step()
 	}
-
-	assert.Equal(t, 179, s.totalEnergy())
+	return s.totalEnergy()
 }
 
 func TestPart1Example(t *testing.T) {
@@ -96,12 +99,12 @@ func TestPart1Example(t *testing.T) {
 		{2,-7,3},
 		{9,-8,-3},
 	}
-	s := newSystem(initPositions)
-	for i := 0; i < 100; i++ {
-		s.step()
-	}
+	assert.Equal(t, 1940, part1(initPositions, 100))
+}
 
-	assert.Equal(t, 1940, s.totalEnergy())
+
+func TestPart1(t *testing.T) {
+	assert.Equal(t, 9743, part1(parseInput(), 1000))
 }
 
 type position struct {
