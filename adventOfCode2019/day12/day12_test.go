@@ -1,6 +1,7 @@
 package day12
 
 import (
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -73,8 +74,34 @@ func TestStep(t *testing.T) {
 	assertVelocity(position{-1,-3,1}, s.moons[3].velocity)
 }
 
-func TestPart1(t *testing.T) {
-	t.Fail()
+func TestPart1Example0(t *testing.T) {
+	initPositions := []position{
+		{-1,0,2},
+		{2,-10,-7},
+		{4,-8,8},
+		{3,5,-1},
+	}
+	s := newSystem(initPositions)
+	for i := 0; i < 10; i++ {
+		s.step()
+	}
+
+	assert.Equal(t, 179, s.totalEnergy())
+}
+
+func TestPart1Example(t *testing.T) {
+	initPositions := []position{
+		{-8,-10,0},
+		{5,5,10},
+		{2,-7,3},
+		{9,-8,-3},
+	}
+	s := newSystem(initPositions)
+	for i := 0; i < 100; i++ {
+		s.step()
+	}
+
+	assert.Equal(t, 1940, s.totalEnergy())
 }
 
 type position struct {
@@ -109,6 +136,13 @@ type moon struct {
 
 func newMoon(position position) *moon {
 	return &moon{position: position}
+}
+
+func (m moon) energy() int {
+	kinetic := math.Abs(float64(m.velocity.x)) + math.Abs(float64(m.velocity.y)) + math.Abs(float64(m.velocity.z))
+	potential := math.Abs(float64(m.position.x)) + math.Abs(float64(m.position.y)) + math.Abs(float64(m.position.z))
+
+	return int(potential) * int(kinetic)
 }
 
 func applyGravity(m1 *moon, m2 *moon) (position,position) {
@@ -188,4 +222,12 @@ func (s *system) step() {
 	applyVelocity(&m[1])
 	applyVelocity(&m[2])
 	applyVelocity(&m[3])
+}
+
+func (s *system) totalEnergy() int {
+	sum := 0
+	for _, v := range s.moons {
+		sum += v.energy()
+	}
+	return sum
 }
