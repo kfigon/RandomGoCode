@@ -134,12 +134,49 @@ func TestPart2(t *testing.T) {
 
 func part2(pos []position) uint64 {
 	s := newSystem(pos)
-	var counter uint64 
-	for counter < 100 {
-		s.step()	
-		counter++
+
+	cntX := counter{}
+	// cntY := counter{}
+	// cntZ := counter{}
+
+	setX := newSet()
+	// setY := newSet()
+	// setZ := newSet()
+
+	for !cntX.found {// || !cntY.found || !cntZ.found {
+		s.step()
+
+		// todo: 
+		// 1) repeat over rest of coords
+		// 2) NWD
+		if !cntX.found {
+			keyX := key {
+				pos0:  s.moons[0].position.x,
+				velo0: s.moons[0].velocity.x,
+	
+				pos1:  s.moons[1].position.x,
+				velo1: s.moons[1].velocity.x,
+	
+				pos2:  s.moons[2].position.x,
+				velo2: s.moons[2].velocity.x,
+	
+				pos3:  s.moons[3].position.x,
+				velo3: s.moons[3].velocity.x,
+			}
+
+			if setX.contains(keyX) {
+				cntX.found=true
+			} else {
+				cntX.cnt++
+			}
+		}
 	}
-	return counter
+	return -1
+}
+
+type counter struct {
+	cnt int
+	found bool
 }
 
 type position struct {
@@ -270,3 +307,24 @@ func (s *system) totalEnergy() int {
 	return sum
 }
 
+type void struct{}
+type key struct {
+	pos0, velo0 int
+	pos1, velo1 int
+	pos2, velo2 int
+	pos3, velo3 int
+}
+type set struct {
+	d map[key]void
+}
+func newSet() *set { return &set{map[key]void{}} }
+
+func (s *set) contains(k key) bool {
+	_, ok := s.d[k]
+	return ok
+}
+
+func (s *set) add(k key) {
+	var v void 
+	s.d[k] = v
+}
