@@ -107,6 +107,41 @@ func TestPart1(t *testing.T) {
 	assert.Equal(t, 9743, part1(parseInput(), 1000))
 }
 
+func TestPart2Example(t *testing.T) {
+	initPositions := []position{
+		{-1,0,2},
+		{2,-10,-7},
+		{4,-8,8},
+		{3,5,-1},
+	}
+	assert.Equal(t, uint64(2772), part2(initPositions))
+}
+
+
+func TestPart2Example2(t *testing.T) {
+	initPositions := []position{
+		{-8,-10,0},
+		{5,5,10},
+		{2,-7,3},
+		{9,-8,-3},
+	}
+	assert.Equal(t, uint64(4686774924), part2(initPositions))
+}
+
+func TestPart2(t *testing.T) {
+	assert.Equal(t, 9743, part2(parseInput()))
+}
+
+func part2(pos []position) uint64 {
+	s := newSystem(pos)
+	var counter uint64 
+	for counter < 100 {
+		s.step()	
+		counter++
+	}
+	return counter
+}
+
 type position struct {
 	x,y,z int
 }
@@ -234,3 +269,4 @@ func (s *system) totalEnergy() int {
 	}
 	return sum
 }
+
