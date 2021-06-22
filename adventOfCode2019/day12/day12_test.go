@@ -1,6 +1,7 @@
 package day12
 
 import (
+	"fmt"
 	"math"
 	"regexp"
 	"strconv"
@@ -117,6 +118,21 @@ func TestPart2Example(t *testing.T) {
 	assert.Equal(t, uint64(2772), part2(initPositions))
 }
 
+func TestLeastCommonMultiple(t *testing.T) {
+	testCases := []struct {
+		a,b, exp uint
+	}{
+		{4,6,12},
+		{12,15,60},
+		{6,8,24},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("%v,%v", tc.a,tc.b), func(t *testing.T) {
+			got := lcm(tc.a,tc.b)
+			assert.Equal(t, tc.exp, got)
+		})
+	}
+}
 
 func TestPart2Example2(t *testing.T) {
 	initPositions := []position{
@@ -145,15 +161,13 @@ func part2(pos []position) uint64 {
 		cntX.iterate(s.moons)
 		cntY.iterate(s.moons)
 		cntZ.iterate(s.moons)
-		// todo: 
-		// 1) repeat over rest of coords
-		// 2) NWD
 	}
-	return uint64(cntX.cnt)
+
+	return uint64(lcm(cntX.cnt, lcm(cntY.cnt, cntZ.cnt)))
 }
 
 type counter struct {
-	cnt int
+	cnt uint
 	found bool
 	coord string
 	set *set
@@ -168,7 +182,8 @@ func (c *counter) iterate(moons []moon) {
 	if c.set.contains(key) {
 		c.found = true
 		return
-	} 
+	}
+	c.set.add(key)
 	c.cnt++
 }
 
@@ -366,4 +381,9 @@ func (s *set) contains(k key) bool {
 func (s *set) add(k key) {
 	var v void 
 	s.d[k] = v
+}
+
+
+func lcm(a,b uint) uint {
+	return 1
 }
