@@ -145,7 +145,7 @@ func TestPart2Example2(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	assert.Equal(t, 9743, part2(parseInput()))
+	assert.Equal(t, uint64(288684633706728), part2(parseInput()))
 }
 
 func part2(pos []position) uint64 {
@@ -385,5 +385,16 @@ func (s *set) add(k key) {
 
 
 func lcm(a,b uint) uint {
-	return 1
+	return (a*b)/gcd(a,b)
+}
+
+func gcd(a,b uint) uint {
+	if a == b {
+		return a
+	}
+
+	if a > b{
+		return gcd(a-b,b)
+	} 
+	return gcd(a, b-a)
 }
