@@ -135,48 +135,87 @@ func TestPart2(t *testing.T) {
 func part2(pos []position) uint64 {
 	s := newSystem(pos)
 
-	cntX := counter{}
-	// cntY := counter{}
-	// cntZ := counter{}
+	cntX := counter{coord:"x", set: newSet()}
+	cntY := counter{coord:"y", set: newSet()}
+	cntZ := counter{coord:"z", set: newSet()}
 
-	setX := newSet()
-	// setY := newSet()
-	// setZ := newSet()
-
-	for !cntX.found {// || !cntY.found || !cntZ.found {
+	for !cntX.found || !cntY.found || !cntZ.found {
 		s.step()
 
+		cntX.iterate(s.moons)
+		cntY.iterate(s.moons)
+		cntZ.iterate(s.moons)
 		// todo: 
 		// 1) repeat over rest of coords
 		// 2) NWD
-		if !cntX.found {
-			keyX := key {
-				pos0:  s.moons[0].position.x,
-				velo0: s.moons[0].velocity.x,
-	
-				pos1:  s.moons[1].position.x,
-				velo1: s.moons[1].velocity.x,
-	
-				pos2:  s.moons[2].position.x,
-				velo2: s.moons[2].velocity.x,
-	
-				pos3:  s.moons[3].position.x,
-				velo3: s.moons[3].velocity.x,
-			}
-
-			if setX.contains(keyX) {
-				cntX.found=true
-			} else {
-				cntX.cnt++
-			}
-		}
 	}
-	return -1
+	return uint64(cntX.cnt)
 }
 
 type counter struct {
 	cnt int
 	found bool
+	coord string
+	set *set
+}
+
+func (c *counter) iterate(moons []moon) {
+	if c.found {
+		return
+	}
+	key := c.makeKey(moons)
+	
+	if c.set.contains(key) {
+		c.found = true
+		return
+	} 
+	c.cnt++
+}
+
+func (c *counter) makeKey(moons []moon) key {
+	if c.coord == "x" {
+		return key{
+			pos0:  moons[0].position.x,
+			velo0: moons[0].velocity.x,
+
+			pos1:  moons[1].position.x,
+			velo1: moons[1].velocity.x,
+
+			pos2:  moons[2].position.x,
+			velo2: moons[2].velocity.x,
+
+			pos3:  moons[3].position.x,
+			velo3: moons[3].velocity.x,
+		}
+	} else if c.coord == "y" {
+		return key{
+			pos0:  moons[0].position.y,
+			velo0: moons[0].velocity.y,
+
+			pos1:  moons[1].position.y,
+			velo1: moons[1].velocity.y,
+
+			pos2:  moons[2].position.y,
+			velo2: moons[2].velocity.y,
+
+			pos3:  moons[3].position.y,
+			velo3: moons[3].velocity.y,
+		}
+	}
+
+	return key{
+		pos0:  moons[0].position.z,
+		velo0: moons[0].velocity.z,
+
+		pos1:  moons[1].position.z,
+		velo1: moons[1].velocity.z,
+
+		pos2:  moons[2].position.z,
+		velo2: moons[2].velocity.z,
+
+		pos3:  moons[3].position.z,
+		velo3: moons[3].velocity.z,
+	}
 }
 
 type position struct {
