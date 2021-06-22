@@ -24,6 +24,47 @@ func TestParsing(t *testing.T) {
 	assert.Equal(t, position{-2,-16,1}, in[3])
 }
 
+func TestApplyGravity(t *testing.T) {
+	ganymede := newMoon(position{3,0,0})
+	callisto := newMoon(position{6,0,0})
+
+	applyGravity(ganymede, callisto)
+
+	assert.Equal(t, position{4,0,0}, ganymede.position)
+	assert.Equal(t, position{5,0,0}, callisto.position)
+}
+
+func TestApplyVelocity(t *testing.T) {
+	m := newMoon(position{1,2,3})
+	m.velocity = position{3,-1,2}
+	
+	applyVelocity(m)
+
+	assert.Equal(t, position{3,-1,2}, m.velocity)
+	assert.Equal(t, position{4,1,5}, m.position)
+}
+
+func applyGravity(m1 *moon, m2 *moon) {
+	applyPosition := func(coord1 *int, coord2 *int) {
+		if *coord1 < *coord2 {
+			*coord1++
+			*coord2--
+		} else if *coord1 > *coord2 {
+			*coord1--
+			*coord2++
+		}
+	}
+	applyPosition(&m1.position.x, &m2.position.x)
+	applyPosition(&m1.position.y, &m2.position.y)
+	applyPosition(&m1.position.z, &m2.position.z)
+}
+
+func applyVelocity(m *moon) {
+	m.position.x += m.velocity.x
+	m.position.y += m.velocity.y
+	m.position.z += m.velocity.z
+}
+
 func TestPart1(t *testing.T) {
 	t.Fail()
 }
@@ -46,3 +87,14 @@ func parseInput() []position {
 	}
 	return out
 }
+
+type moon struct {
+	position position
+	velocity position
+}
+
+func newMoon(position position) *moon {
+	return &moon{position: position}
+}
+
+
