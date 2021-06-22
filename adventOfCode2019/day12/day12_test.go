@@ -28,10 +28,10 @@ func TestApplyGravity(t *testing.T) {
 	ganymede := newMoon(position{3,0,0})
 	callisto := newMoon(position{6,0,0})
 
-	applyGravity(ganymede, callisto)
+	changePos1, changePos2 := applyGravity(ganymede, callisto)
 
-	assert.Equal(t, position{4,0,0}, ganymede.position)
-	assert.Equal(t, position{5,0,0}, callisto.position)
+	assert.Equal(t, position{1,0,0}, changePos1)
+	assert.Equal(t, position{-1,0,0}, changePos2)
 }
 
 func TestApplyVelocity(t *testing.T) {
@@ -55,7 +55,7 @@ func TestStep(t *testing.T) {
 
 	initPositions := []position{
 		{-1,0,2},
-		{2,10,-7},
+		{2,-10,-7},
 		{4,-8,8},
 		{3,5,-1},
 	}
@@ -79,6 +79,12 @@ func TestPart1(t *testing.T) {
 
 type position struct {
 	x,y,z int
+}
+
+func (p *position) addChanges(pos position) {
+	p.x += pos.x
+	p.y += pos.y
+	p.z += pos.z
 }
 
 func parseInput() []position {
@@ -105,25 +111,27 @@ func newMoon(position position) *moon {
 	return &moon{position: position}
 }
 
-func applyGravity(m1 *moon, m2 *moon) {
-	applyPosition := func(coord1 *int, coord2 *int) {
-		if *coord1 < *coord2 {
-			*coord1++
-			*coord2--
-		} else if *coord1 > *coord2 {
-			*coord1--
-			*coord2++
+func applyGravity(m1 *moon, m2 *moon) (position,position) {
+	applyPosition := func(coord1 int, coord2 int) (int,int) {
+		if coord1 < coord2 {
+			return 1, -1
+		} else if coord1 > coord2 {
+			return -1, 1
 		}
+		return 0,0
 	}
-	applyPosition(&m1.position.x, &m2.position.x)
-	applyPosition(&m1.position.y, &m2.position.y)
-	applyPosition(&m1.position.z, &m2.position.z)
+	changePos1 := position{}
+	changePos2 := position{}
+
+	changePos1.x, changePos2.x = applyPosition(m1.position.x, m2.position.x)
+	changePos1.y, changePos2.y = applyPosition(m1.position.y, m2.position.y)
+	changePos1.z, changePos2.z = applyPosition(m1.position.z, m2.position.z)
+
+	return changePos1, changePos2
 }
 
 func applyVelocity(m *moon) {
-	m.position.x += m.velocity.x
-	m.position.y += m.velocity.y
-	m.position.z += m.velocity.z
+	(&m.position).addChanges(m.velocity)
 }
 
 type system struct {
@@ -138,19 +146,46 @@ func newSystem(positions []position) *system {
 	return &system{moons}
 }
 
+// todo: handle combinations algorithmically and any number of inputs
 func (s *system) step() {
 	m := s.moons
-	applyGravity(&m[0], &m[1])
-	applyGravity(&m[0], &m[2])
-	applyGravity(&m[0], &m[3])
 
-	applyGravity(&m[1], &m[2])
-	applyGravity(&m[1], &m[3])
+	changeVel0 := &position{}
+	changeVel1 := &position{}
+	changeVel2 := &position{}
+	changeVel3 := &position{}
 
-	applyGravity(&m[2], &m[3])
+	cl0, cl1 := applyGravity(&m[0], &m[1])
+	changeVel0.addChanges(cl0)
+	changeVel1.addChanges(cl1)
 
-	for i := 0; i < len(m); i++ {
-		v := m[i]
-		applyVelocity(&v)
-	}
+	cl0, cl2 := applyGravity(&m[0], &m[2])
+	changeVel0.addChanges(cl0)
+	changeVel2.addChanges(cl2)
+
+	cl0, cl3 := applyGravity(&m[0], &m[3])
+	changeVel0.addChanges(cl0)
+	changeVel3.addChanges(cl3)
+
+	cl1,cl2 = applyGravity(&m[1], &m[2])
+	changeVel1.addChanges(cl1)
+	changeVel2.addChanges(cl2)
+
+	cl1, cl3 = applyGravity(&m[1], &m[3])
+	changeVel1.addChanges(cl1)
+	changeVel3.addChanges(cl3)
+
+	cl2,cl3 = applyGravity(&m[2], &m[3])
+	changeVel2.addChanges(cl2)
+	changeVel3.addChanges(cl3)
+
+	(&m[0].velocity).addChanges(*changeVel0)
+	(&m[1].velocity).addChanges(*changeVel1)
+	(&m[2].velocity).addChanges(*changeVel2)
+	(&m[3].velocity).addChanges(*changeVel3)
+
+	applyVelocity(&m[0])
+	applyVelocity(&m[1])
+	applyVelocity(&m[2])
+	applyVelocity(&m[3])
 }
