@@ -1,7 +1,6 @@
 package day14
 
 import (
-	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -64,6 +63,20 @@ type reagentMap map[string]val
 func parseInput(input string) reagentMap {
 	out := reagentMap{}
 
+	splitted := strings.Split(input, "\n")
+	for _,line := range splitted {
+		name, val, ok := parseLine(line)
+		if !ok {
+			log.Println("got error during parsing: ", line)
+			continue
+		}
+		out[name] = val
+	}
+	return out
+}
+
+func parseLine(line string) (string, val, bool) {
+	
 	reg := regexp.MustCompile(`((\d+) (\w+))+`)
 
 	extractPair := func(d []string) ingredient {
@@ -72,38 +85,28 @@ func parseInput(input string) reagentMap {
 		return ingredient{quantity: howMany, material: what}
 	}
 
-	parseLine := func(line string) error {
-		twoSides := strings.Split(line, " => ")
-		if len(twoSides) != 2 {
-			return fmt.Errorf("INVALID line! %v", line)
-		}
-		
-		leftResults := reg.FindAllStringSubmatch(twoSides[0], -1)
-		rightResult := reg.FindAllStringSubmatch(twoSides[1], -1)
-		
-		if len(rightResult) != 1 || len(leftResults) < 1 || 
-			len(rightResult[0]) != 4 || len(leftResults[0]) < 3 {
-			return fmt.Errorf("regex not matched! %v", line)
-		}
-		
-		mainIng := extractPair(rightResult[0])
-		value := val{}
-		value.ingredients = []ingredient{}
-		value.howManyProduced = mainIng.quantity
-		for i := 0; i < len(leftResults); i++ {
-			value.ingredients = append(value.ingredients, extractPair(leftResults[i]))
-		}
-		out[mainIng.material] = value
-		return nil
+	twoSides := strings.Split(line, " => ")
+	if len(twoSides) != 2 {
+		return "",val{}, false
 	}
-
-	splitted := strings.Split(input, "\n")
-	for _,line := range splitted{
-		if err := parseLine(line); err != nil {
-			log.Println("got error during parsing: ", err)
-		}
+	
+	leftResults := reg.FindAllStringSubmatch(twoSides[0], -1)
+	rightResult := reg.FindAllStringSubmatch(twoSides[1], -1)
+	
+	if len(rightResult) != 1 || len(leftResults) < 1 || 
+		len(rightResult[0]) != 4 || len(leftResults[0]) < 3 {
+			return "",val{}, false
 	}
-	return out
+	
+	mainIng := extractPair(rightResult[0])
+	value := val{}
+	value.ingredients = []ingredient{}
+	value.howManyProduced = mainIng.quantity
+	for i := 0; i < len(leftResults); i++ {
+		value.ingredients = append(value.ingredients, extractPair(leftResults[i]))
+	}
+	
+	return mainIng.material, value, true
 }
 
 func sampleInputs(idx int) string {
