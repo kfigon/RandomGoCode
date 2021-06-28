@@ -46,7 +46,31 @@ func TestExamplesPart1(t *testing.T) {
 }
 
 func part1(reagents reagentMap) int {
-	return -1
+	ingredients := []ingredient{}
+	var traverse func(string)
+
+	traverse = func(node string) {
+		v, ok := reagents[node]
+		if !ok {
+			return
+		}
+
+
+		for i := 0; i < len(v.ingredients); i++ {
+			ing := v.ingredients[i]
+			if ing.material == "ORE" {
+				ingredients = append(ingredients, ing)
+			}
+			traverse(ing.material)
+		}
+	}
+
+	traverse("FUEL")
+	sum := 0
+	for _, v := range ingredients {
+		sum += v.quantity
+	}
+	return sum
 }
 
 type ingredient struct {
@@ -61,9 +85,12 @@ type val struct {
 
 type reagentMap map[string]val
 func parseInput(input string) reagentMap {
+	return parseInputWithSeparator(input, "\n")
+}
+func parseInputWithSeparator(input string, separator string) reagentMap {
 	out := reagentMap{}
 
-	splitted := strings.Split(input, "\n")
+	splitted := strings.Split(input, separator)
 	for _,line := range splitted {
 		name, val, ok := parseLine(line)
 		if !ok {
@@ -76,7 +103,6 @@ func parseInput(input string) reagentMap {
 }
 
 func parseLine(line string) (string, val, bool) {
-	
 	reg := regexp.MustCompile(`((\d+) (\w+))+`)
 
 	extractPair := func(d []string) ingredient {
