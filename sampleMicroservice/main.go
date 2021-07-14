@@ -3,18 +3,24 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"time"
 	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/google/uuid"
 )
 
 func main() {
 	server := newServer(newLogin())
-	log.Fatal(http.ListenAndServe(":8080", server))
+
+	const port = 8080
+	log.Println("Starting server on port", port)
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), server))
 }
 
 func newServer(loginServ *login) *http.ServeMux {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/health", healthEndpoint)
 	mux.HandleFunc("/login", withLog(loginServ.login))
 	mux.HandleFunc("/auth", withLog(loginServ.authHandler))
 	mux.HandleFunc("/data", withLog(withSecurity(loginServ,data)))
@@ -47,5 +53,12 @@ func data(w http.ResponseWriter, r *http.Request) {
 	response := &struct {
 		Data string `json:"data"`
 	}{ "foobar" }
+	json.NewEncoder(w).Encode(response)
+}
+
+func healthEndpoint(w http.ResponseWriter, r *http.Request) {
+	response := &struct {
+		Status string `json:"status"`
+	}{ "up" }
 	json.NewEncoder(w).Encode(response)
 }
