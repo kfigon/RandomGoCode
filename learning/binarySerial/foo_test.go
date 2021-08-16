@@ -7,9 +7,9 @@ import (
 )
 
 type data struct {
-	foo int32
-	bar int32
-	x bool
+	Foo int32
+	Bar int32
+	X bool
 }
 
 func TestAsd(t *testing.T) {
@@ -32,5 +32,18 @@ func TestAsd(t *testing.T) {
 		if exp[i] != got[i] {
 			t.Error("Invalid data on",i)
 		}
+	}
+
+	var unmarshaled data
+	err = binary.Read(&buf, binary.BigEndian, &unmarshaled)
+	if err != nil {
+		t.Fatal("Got error", err)
+	}
+	if d != unmarshaled {
+		t.Error("Invalid body after unmarshalling", unmarshaled)
+	}
+
+	if d.Bar != unmarshaled.Bar || d.Foo != unmarshaled.Foo || d.X != unmarshaled.X {
+		t.Error("Invalid body after unmarshalling", unmarshaled)
 	}
 }
