@@ -6,27 +6,12 @@ import (
 
 func main() {
 	fmt.Println("foo")
-	s := newStack()
-	s.add(2)
-	s.add(3)
-	s.add(4)
-	s.add(5)
-
-	fmt.Println("collect:",s.collect())
-
-	var els []int
-	it := s.iter()
-	for it.hasNext() {
-		els = append(els, it.next())
-	}
-	fmt.Println("collected iterator:",els)
 }
 
 type node struct {
 	val int
 	next *node
 }
-
 
 type linkedList struct {
 	head *node
@@ -77,4 +62,33 @@ func (i *iterator) next() int {
 	val := i.current.val
 	i.current = i.current.next
 	return val
+}
+
+func (l *linkedList) iterClosure() func()(int,bool) {
+	node := l.head
+	return func() (int, bool) {
+		if node == nil {
+			return 0, false
+		}
+		val := node.val
+		node = node.next
+		return val, true
+	}
+}
+
+type optionInt struct {
+	val int
+	ok bool
+}
+
+func (l *linkedList) iterClosure2() func() optionInt {
+	node := l.head
+	return func() optionInt {
+		if node == nil {
+			return optionInt{}
+		}
+		val := node.val
+		node = node.next
+		return optionInt{val, true}
+	}
 }
