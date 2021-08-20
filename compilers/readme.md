@@ -66,6 +66,44 @@ class Main {
 };
 ```
 
+```
+class Main {
+  // dont care about return type
+  main():Object { 
+
+    i: IO <- new IO;
+    atoi: A2I <- new A2I;
+
+    i.out_string("provide input\n");
+    let num: Int = atoi.a2i(i.in_string());
+    
+    i.out_string("provided ".concat(atoi.i2a(num).concat("\n")));
+
+    let result: Int = fact(num);
+    i.out_string("Result\n");
+    i.out_string(atoi.itoa(result));
+    i.out_string(atoi.itoa(factIter(num)));
+  };
+
+  fact(i: Int): Int {
+    if (i = 0) then 1 else i * fact(i-1) fi
+  };
+
+  factIter(i: Int): Int {
+    let res: Int <- 1 in {
+      while (not (i = 0)) loop 
+        {
+          res <- res * i;
+          i <- i - 1;
+        }
+      pool; // end of loop
+      res; // return statement to let
+    }
+
+  };
+};
+```
+
 # lexical analysis
 tokenize text input (classify program substring) and communicate tokens to parser.
 list of tokens - pairs with `class` and `string corresponding`(lexeme)
