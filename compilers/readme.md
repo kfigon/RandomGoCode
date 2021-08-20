@@ -49,6 +49,7 @@ producing an exe (c->machine code) or a program in other language (js->ts, c->as
 * inheritance
 * memory management
 
+* https://nathanfriend.io/cooltojs/
 
 this will return 1, explicit returns
 ```
@@ -68,21 +69,24 @@ class Main {
 
 ```
 class Main {
-  // dont care about return type
+  i: IO <- new IO;
+  atoi: A2I <- new A2I;
+
+  -- dont care about return type
   main():Object { 
+    let num: Int <- 0,
+        result: Int <- 0
+     in {
 
-    i: IO <- new IO;
-    atoi: A2I <- new A2I;
+      i.out_string("provide input\n");
+      num <- atoi.a2i(i.in_string());
+      i.out_string("provided ".concat(atoi.i2a(num).concat("\n")));
 
-    i.out_string("provide input\n");
-    let num: Int = atoi.a2i(i.in_string());
-    
-    i.out_string("provided ".concat(atoi.i2a(num).concat("\n")));
-
-    let result: Int = fact(num);
-    i.out_string("Result\n");
-    i.out_string(atoi.itoa(result));
-    i.out_string(atoi.itoa(factIter(num)));
+      result <- fact(num);
+      i.out_string("Result\n");
+      i.out_string(atoi.itoa(result));
+      i.out_string(atoi.itoa(factIter(num)));
+    }
   };
 
   fact(i: Int): Int {
@@ -96,8 +100,8 @@ class Main {
           res <- res * i;
           i <- i - 1;
         }
-      pool; // end of loop
-      res; // return statement to let
+      pool; -- end of loop
+      res; -- return statement to let
     }
 
   };
