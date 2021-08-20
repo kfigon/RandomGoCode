@@ -1,3 +1,5 @@
+Compiler course on edx from Stanford
+
 # languages
 * compilers - takes input (program) - produces executable. This is another program, that takes data and produces output. Offline
 * interpreters - takes input (program) and data and produces direct output. Online
@@ -41,7 +43,7 @@ x=0
 producing an exe (c->machine code) or a program in other language (js->ts, c->asm)
 
 # Our example language:
-`cool` - classroom object oriented language. Compile `cool` to MIPS assembly. Run by spim exec. Language:
+`cool` - classroom object oriented language. Compile `cool` to MIPS assembly. Run by spim exec (mips simulator). Language:
 * abstraction
 * static typing
 * inheritance
