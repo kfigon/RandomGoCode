@@ -108,13 +108,14 @@ class Main {
 };
 ```
 
-# lexical analysis
+# Lexical Analysis (LA)
 tokenize text input (classify program substring) and communicate tokens to parser.
 list of tokens - pairs with `class` and `string corresponding`(lexeme)
 
 * recognise substrings corresponding to tokens (lexemes)
 * identify token class of each lexeme
 
+classes: identifiers, keywords, `(`, `)`, numbers, strings, whitespace (grouped, 3 spaces are 1 token - whitespace) etc.
 
 example of token - LA output:
 * <ID, "foo"> - identifier
