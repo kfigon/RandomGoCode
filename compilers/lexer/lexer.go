@@ -2,7 +2,7 @@ package lexer
 
 type Token struct {
 	Class TokenClass
-	Content string
+	Lexeme string
 }
 
 type TokenClass int

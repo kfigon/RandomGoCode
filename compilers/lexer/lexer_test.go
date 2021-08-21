@@ -5,7 +5,9 @@ import "testing"
 func TestTokenizer(t *testing.T) {
 	input := `if (i==j) z = 0;
 	else z=1;`
+
 	got := Tokenize(input)
+
 	exp := []Token {
 		{Keyword, "if"},
 		{Whitespace, " "},
@@ -20,8 +22,7 @@ func TestTokenizer(t *testing.T) {
 		{Whitespace, " "},
 		{Number, "0"},
 		{Semicolon, ";"},
-		{Whitespace, "\n"},
-		{Whitespace, "\t"},
+		{Whitespace, "\n\t"},
 		{Keyword, "else"},
 		{Whitespace, " "},
 		{Identifier, "z"},
@@ -35,7 +36,7 @@ func TestTokenizer(t *testing.T) {
 
 func assertTokens(t *testing.T, exp, got []Token) {
 	if len(exp) != len(got) {
-		t.Fatalf("Invalid token lengths, exp %v, got %v", len(exp), len(got))
+		t.Fatalf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
 	}
 
 	for i := 0; i < len(got); i++ {
@@ -43,7 +44,7 @@ func assertTokens(t *testing.T, exp, got []Token) {
 		e := exp[i]
 
 		if g != e {
-			t.Errorf("Invalid token on position %v, exp %v, got %v", i, e, g)
+			t.Errorf("Invalid element on position %v, exp %v, got %v", i, e, g)
 		}
 	}
 }

@@ -127,3 +127,9 @@ else z = 1;
 ```
 find whitespace, keywords, identifiers, numbers, equal operator, (, ), ;, =
 
+Fortran - whitespaces are insignificant. Lexer removes all whitespaces and it still works. Sometimes it requires `lookaheads` - peek to next chars to classify the lexeme. Other examples from regular languages:
+* single char scan (vars `i`, `j`) 
+* `else` - `els` is valid identifier
+
+PL1 - keywords are not reserved. We can have vars `if` etc. Lookahead is needed to get the context. Lexer is harder to write
+
