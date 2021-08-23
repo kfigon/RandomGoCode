@@ -1,10 +1,12 @@
 package lexer
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestTokenizer(t *testing.T) {
-	input := `if (i==j) z = 0;
-	else z=1;`
+	input := `if (i==j) els = 0;
+	else els=1;`
 
 	got := Tokenize(input)
 
@@ -16,7 +18,7 @@ func TestTokenizer(t *testing.T) {
 		{Operator, "=="},
 		{Identifier, "j"},
 		{Whitespace, " "},
-		{Identifier, "z"},
+		{Identifier, "els"},
 		{Whitespace, " "},
 		{Assignment, "="},
 		{Whitespace, " "},
@@ -25,7 +27,7 @@ func TestTokenizer(t *testing.T) {
 		{Whitespace, "\n\t"},
 		{Keyword, "else"},
 		{Whitespace, " "},
-		{Identifier, "z"},
+		{Identifier, "els"},
 		{Assignment, "="},
 		{Number, "1"},
 		{Semicolon, ";"},

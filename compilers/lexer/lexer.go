@@ -19,6 +19,23 @@ const (
 	Assignment
 )
 
+var keywords []string = []string{"if", "else", "else if", "for"}
+var whitespaces []string = []string{" ", "\t", "\n"}
+
+func keywordSet() *set {
+	out := newSet()
+	for _, v := range keywords {
+		out.add(v)
+	}
+	return out
+}
+
 func Tokenize(input string) []Token {
-	return []Token{}
+	var tokens []Token
+	var idx uint64
+	ln := uint64(len(input))
+	for idx < ln {
+		idx++
+	}
+	return tokens
 }
