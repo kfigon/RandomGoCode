@@ -33,8 +33,12 @@ func keywordSet() *set {
 func Tokenize(input string) []Token {
 	var tokens []Token
 	var idx uint64
+
 	ln := uint64(len(input))
 	for idx < ln {
+		// char := input[idx]
+
+		// todo: state machine per keyword?
 		idx++
 	}
 	return tokens
