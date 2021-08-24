@@ -22,7 +22,7 @@ const (
 var keywords []string = []string{"if", "else", "else if", "for"}
 var whitespaces []string = []string{" ", "\t", "\n"}
 
-func keywordSet() *set {
+func makeSet() *set {
 	out := newSet()
 	for _, v := range keywords {
 		out.add(v)
