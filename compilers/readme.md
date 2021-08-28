@@ -109,8 +109,9 @@ class Main {
 ```
 
 # Lexical Analysis (LA)
-tokenize text input (classify program substring) and communicate tokens to parser.
-list of tokens - pairs with `class` and `string corresponding`(lexeme)
+tokenize text input (classify program substring) and communicate tokens to parser. Done by regular expressions (implementation - finite automaton)
+
+Output: list of tokens - pairs with `class` and `string corresponding`(lexeme)
 
 * recognise substrings corresponding to tokens (lexemes)
 * identify token class of each lexeme
@@ -131,5 +132,8 @@ Fortran - whitespaces are insignificant. Lexer removes all whitespaces and it st
 * single char scan (vars `i`, `j`) 
 * `else` - `els` is valid identifier
 
-PL1 - keywords are not reserved. We can have vars `if` etc. Lookahead is needed to get the context. Lexer is harder to write
+PL1 - keywords are not reserved. We can have vars `if` etc. Lookahead is 
+needed to get the context. Lexer is harder to write
 
+## finite automata
+on state s1, on input a go to state s2. If end state reached - accept. Otherwise - reject (end state in not finite or acceptable state or stuck)

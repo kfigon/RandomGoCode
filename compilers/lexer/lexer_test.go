@@ -174,3 +174,66 @@ func TestStateMachine(t *testing.T) {
 		})
 	}
 }
+
+// accept only digit "1"
+// 2 states - init, end
+func simpleState(input string) func() (string, bool) {
+	state := "init"
+	indx := 0
+
+	return func() (string, bool) {
+		switch state {
+		case "init":
+			char := input[indx]
+			if char == '1' {
+				state = "accept"
+				indx++
+				return state, true
+			} 
+			// stuck, reject
+			state = "reject"
+			return state, false
+
+		case "accept":
+			if indx >= len(input) {
+				return "accept",false
+			}
+		}
+		return "reject",false
+	}
+}
+
+// go test ./lexer -run TestSimpleAutomaton
+func TestSimpleAutomaton(t *testing.T) {
+	drain := func(machine func()(string,bool)) string {
+		state, more := machine()
+		for more{
+			state, more = machine()
+		}
+		return state
+	}
+
+	t.Run("Simple run", func(t *testing.T) {
+		machine := simpleState("1")
+		state := drain(machine)
+		if state != "accept" {
+			t.Error("Invalid state, expected accept, got",state)
+		}
+	})
+
+	t.Run("Simple run - invalid", func(t *testing.T) {
+		machine := simpleState("0")
+		state := drain(machine)
+		if state != "reject" {
+			t.Error("Invalid state, expected reject, got",state)
+		}
+	})
+	
+	t.Run("Simple run - too long string", func(t *testing.T) {
+		machine := simpleState("10")
+		state := drain(machine)
+		if state != "reject" {
+			t.Error("Invalid state, expected reject, got",state)
+		}
+	})
+}
