@@ -136,4 +136,29 @@ PL1 - keywords are not reserved. We can have vars `if` etc. Lookahead is
 needed to get the context. Lexer is harder to write
 
 ## finite automata
-on state s1, on input a go to state s2. If end state reached - accept. Otherwise - reject (end state in not finite or acceptable state or stuck)
+on state s1, on input a go to state s2. If end state reached - accept. Otherwise - reject (end state in not finite or acceptable state or stuck).
+
+each move consumes input (moves ptr in string). There are also epsilon moves - does not consume inputs.
+
+deterministic finite automata. DFA
+* one transition per input
+* no e-moves
+
+non deterministic finite automate - NFA
+* can have multiple transition points per 1 input
+* can have e-moves
+
+implementation (DFA) - 2d array
+* rows - states
+* columns - inputs
+* cells - next states
+
+in case of sparse tables - graph like - map of vector of moves for each possible state. allows to share rows (by setting ptrs)
+
+
+implementation (NFA) - 2d array
+* rows - states
+* columns - inputs. Additional column - epsilon
+* cells - set of next states
+
+each iteration needs to process in a loop - for each el in next state set
