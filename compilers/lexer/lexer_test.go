@@ -205,7 +205,8 @@ func simpleState(input string) func() (string, bool) {
 
 // go test ./lexer -run TestSimpleAutomaton
 func TestSimpleAutomaton(t *testing.T) {
-	drain := func(machine func()(string,bool)) string {
+	type stateMachine func()(string,bool)
+	drain := func(machine stateMachine) string {
 		state, more := machine()
 		for more{
 			state, more = machine()
@@ -234,6 +235,73 @@ func TestSimpleAutomaton(t *testing.T) {
 		state := drain(machine)
 		if state != "reject" {
 			t.Error("Invalid state, expected reject, got",state)
+		}
+	})
+}
+
+// any number of 1s followed by a single 0
+func anyNumberOfOnes(input string) func()(string,bool) {
+	state := "A"
+	idx := 0
+	return func() (string, bool) {
+		switch state {
+		case "A":
+			if idx >= len(input) {
+				return "reject", false
+			} else if input[idx] == '1' {
+				state = "A"
+			} else if input[idx] == '0' {
+				state = "B"
+			}
+			idx++
+			return state, true
+		case "B":
+			if idx >= len(input) {
+				return "accept", false
+			} 
+		}
+		return "reject", false
+	}
+}
+func TestLessSimpleAutomaton(t *testing.T) {
+	type stateMachine func()(string,bool)
+	drain := func(machine stateMachine) string {
+		state, more := machine()
+		for more{
+			state, more = machine()
+		}
+		return state
+	}
+
+	t.Run("Simple run, invalid", func(t *testing.T) {
+		machine := anyNumberOfOnes("11")
+		state := drain(machine)
+		if state != "reject" {
+			t.Error("Invalid state, expected reject, got",state)
+		}
+	})
+
+	t.Run("Simple run, no ones, valid", func(t *testing.T) {
+		machine := anyNumberOfOnes("0")
+		state := drain(machine)
+		if state != "accept" {
+			t.Error("Invalid state, expected accept, got",state)
+		}
+	})
+
+	t.Run("Simple run, invalid2", func(t *testing.T) {
+		machine := anyNumberOfOnes("100")
+		state := drain(machine)
+		if state != "reject" {
+			t.Error("Invalid state, expected reject, got",state)
+		}
+	})
+	
+	t.Run("Simple run - ok", func(t *testing.T) {
+		machine := anyNumberOfOnes("110")
+		state := drain(machine)
+		if state != "accept" {
+			t.Error("Invalid state, expected accept, got",state)
 		}
 	})
 }
