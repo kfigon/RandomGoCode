@@ -51,3 +51,18 @@ func assertTokens(t *testing.T, exp, got []Token) {
 		}
 	}
 }
+
+
+func TestTokenizer2(t *testing.T) {
+	input := ` i;`
+
+	got := Tokenize(input)
+
+	exp := []Token {
+		{Whitespace, " "},
+		{Identifier, "i"},
+		{Semicolon, ";"},
+	}
+
+	assertTokens(t, exp, got)
+}

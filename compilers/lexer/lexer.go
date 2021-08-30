@@ -1,6 +1,12 @@
 package lexer
 
-import "regexp"
+import (
+	"log"
+	"regexp"
+)
+
+var enableLogs bool = true
+
 
 type Token struct {
 	Class  TokenClass
@@ -41,6 +47,7 @@ func Tokenize(input string) []Token {
 	var tokens []Token
 	var idx uint64
 
+
 	ln := uint64(len(input))
 	update := func(found string, class TokenClass) {
 		idx += uint64(len(found))
@@ -48,30 +55,44 @@ func Tokenize(input string) []Token {
 	}
 
 	tokenizerEntries := []tokenizerEntry {
-		{`\s`, Whitespace},
+		{`(if)($|\s)`, Keyword},
+		{`(else)($|\s)`, Keyword},
 
-		{`(if)\s`, Keyword},
-		{`(else)\s`, Keyword},
-
-		{`(==)\s`, Operator},
-		{`(=)\s`, Assignment},
+		{`(==)($|\s)`, Operator},
+		{`(=)($|\s)`, Assignment},
 		
-		{`([0-9]+)\s`, Number},
-		{`([0-9]+\.[0-9]+)\s`, Number},
+		{`([0-9]+)($|\s)`, Number},
+		{`([0-9]+\.[0-9]+)($|\s)`, Number},
 		
-		{`(\w+)\s`, Identifier},
+		{`(\w+)($|\s)`, Identifier},
 
-		{`(;)\s`, Semicolon},
-		{`(\))\s`, OpenParam},
-		{`(\()\s`, CloseParam},
+		{`(;)($|\s)`, Semicolon},
+		{`(\))($|\s)`, OpenParam},
+		{`(\()($|\s)`, CloseParam},
+
+		// {`\s`, Whitespace},
 	}
 	for idx < ln {
 		rest := input[idx:]
+	
+		if enableLogs {
+			toPrint := 20
+			if idx + uint64(toPrint) > ln {
+				toPrint = int(ln-idx-1)
+			}
+			log.Printf("parsing %q...\n", rest[:toPrint])
+		}
 
+	
 		found := false
 		for _, entry := range tokenizerEntries {
 			substr, ok := findStr(rest,entry.pattern)
 			if ok {
+
+				if enableLogs {
+					log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
+				}
+
 				update(substr, entry.class)
 				found = true
 				break
