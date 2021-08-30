@@ -40,24 +40,12 @@ var classesStrings = []string{
 	"Assignment",
 }
 
-func (t Token) String() string {
-	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
+type tokenizerEntry struct {
+	pattern string
+	class TokenClass
 }
-
-func (t TokenClass) String() string {
-	return classesStrings[t]
-}
-
-func Tokenize(input string) []Token {
-	var tokens []Token
-	var idx uint64
-
-	update := func(found string, class TokenClass) {
-		idx += uint64(len(found))
-		tokens = append(tokens, Token{Class: class, Lexeme: found})
-	}
-
-	tokenizerEntries := []tokenizerEntry {
+func definedTokens() []tokenizerEntry{
+	return []tokenizerEntry {
 		{`^(\s+)`, Whitespace},
 
 		{`^(if)($|\s)`, Keyword},
@@ -79,6 +67,21 @@ func Tokenize(input string) []Token {
 	
 		{`^(\w+)`, Identifier},
 	}
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
+}
+
+func (t TokenClass) String() string {
+	return classesStrings[t]
+}
+
+func Tokenize(input string) []Token {
+	var tokens []Token
+	var idx uint64
+
+	tokenizerEntries := definedTokens()
 
 	ln := uint64(len(input))
 	for idx < ln {
@@ -104,7 +107,9 @@ func Tokenize(input string) []Token {
 				log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
 			}
 
-			update(substr, entry.class)
+			idx += uint64(len(substr))
+			tokens = append(tokens, Token{Class: entry.class, Lexeme: substr})
+
 			found = true
 			break
 		}
@@ -115,11 +120,6 @@ func Tokenize(input string) []Token {
 		}
 	}
 	return tokens
-}
-
-type tokenizerEntry struct {
-	pattern string
-	class TokenClass
 }
 
 func findStr(input string, pattern string) (string, bool) {
