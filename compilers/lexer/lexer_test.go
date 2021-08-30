@@ -64,6 +64,31 @@ func TestTokenizer(t *testing.T) {
 				{Semicolon, ";"},
 			},
 		},
+		{
+			desc: "case with math operators",
+			input: `abc=123 / 2*1-12
+	x=3+2;`,
+			expectedTokens: []Token{
+				{Identifier, "abc"},
+				{Assignment, "="},
+				{Number, "123"},
+				{Whitespace, " "},
+				{Operator, "/"},
+				{Whitespace, " "},
+				{Number, "2"},
+				{Operator, "*"},
+				{Number, "1"},
+				{Operator, "-"},
+				{Number, "12"},
+				{Whitespace, "\n\t"},
+				{Identifier, "x"},
+				{Assignment, "="},
+				{Number, "3"},
+				{Operator, "+"},
+				{Number, "2"},
+				{Semicolon, ";"},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
