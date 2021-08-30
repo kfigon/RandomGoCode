@@ -52,8 +52,6 @@ func Tokenize(input string) []Token {
 	var tokens []Token
 	var idx uint64
 
-
-	ln := uint64(len(input))
 	update := func(found string, class TokenClass) {
 		idx += uint64(len(found))
 		tokens = append(tokens, Token{Class: class, Lexeme: found})
@@ -77,6 +75,8 @@ func Tokenize(input string) []Token {
 		{`^(\))`, CloseParam},
 		{`^(\()`, OpenParam},
 	}
+
+	ln := uint64(len(input))
 	for idx < ln {
 		rest := input[idx:]
 	
@@ -91,20 +91,22 @@ func Tokenize(input string) []Token {
 	
 		found := false
 		for _, entry := range tokenizerEntries {
-			substr, ok := findStr(rest,entry.pattern)
-			if ok {
-
-				if enableLogs {
-					log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
-				}
-
-				update(substr, entry.class)
-				found = true
-				break
+			substr, ok := findStr(rest, entry.pattern)
+			if !ok {
+				continue
 			}
+
+			if enableLogs {
+				log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
+			}
+
+			update(substr, entry.class)
+			found = true
+			break
 		}
 
 		if !found {
+			log.Println("Unknown token at idx", idx)
 			idx++
 		}
 	}
