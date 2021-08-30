@@ -1,11 +1,12 @@
 package lexer
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 )
 
-var enableLogs bool = true
+var enableLogs bool = false
 
 
 type Token struct {
@@ -39,6 +40,10 @@ var classesStrings = []string{
 	"Assignment",
 }
 
+func (t Token) String() string {
+	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
+}
+
 func (t TokenClass) String() string {
 	return classesStrings[t]
 }
@@ -55,22 +60,22 @@ func Tokenize(input string) []Token {
 	}
 
 	tokenizerEntries := []tokenizerEntry {
-		{`(if)($|\s)`, Keyword},
-		{`(else)($|\s)`, Keyword},
+		{`^(\s+)`, Whitespace},
 
-		{`(==)($|\s)`, Operator},
-		{`(=)($|\s)`, Assignment},
+		{`^(if)($|\s)`, Keyword},
+		{`^(else)($|\s)`, Keyword},
+
+		{`^(==)($|\s?)`, Operator},
+		{`^(=)($|\s?)`, Assignment},
+
+		{`^([0-9]+\.[0-9]+)`, Number},
+		{`^([0-9]+)`, Number},
 		
-		{`([0-9]+)($|\s)`, Number},
-		{`([0-9]+\.[0-9]+)($|\s)`, Number},
-		
-		{`(\w+)($|\s)`, Identifier},
+		{`^(\w+)`, Identifier},
 
-		{`(;)($|\s)`, Semicolon},
-		{`(\))($|\s)`, OpenParam},
-		{`(\()($|\s)`, CloseParam},
-
-		// {`\s`, Whitespace},
+		{`^(;)`, Semicolon},
+		{`^(\))`, CloseParam},
+		{`^(\()`, OpenParam},
 	}
 	for idx < ln {
 		rest := input[idx:]

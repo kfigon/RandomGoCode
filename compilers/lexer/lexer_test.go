@@ -17,6 +17,7 @@ func TestTokenizer(t *testing.T) {
 		{Identifier, "i"},
 		{Operator, "=="},
 		{Identifier, "j"},
+		{CloseParam, ")"},
 		{Whitespace, " "},
 		{Identifier, "els"},
 		{Whitespace, " "},
@@ -39,7 +40,8 @@ func TestTokenizer(t *testing.T) {
 func assertTokens(t *testing.T, exp, got []Token) {
 	if len(exp) != len(got) {
 		t.Errorf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
-		t.Fatalf("Got: %v", got)
+		t.Errorf("Got: %v", got)
+		t.Fatalf("Exp: %v", exp)
 	}
 
 	for i := 0; i < len(got); i++ {
