@@ -4,39 +4,6 @@ import (
 	"testing"
 )
 
-func TestTokenizer(t *testing.T) {
-	input := `if (i==j) els = 654.1;
-	else els=123;`
-
-	got := Tokenize(input)
-
-	exp := []Token {
-		{Keyword, "if"},
-		{Whitespace, " "},
-		{OpenParam, "("},
-		{Identifier, "i"},
-		{Operator, "=="},
-		{Identifier, "j"},
-		{CloseParam, ")"},
-		{Whitespace, " "},
-		{Identifier, "els"},
-		{Whitespace, " "},
-		{Assignment, "="},
-		{Whitespace, " "},
-		{Number, "654.1"},
-		{Semicolon, ";"},
-		{Whitespace, "\n\t"},
-		{Keyword, "else"},
-		{Whitespace, " "},
-		{Identifier, "els"},
-		{Assignment, "="},
-		{Number, "123"},
-		{Semicolon, ";"},
-	}
-
-	assertTokens(t, exp, got)
-}
-
 func assertTokens(t *testing.T, exp, got []Token) {
 	if len(exp) != len(got) {
 		t.Errorf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
@@ -54,17 +21,54 @@ func assertTokens(t *testing.T, exp, got []Token) {
 	}
 }
 
-
-func TestTokenizer2(t *testing.T) {
-	input := ` i;`
-
-	got := Tokenize(input)
-
-	exp := []Token {
-		{Whitespace, " "},
-		{Identifier, "i"},
-		{Semicolon, ";"},
+func TestTokenizer(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		input 	string
+		expectedTokens []Token
+	}{
+		{
+			desc: "simple case with whitespace",
+			input: ` i;`,
+			expectedTokens: []Token {
+				{Whitespace, " "},
+				{Identifier, "i"},
+				{Semicolon, ";"},
+			},
+		},
+		{
+			desc: "complex case 1",
+			input: `if (i==j) els = 654.1;
+	else els=123;`,
+			expectedTokens: []Token {
+				{Keyword, "if"},
+				{Whitespace, " "},
+				{OpenParam, "("},
+				{Identifier, "i"},
+				{Operator, "=="},
+				{Identifier, "j"},
+				{CloseParam, ")"},
+				{Whitespace, " "},
+				{Identifier, "els"},
+				{Whitespace, " "},
+				{Assignment, "="},
+				{Whitespace, " "},
+				{Number, "654.1"},
+				{Semicolon, ";"},
+				{Whitespace, "\n\t"},
+				{Keyword, "else"},
+				{Whitespace, " "},
+				{Identifier, "els"},
+				{Assignment, "="},
+				{Number, "123"},
+				{Semicolon, ";"},
+			},
+		},
 	}
-
-	assertTokens(t, exp, got)
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			got := Tokenize(tC.input)		
+			assertTokens(t, tC.expectedTokens, got)
+		})
+	}
 }

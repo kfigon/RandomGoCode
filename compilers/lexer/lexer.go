@@ -64,16 +64,20 @@ func Tokenize(input string) []Token {
 		{`^(else)($|\s)`, Keyword},
 
 		{`^(==)($|\s?)`, Operator},
+		{`^(\+)($|\s?)`, Operator},
+		{`^(\-)($|\s?)`, Operator},
+		{`^(\*)($|\s?)`, Operator},
+		{`^(\/)($|\s?)`, Operator},
 		{`^(=)($|\s?)`, Assignment},
-
-		{`^([0-9]+\.[0-9]+)`, Number},
-		{`^([0-9]+)`, Number},
-		
-		{`^(\w+)`, Identifier},
 
 		{`^(;)`, Semicolon},
 		{`^(\))`, CloseParam},
 		{`^(\()`, OpenParam},
+
+		{`^([0-9]+\.[0-9]+)`, Number},
+		{`^([0-9]+)`, Number},
+	
+		{`^(\w+)`, Identifier},
 	}
 
 	ln := uint64(len(input))
