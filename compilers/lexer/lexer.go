@@ -44,29 +44,28 @@ type tokenizerEntry struct {
 	pattern string
 	class TokenClass
 }
-func definedTokens() []tokenizerEntry{
-	return []tokenizerEntry {
-		{`^(\s+)`, Whitespace},
 
-		{`^(if)($|\s)`, Keyword},
-		{`^(else)($|\s)`, Keyword},
+var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
+	{`^(\s+)`, Whitespace},
 
-		{`^(==)($|\s?)`, Operator},
-		{`^(\+)($|\s?)`, Operator},
-		{`^(\-)($|\s?)`, Operator},
-		{`^(\*)($|\s?)`, Operator},
-		{`^(\/)($|\s?)`, Operator},
-		{`^(=)($|\s?)`, Assignment},
+	{`^(if)($|\s)`, Keyword},
+	{`^(else)($|\s)`, Keyword},
 
-		{`^(;)`, Semicolon},
-		{`^(\))`, CloseParam},
-		{`^(\()`, OpenParam},
+	{`^(==)($|\s?)`, Operator},
+	{`^(\+)($|\s?)`, Operator},
+	{`^(\-)($|\s?)`, Operator},
+	{`^(\*)($|\s?)`, Operator},
+	{`^(\/)($|\s?)`, Operator},
+	{`^(=)($|\s?)`, Assignment},
 
-		{`^([0-9]+\.[0-9]+)`, Number},
-		{`^([0-9]+)`, Number},
-	
-		{`^(\w+)`, Identifier},
-	}
+	{`^(;)`, Semicolon},
+	{`^(\))`, CloseParam},
+	{`^(\()`, OpenParam},
+
+	{`^([0-9]+\.[0-9]+)`, Number},
+	{`^([0-9]+)`, Number},
+
+	{`^(\w+)`, Identifier},
 }
 
 func (t Token) String() string {
@@ -81,8 +80,6 @@ func Tokenize(input string) []Token {
 	var tokens []Token
 	var idx uint64
 
-	tokenizerEntries := definedTokens()
-
 	ln := uint64(len(input))
 	for idx < ln {
 		rest := input[idx:]
@@ -90,39 +87,42 @@ func Tokenize(input string) []Token {
 		if enableLogs {
 			toPrint := 20
 			if idx + uint64(toPrint) > ln {
-				toPrint = int(ln-idx-1)
+				toPrint = int(ln-idx)
 			}
 			log.Printf("parsing %q...\n", rest[:toPrint])
 		}
 
-	
-		found := false
-		for _, entry := range tokenizerEntries {
-			substr, ok := findStr(rest, entry.pattern)
-			if !ok {
-				continue
-			}
+		found, deltaIdx, token := processAvailableTokens(rest)
 
-			if enableLogs {
-				log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
-			}
-
-			idx += uint64(len(substr))
-			tokens = append(tokens, Token{Class: entry.class, Lexeme: substr})
-
-			found = true
-			break
-		}
-
-		if !found {
+		if found {
+			idx += uint64(deltaIdx)
+			tokens = append(tokens, token)
+		} else {
 			log.Println("Unknown token at idx", idx)
 			idx++
-		}
+		} 
 	}
 	return tokens
 }
 
-func findStr(input string, pattern string) (string, bool) {
+func processAvailableTokens(input string) (bool, int, Token) {
+	for _, entry := range tokenizerEntries {
+		substr, ok := findPattern(input, entry.pattern)
+		if !ok {
+			continue
+		}
+
+		if enableLogs {
+			log.Printf("found %q -> %v, moving up to %v\n", substr, entry.class, len(substr))
+		}
+
+		return true, len(substr), Token{Class: entry.class, Lexeme: substr}
+	}
+
+	return false, 0, Token{}
+}
+
+func findPattern(input string, pattern string) (string, bool) {
 	reg := regexp.MustCompile(pattern)
 	res := reg.FindStringSubmatch(input)
 	if len(res) < 2 {
