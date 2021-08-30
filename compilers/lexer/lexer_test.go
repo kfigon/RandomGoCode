@@ -5,8 +5,8 @@ import (
 )
 
 func TestTokenizer(t *testing.T) {
-	input := `if (i==j) els = 0;
-	else els=1;`
+	input := `if (i==j) els = 654.1;
+	else els=123;`
 
 	got := Tokenize(input)
 
@@ -22,14 +22,14 @@ func TestTokenizer(t *testing.T) {
 		{Whitespace, " "},
 		{Assignment, "="},
 		{Whitespace, " "},
-		{Number, "0"},
+		{Number, "654.1"},
 		{Semicolon, ";"},
 		{Whitespace, "\n\t"},
 		{Keyword, "else"},
 		{Whitespace, " "},
 		{Identifier, "els"},
 		{Assignment, "="},
-		{Number, "1"},
+		{Number, "123"},
 		{Semicolon, ";"},
 	}
 
@@ -38,7 +38,8 @@ func TestTokenizer(t *testing.T) {
 
 func assertTokens(t *testing.T, exp, got []Token) {
 	if len(exp) != len(got) {
-		t.Fatalf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
+		t.Errorf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
+		t.Fatalf("Got: %v", got)
 	}
 
 	for i := 0; i < len(got); i++ {
