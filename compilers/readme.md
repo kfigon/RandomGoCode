@@ -162,3 +162,17 @@ implementation (NFA) - 2d array
 * cells - set of next states
 
 each iteration needs to process in a loop - for each el in next state set
+
+# Parsing
+
+building parsed tree (syntax tree) from list of tokens.
+Parser distinguishes valid/invalid list of tokens. Often recursive structure.
+
+`Context-free grammars` (CFG) are a natural notation for that structure.
+* set o terminal symbols, 
+* set of non terminal symbols, 
+* start symbol 
+* set of productions (mapping one symbol to multiple symbols)
+
+derivation - sequence of productions. can be drawn as a tree
+
