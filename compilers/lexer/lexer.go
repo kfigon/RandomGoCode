@@ -41,41 +41,41 @@ var classesStrings = []string{
 }
 
 type tokenizerEntry struct {
-	pattern string
+	reg *regexp.Regexp
 	class TokenClass
 }
 
 var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
-	{`^(\s+)`, Whitespace},
+	{regexp.MustCompile(`^(\s+)`), Whitespace},
 
-	{`^(if)($|\s|\()`, Keyword},
-	{`^(else)($|\s|\()`, Keyword},
-	{`^(for)($|\s|\()`, Keyword},
+	{regexp.MustCompile(`^(if)($|\s|\()`), Keyword},
+	{regexp.MustCompile(`^(else)($|\s|\()`), Keyword},
+	{regexp.MustCompile(`^(for)($|\s|\()`), Keyword},
 
-	{`^(==)($|\s?)`, Operator},
-	{`^(\+\+)($|\s?)`, Operator},
-	{`^(\+)($|\s?)`, Operator},
-	{`^(\-)($|\s?)`, Operator},
-	{`^(\-\-)($|\s?)`, Operator},
-	{`^(\*)($|\s?)`, Operator},
-	{`^(\/)($|\s?)`, Operator},
-	{`^(<)($|\s?)`, Operator},
-	{`^(>)($|\s?)`, Operator},
-	{`^(<=)($|\s?)`, Operator},
-	{`^(>=)($|\s?)`, Operator},
+	{regexp.MustCompile(`^(==)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\+\+)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\+)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\-)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\-\-)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\*)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(\/)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(<)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(>)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(<=)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(>=)($|\s?)`), Operator},
 
-	{`^(=)($|\s?)`, Assignment},
+	{regexp.MustCompile(`^(=)($|\s?)`), Assignment},
 
-	{`^(;)`, Semicolon},
-	{`^(\))`, CloseParam},
-	{`^(\()`, OpenParam},
-	{`^({)`, OpenParam},
-	{`^(})`, CloseParam},
+	{regexp.MustCompile(`^(;)`), Semicolon},
+	{regexp.MustCompile(`^(\))`), CloseParam},
+	{regexp.MustCompile(`^(\()`), OpenParam},
+	{regexp.MustCompile(`^({)`), OpenParam},
+	{regexp.MustCompile(`^(})`), CloseParam},
 
-	{`^([0-9]+\.[0-9]+)`, Number},
-	{`^([0-9]+)`, Number},
+	{regexp.MustCompile(`^([0-9]+\.[0-9]+)`), Number},
+	{regexp.MustCompile(`^([0-9]+)`), Number},
 
-	{`^(\w+)`, Identifier},
+	{regexp.MustCompile(`^(\w+)`), Identifier},
 }
 
 func (t Token) String() string {
@@ -124,7 +124,7 @@ func logLine(idx, ln uint64, rest string) {
 
 func processAvailableTokens(input string) (bool, int, Token) {
 	for _, entry := range tokenizerEntries {
-		substr, ok := findPattern(input, entry.pattern)
+		substr, ok := findPattern(input, entry.reg)
 		if !ok {
 			continue
 		}
@@ -139,8 +139,7 @@ func processAvailableTokens(input string) (bool, int, Token) {
 	return false, 0, Token{}
 }
 
-func findPattern(input string, pattern string) (string, bool) {
-	reg := regexp.MustCompile(pattern)
+func findPattern(input string, reg *regexp.Regexp) (string, bool) {
 	res := reg.FindStringSubmatch(input)
 	if len(res) < 2 {
 		return "", false
