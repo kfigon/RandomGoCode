@@ -48,19 +48,29 @@ type tokenizerEntry struct {
 var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{`^(\s+)`, Whitespace},
 
-	{`^(if)($|\s)`, Keyword},
-	{`^(else)($|\s)`, Keyword},
+	{`^(if)($|\s|\()`, Keyword},
+	{`^(else)($|\s|\()`, Keyword},
+	{`^(for)($|\s|\()`, Keyword},
 
 	{`^(==)($|\s?)`, Operator},
+	{`^(\+\+)($|\s?)`, Operator},
 	{`^(\+)($|\s?)`, Operator},
 	{`^(\-)($|\s?)`, Operator},
+	{`^(\-\-)($|\s?)`, Operator},
 	{`^(\*)($|\s?)`, Operator},
 	{`^(\/)($|\s?)`, Operator},
+	{`^(<)($|\s?)`, Operator},
+	{`^(>)($|\s?)`, Operator},
+	{`^(<=)($|\s?)`, Operator},
+	{`^(>=)($|\s?)`, Operator},
+
 	{`^(=)($|\s?)`, Assignment},
 
 	{`^(;)`, Semicolon},
 	{`^(\))`, CloseParam},
 	{`^(\()`, OpenParam},
+	{`^({)`, OpenParam},
+	{`^(})`, CloseParam},
 
 	{`^([0-9]+\.[0-9]+)`, Number},
 	{`^([0-9]+)`, Number},

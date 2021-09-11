@@ -89,6 +89,26 @@ func TestTokenizer(t *testing.T) {
 				{Semicolon, ";"},
 			},
 		},
+		{
+			desc: "for loop",
+			input: `for(i=0;i<3;i++){`,
+			expectedTokens: []Token{
+				{Keyword, "for"},
+				{OpenParam, "("},
+				{Identifier, "i"},
+				{Assignment,"="},
+				{Number,"0"},
+				{Semicolon,";"},
+				{Identifier,"i"},
+				{Operator,"<"},
+				{Number,"3"},
+				{Semicolon,";"},
+				{Identifier,"i"},
+				{Operator,"++"},
+				{CloseParam,")"},
+				{OpenParam,"{"},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
