@@ -7,7 +7,7 @@ import (
 type Grammar int
 
 const (
-	Expression Grammar = iota 
+	Expression Grammar = iota  // <term> <operator>(+-*/) <term>
 	Term
 )
 
