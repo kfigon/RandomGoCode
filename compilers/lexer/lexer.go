@@ -83,14 +83,9 @@ func Tokenize(input string) []Token {
 	ln := uint64(len(input))
 	for idx < ln {
 		rest := input[idx:]
-	
-		if enableLogs {
-			toPrint := 20
-			if idx + uint64(toPrint) > ln {
-				toPrint = int(ln-idx)
-			}
-			log.Printf("parsing %q...\n", rest[:toPrint])
-		}
+
+		logLine(idx, ln, rest)
+		
 
 		found, deltaIdx, token := processAvailableTokens(rest)
 
@@ -103,6 +98,18 @@ func Tokenize(input string) []Token {
 		} 
 	}
 	return tokens
+}
+
+func logLine(idx, ln uint64, rest string) {
+	if !enableLogs {
+		return
+	}
+	
+	toPrint := 20
+	if idx + uint64(toPrint) > ln {
+		toPrint = int(ln-idx)
+	}
+	log.Printf("parsing %q...\n", rest[:toPrint])
 }
 
 func processAvailableTokens(input string) (bool, int, Token) {

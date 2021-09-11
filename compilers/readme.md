@@ -176,3 +176,6 @@ Parser distinguishes valid/invalid list of tokens. Often recursive structure.
 
 derivation - sequence of productions. can be drawn as a tree
 
+Abstract syntax tree - parse tree without some details.
+
+
