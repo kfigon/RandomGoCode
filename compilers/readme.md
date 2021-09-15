@@ -178,5 +178,5 @@ derivation - sequence of productions. can be drawn as a tree
 
 Abstract syntax tree - parse tree without some details.
 
-BNF notation - `<expression> ::= <term> [<addop> <term>]*`
+BNF (Backus-Naur Form) notation - `<expression> ::= <term> [<addop> <term>]*`
 
