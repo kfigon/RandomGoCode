@@ -13,8 +13,14 @@ type Token struct {
 	Class  TokenClass
 	Lexeme string
 }
+func (t Token) String() string {
+	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
+}
 
 type TokenClass int
+func (t TokenClass) String() string {
+	return classesStrings[t]
+}
 
 const (
 	Whitespace TokenClass = iota
@@ -76,14 +82,6 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^([0-9]+)`), Number},
 
 	{regexp.MustCompile(`^(\w+)`), Identifier},
-}
-
-func (t Token) String() string {
-	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
-}
-
-func (t TokenClass) String() string {
-	return classesStrings[t]
 }
 
 func Tokenize(input string) []Token {
