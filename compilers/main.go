@@ -44,5 +44,6 @@ func main() {
 		for _, t := range tokens {
 			fmt.Println(t)
 		}
+		return
 	}
 }
