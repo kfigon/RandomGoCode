@@ -180,3 +180,13 @@ Abstract syntax tree - parse tree without some details.
 
 BNF (Backus-Naur Form) notation - `<expression> ::= <term> [<addop> <term>]*`
 
+nodes
+* expression (right side of assignment)
+* binary operations (+,-,*,/)
+* statements - list of expressions
+* assignments
+* if-else
+* if 
+* predicate (boolean expression)
+* loop
+* function
