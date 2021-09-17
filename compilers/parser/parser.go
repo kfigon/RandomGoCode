@@ -6,24 +6,31 @@ import (
 
 type Grammar int
 
-// * expression (right side of assignment)
-// * binary operations (+,-,*,/)
-// * statements - list of expressions
-// * assignments
-// * if-else
-// * if 
-// * predicate (boolean expression)
-// * loop
-// * function
 const (
-	Expression Grammar = iota  // <term> <operator>(+-*/) <term>
-	Term
+	Expression Grammar = iota
+	BinaryOperator
+	Statement
+	Assignment
+	If
+	ElseIf
+	Else
+	Predicate
+	Loop
+	Function
 )
 
 func Parse(tokens []lexer.Token) *Tree {
 	return nil
 }
 
-type Tree struct {
+type Tree struct {}
+
+type BinaryNode struct {
+	Operation string
+	Left *ExpressionNode
+	Right *ExpressionNode
+}
+
+type ExpressionNode struct {
 
 }
