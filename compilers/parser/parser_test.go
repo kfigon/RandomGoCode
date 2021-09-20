@@ -9,9 +9,9 @@ func TestBasicMathTree(t *testing.T) {
 	t.Run("Addition", func(t *testing.T) {
 		// 1+2
 		tokens := []lexer.Token{
-			{lexer.Number, "1"},
-			{lexer.Operator, "+"},
-			{lexer.Number, "2"},
+			{Class: lexer.Number, Lexeme: "1"},
+			{Class: lexer.Operator, Lexeme: "+"},
+			{Class: lexer.Number, Lexeme: "2"},
 		}
 
 		tree := Parse(tokens)
@@ -24,11 +24,11 @@ func TestBasicMathTree(t *testing.T) {
 	t.Run("Operation order", func(t *testing.T) {
 		// 1+2*3
 		tokens := []lexer.Token{
-			{lexer.Number, "1"},
-			{lexer.Operator, "+"},
-			{lexer.Number, "2"},
-			{lexer.Operator, "*"},
-			{lexer.Number, "3"},
+			{Class: lexer.Number, Lexeme: "1"},
+			{Class: lexer.Operator, Lexeme: "+"},
+			{Class: lexer.Number, Lexeme: "2"},
+			{Class: lexer.Operator, Lexeme: "*"},
+			{Class: lexer.Number, Lexeme: "3"},
 		}
 
 		tree := Parse(tokens)

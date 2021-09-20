@@ -12,11 +12,8 @@ const (
 	Statement
 	Assignment
 	If
-	ElseIf
-	Else
-	Predicate
 	Loop
-	Function
+	// Function
 )
 
 func Parse(tokens []lexer.Token) *Tree {
@@ -32,5 +29,25 @@ type BinaryNode struct {
 }
 
 type ExpressionNode struct {
+	Assign *AssignmentNode
+	Op *BinaryNode
+}
 
+type StatementNode struct {
+	Exp *ExpressionNode
+}
+
+type AssignmentNode struct {
+	Identifier string
+	Expression *ExpressionNode
+}
+
+type IfNode struct {
+	Predicate *ExpressionNode
+	Statement *StatementNode
+}
+
+type LoopNode struct {
+	End *ExpressionNode
+	Statement *StatementNode
 }
