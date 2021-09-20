@@ -170,7 +170,7 @@ Parser distinguishes valid/invalid list of tokens. Often recursive structure.
 
 `Context-free grammars` (CFG) are a natural notation for that structure.
 * set o terminal symbols, 
-* set of non terminal symbols, 
+* set of non terminal symbols - these evaluate to another, like statements, expressions etc., 
 * start symbol 
 * set of productions (mapping one symbol to multiple symbols)
 
