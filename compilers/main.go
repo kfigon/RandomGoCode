@@ -15,7 +15,7 @@ func main() {
 		fmt.Println("\nDone", time.Since(start))
 	}()
 
-	fmt.Println("Welcome to my bad compiler\n")
+	fmt.Println("Welcome to my bad compiler")
 
 	filePath := flag.String("file", "", "path to file with code")
 	lex := flag.Bool("lex", false, "print lexer output")

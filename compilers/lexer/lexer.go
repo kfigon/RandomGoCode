@@ -7,6 +7,7 @@ import (
 )
 
 var enableLogs bool = false
+var skipWhitespaces bool = true
 
 
 type Token struct {
@@ -97,13 +98,17 @@ func Tokenize(input string) []Token {
 
 		found, deltaIdx, token := processAvailableTokens(rest)
 
-		if found {
-			idx += uint64(deltaIdx)
-			tokens = append(tokens, token)
-		} else {
+		if !found {
 			log.Println("Unknown token at idx", idx)
 			idx++
+			continue
 		} 
+
+		idx += uint64(deltaIdx)
+		if skipWhitespaces && token.Class == Whitespace {
+			continue
+		}
+		tokens = append(tokens, token)
 	}
 	return tokens
 }
