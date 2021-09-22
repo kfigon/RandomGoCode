@@ -27,12 +27,13 @@ func main() {
 	
 	if cfg.runRepl {
 		handleRepl(cfg)
+		return
 	} 
 	if cfg.lex {
-		printTokens(cfg.filePath)
+		printFromFile(cfg.filePath)
 	}
 	if cfg.parse {
-		printAst(cfg.filePath)
+		printAstFromFile(cfg.filePath)
 	}
 }
 
@@ -85,39 +86,41 @@ func handleRepl(cfg config) {
 		}
 		
 		if cfg.lex {
-			out := lexer.Tokenize(text)
-			fmt.Println(out)
+			printTokens(text)
 		}
 		if cfg.parse {
-			tokens := lexer.Tokenize(text)
-			tree := parser.Parse(tokens)
-			fmt.Println(tree)
+			lexParsePrint(text)
 		}
 	}
 
 	fmt.Println("Closing repl")
 }
 
-func printTokens(filePath string) {
+func printFromFile(filePath string) {
 	fileContent, err := readFileContent(filePath)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	tokens := lexer.Tokenize(fileContent)
-	fmt.Println("Tokens:")
-	for _, t := range tokens {
-		fmt.Println(t)
-	}
+	fmt.Println(tokens)
 }
 
-func printAst(filePath string) {
+func printTokens(input string) {
+	fmt.Println(lexer.Tokenize(input))
+}
+
+func printAstFromFile(filePath string) {
 	fileContent, err := readFileContent(filePath)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tokens := lexer.Tokenize(fileContent)
+	lexParsePrint(fileContent)
+}
+
+func lexParsePrint(input string) {
+	tokens := lexer.Tokenize(input)
 	tree := parser.Parse(tokens)
 	fmt.Println(tree)
 }
