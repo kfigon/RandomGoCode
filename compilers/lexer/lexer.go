@@ -9,16 +9,17 @@ import (
 var enableLogs bool = false
 var skipWhitespaces bool = true
 
-
 type Token struct {
 	Class  TokenClass
 	Lexeme string
 }
+
 func (t Token) String() string {
 	return fmt.Sprintf("{%v %q}", t.Class, t.Lexeme)
 }
 
 type TokenClass int
+
 func (t TokenClass) String() string {
 	return classesStrings[t]
 }
@@ -35,6 +36,7 @@ const (
 	Semicolon
 	Assignment
 )
+
 var classesStrings = []string{
 	"Whitespace",
 	"Keyword",
@@ -48,7 +50,7 @@ var classesStrings = []string{
 }
 
 type tokenizerEntry struct {
-	reg *regexp.Regexp
+	reg   *regexp.Regexp
 	class TokenClass
 }
 
@@ -58,8 +60,10 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^(if)($|\s|\()`), Keyword},
 	{regexp.MustCompile(`^(else)($|\s|\()`), Keyword},
 	{regexp.MustCompile(`^(for)($|\s|\()`), Keyword},
+	{regexp.MustCompile(`^(var)($|\s|\()`), Keyword},
 
 	{regexp.MustCompile(`^(==)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(!=)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(\+\+)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(\+)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(\-)($|\s?)`), Operator},
@@ -94,7 +98,6 @@ func Tokenize(input string) []Token {
 		rest := input[idx:]
 
 		logLine(idx, ln, rest)
-		
 
 		found, deltaIdx, token := processAvailableTokens(rest)
 
@@ -102,7 +105,7 @@ func Tokenize(input string) []Token {
 			log.Println("Unknown token at idx", idx)
 			idx++
 			continue
-		} 
+		}
 
 		idx += uint64(deltaIdx)
 		if skipWhitespaces && token.Class == Whitespace {
@@ -117,10 +120,10 @@ func logLine(idx, ln uint64, rest string) {
 	if !enableLogs {
 		return
 	}
-	
+
 	toPrint := 20
-	if idx + uint64(toPrint) > ln {
-		toPrint = int(ln-idx)
+	if idx+uint64(toPrint) > ln {
+		toPrint = int(ln - idx)
 	}
 	log.Printf("parsing %q...\n", rest[:toPrint])
 }
@@ -147,5 +150,5 @@ func findPattern(input string, reg *regexp.Regexp) (string, bool) {
 	if len(res) < 2 {
 		return "", false
 	}
-	return res[1],true
+	return res[1], true
 }

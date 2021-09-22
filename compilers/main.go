@@ -11,7 +11,7 @@ import (
 
 func main() {
 	start := time.Now()
-	defer func(){
+	defer func() {
 		fmt.Println("\nDone", time.Since(start))
 	}()
 

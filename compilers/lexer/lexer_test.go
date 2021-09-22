@@ -23,14 +23,14 @@ func assertTokens(t *testing.T, exp, got []Token) {
 
 func TestTokenizer(t *testing.T) {
 	testCases := []struct {
-		desc	string
-		input 	string
+		desc           string
+		input          string
 		expectedTokens []Token
 	}{
 		{
-			desc: "simple case with whitespace",
+			desc:  "simple case with whitespace",
 			input: ` i;`,
-			expectedTokens: []Token {
+			expectedTokens: []Token{
 				{Identifier, "i"},
 				{Semicolon, ";"},
 			},
@@ -39,7 +39,7 @@ func TestTokenizer(t *testing.T) {
 			desc: "complex case 1",
 			input: `if (i==j) els = 654.1;
 	else els=123;`,
-			expectedTokens: []Token {
+			expectedTokens: []Token{
 				{Keyword, "if"},
 				{OpenParam, "("},
 				{Identifier, "i"},
@@ -80,29 +80,29 @@ func TestTokenizer(t *testing.T) {
 			},
 		},
 		{
-			desc: "for loop",
+			desc:  "for loop",
 			input: `for(i=0;i<3;i++){`,
 			expectedTokens: []Token{
 				{Keyword, "for"},
 				{OpenParam, "("},
 				{Identifier, "i"},
-				{Assignment,"="},
-				{Number,"0"},
-				{Semicolon,";"},
-				{Identifier,"i"},
-				{Operator,"<"},
-				{Number,"3"},
-				{Semicolon,";"},
-				{Identifier,"i"},
-				{Operator,"++"},
-				{CloseParam,")"},
-				{OpenParam,"{"},
+				{Assignment, "="},
+				{Number, "0"},
+				{Semicolon, ";"},
+				{Identifier, "i"},
+				{Operator, "<"},
+				{Number, "3"},
+				{Semicolon, ";"},
+				{Identifier, "i"},
+				{Operator, "++"},
+				{CloseParam, ")"},
+				{OpenParam, "{"},
 			},
 		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			got := Tokenize(tC.input)		
+			got := Tokenize(tC.input)
 			assertTokens(t, tC.expectedTokens, got)
 		})
 	}

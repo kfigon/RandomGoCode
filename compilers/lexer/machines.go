@@ -14,23 +14,22 @@ func simpleState(input string) func() (string, bool) {
 				state = "accept"
 				indx++
 				return state, true
-			} 
+			}
 			// stuck, reject
 			state = "reject"
 			return state, false
 
 		case "accept":
 			if indx >= len(input) {
-				return "accept",false
+				return "accept", false
 			}
 		}
-		return "reject",false
+		return "reject", false
 	}
 }
 
-
 // any number of 1s followed by a single 0
-func anyNumberOfOnes(input string) func()(string,bool) {
+func anyNumberOfOnes(input string) func() (string, bool) {
 	state := "A"
 	idx := 0
 	return func() (string, bool) {
@@ -48,7 +47,7 @@ func anyNumberOfOnes(input string) func()(string,bool) {
 		case "B":
 			if idx >= len(input) {
 				return "accept", false
-			} 
+			}
 		}
 		return "reject", false
 	}
