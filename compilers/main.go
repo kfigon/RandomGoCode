@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -22,31 +23,26 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	file, err := os.Open(cfg.filePath)
+	
+	if cfg.runRepl {
+		handleRepl(cfg)
+	} else if cfg.lex {
+		parseTokens(cfg.filePath)
+	}
+}
+
+func readFileContent(filePath string) (string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		fmt.Println("Error when reading file:", err)
-		return
+		return "", fmt.Errorf("error when reading file: %v", err)
 	}
 	defer file.Close()
 
 	fileByteContent, err := io.ReadAll(file)
 	if err != nil {
-		fmt.Println("Error in reading file:", err)
-		return
+		return "", fmt.Errorf("error in reading file: %v", err)
 	}
-	fileContent := string(fileByteContent)
-	if cfg.lex {
-		tokens := lexer.Tokenize(fileContent)
-		fmt.Println("Tokens:")
-		for _, t := range tokens {
-			fmt.Println(t)
-		}
-		return
-	} else if cfg.runRepl {
-		fmt.Println("Running repl...")
-		// todo
-		return
-	}
+	return string(fileByteContent), nil
 }
 
 type config struct {
@@ -66,8 +62,39 @@ func parseCliArgsToConfig() config {
 }
 
 func validate(c config) error {
-	if c.lex && c.filePath == "" {
+	if !c.runRepl && c.filePath == "" {
 		return fmt.Errorf("filepath not provided")
 	} 
 	return nil
+}
+
+func handleRepl(cfg config) {
+	fmt.Println("Running repl...")
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			break
+		}
+		
+		if cfg.lex {
+			out := lexer.Tokenize(text)
+			fmt.Println(out)
+		} 
+	}
+
+	fmt.Println("Closing repl")
+}
+
+func parseTokens(filePath string) {
+	fileContent, err := readFileContent(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tokens := lexer.Tokenize(fileContent)
+	fmt.Println("Tokens:")
+	for _, t := range tokens {
+		fmt.Println(t)
+	}
 }
