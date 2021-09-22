@@ -193,16 +193,20 @@ nodes
 
 expression - produces a value, statement does not.
 
+Program is just a series of statements
+
 expressions:
 ```
 5
 5+1
 true
 add(1,3)
+func(x,y) { return x+y; }
 ```
 
 statements:
 ```
 var x = 5;
 return 5;
+var add = func(x,y) { return x+y; }
 ```
