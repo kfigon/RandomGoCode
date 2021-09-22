@@ -1,6 +1,5 @@
 package lexer
 
-// dont know if this actually works, it's just a mechanism for a reference
 
 type llex struct {
 	input string
@@ -23,7 +22,7 @@ func (l *llex) readChar() rune {
 }
 
 func (l *llex) peekChar() rune {
-	return rune(l.input[l.idx+1])
+	return rune(l.input[l.idx])
 }
 
 func (l *llex) eof() bool {
@@ -35,8 +34,32 @@ func (l *llex) emit() llexToken {
 		return llexToken{token: "EOF", lexeme: ""}
 	}
 	char := l.readChar()
-	switch char{
+	toPrint := string(char)
+	if toPrint == "" {
+		char-=1
+		char+=1
+	}
+	switch char {
+
 	case ';': return llexToken{"SEMICOLON", string(char)}
+	
+	case '+': {
+		if !l.eof() && l.peekChar() == '+' {
+			l.readChar()
+			return llexToken{"OPERATOR", "++"}
+		}
+		return llexToken{"OPERATOR", string(char)}
+	}
+	case '<': return llexToken{"OPERATOR", string(char)}
+	case '>': return llexToken{"OPERATOR", string(char)}
+	case '-': return llexToken{"OPERATOR", string(char)}
+	case '*': return llexToken{"OPERATOR", string(char)}
+
+	case '(': return llexToken{"OPEN_BRACE", string(char)}
+	case ')': return llexToken{"CLOSE_BRACE", string(char)}
+	case '{': return llexToken{"OPEN_CBRACE", string(char)}
+	case '}': return llexToken{"CLOSE_CBRACE", string(char)}
+
 	case '=': {
 		if !l.eof() && l.peekChar() == '=' {
 			l.readChar()
@@ -62,7 +85,7 @@ func (l *llex) emit() llexToken {
 			consumedString := string(char)+l.eatNumber()
 			return llexToken{"NUMBER", consumedString}
 		 } else if isWhiteSpace(char) {
-			 return llexToken{"WHITESPACE",string(char)}
+			 return l.emit()
 		 }
 	}
 	}
@@ -70,7 +93,7 @@ func (l *llex) emit() llexToken {
 }
 
 func isWhiteSpace(char rune) bool {
-	return char==' ' || char == '\t' || char == '\n'
+	return char ==' ' || char == '\t' || char == '\n' || char == '\r'
 }
 
 func isDigit(char rune) bool {
@@ -82,27 +105,26 @@ func isAlpha(char rune) bool {
 }
 
 func (l *llex) eatIdentifier() string {
-	var out string
-	for !l.eof() {
-		c := l.readChar()
-		if !isAlpha(c) {
-			break
-		}
-		out += string(c)
-	}
-	return out
+	return l.consumeCharacter(isAlpha)()
 }
 
 func (l *llex) eatNumber() string {
-	var out string
-	for !l.eof() {
-		c := l.readChar()
-		if !isDigit(c) {
-			break
+	return l.consumeCharacter(isDigit)()
+}
+
+func (l *llex) consumeCharacter(fn func(rune)bool) func() string {
+	return func() string {
+		var out string
+		for !l.eof() {
+			c := l.peekChar()
+			if !fn(c) {
+				break
+			}
+			l.readChar()
+			out += string(c)
 		}
-		out += string(c)
+		return out
 	}
-	return out
 }
 
 func isKeyword(input string) bool {
