@@ -201,6 +201,7 @@ expressions:
 5+1
 true
 add(1,3)
+x // might be also x identifier in declaration:  var x
 func(x,y) { return x+y; }
 ```
 
