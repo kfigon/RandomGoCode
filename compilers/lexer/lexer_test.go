@@ -99,6 +99,19 @@ func TestTokenizer(t *testing.T) {
 				{OpenParam, "{"},
 			},
 		},
+		{
+			desc:  "var statement",
+			input: `var foo = 123 != 3;`,
+			expectedTokens: []Token{
+				{Class: Keyword, Lexeme: "var"},
+				{Class: Identifier, Lexeme: "foo"},
+				{Class: Assignment, Lexeme: "="},
+				{Class: Number, Lexeme: "123"},
+				{Class: Operator, Lexeme: "!="},
+				{Class: Number, Lexeme: "3"},
+				{Class: Semicolon, Lexeme: ";"},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
