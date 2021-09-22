@@ -1,10 +1,10 @@
-package lexer
+package lexerbybook
 
 import (
 	"testing"
 )
 
-func TestLlexer(t *testing.T) {
+func TestLexerByTheBook(t *testing.T) {
 	input := `let asd = 123;
 for(i=1;i<3; i++){}`
 
@@ -52,7 +52,7 @@ for(i=1;i<3; i++){}`
 	}
 }
 
-func TestSimpleIdentifier(t *testing.T) {
+func TestLexerByTheBookSimpleIdentifier(t *testing.T) {
 	l := newLlexer(`let;`)
 	to := l.emit()
 	semi := l.emit()
