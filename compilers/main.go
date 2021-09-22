@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"programming-lang/lexer"
+	"programming-lang/parser"
 	"time"
 )
 
@@ -26,8 +27,12 @@ func main() {
 	
 	if cfg.runRepl {
 		handleRepl(cfg)
-	} else if cfg.lex {
-		parseTokens(cfg.filePath)
+	} 
+	if cfg.lex {
+		printTokens(cfg.filePath)
+	}
+	if cfg.parse {
+		printAst(cfg.filePath)
 	}
 }
 
@@ -49,13 +54,15 @@ type config struct {
 	filePath string
 	lex bool
 	runRepl bool
+	parse bool
 }
 
 func parseCliArgsToConfig() config {
 	var cfg config
 	flag.StringVar(&cfg.filePath, "file", "", "path to file with code")
-	flag.BoolVar(&cfg.lex, "lex", false, "lexes file and prints lexer output")
+	flag.BoolVar(&cfg.lex, "lex", false, "prints lexer output")
 	flag.BoolVar(&cfg.runRepl, "repl", false, "run REPL, ignores all other params")
+	flag.BoolVar(&cfg.parse, "parse", false, "prints parser output")
 	flag.Parse()
 
 	return cfg
@@ -80,13 +87,18 @@ func handleRepl(cfg config) {
 		if cfg.lex {
 			out := lexer.Tokenize(text)
 			fmt.Println(out)
-		} 
+		}
+		if cfg.parse {
+			tokens := lexer.Tokenize(text)
+			tree := parser.Parse(tokens)
+			fmt.Println(tree)
+		}
 	}
 
 	fmt.Println("Closing repl")
 }
 
-func parseTokens(filePath string) {
+func printTokens(filePath string) {
 	fileContent, err := readFileContent(filePath)
 	if err != nil {
 		fmt.Println(err)
@@ -97,4 +109,15 @@ func parseTokens(filePath string) {
 	for _, t := range tokens {
 		fmt.Println(t)
 	}
+}
+
+func printAst(filePath string) {
+	fileContent, err := readFileContent(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tokens := lexer.Tokenize(fileContent)
+	tree := parser.Parse(tokens)
+	fmt.Println(tree)
 }

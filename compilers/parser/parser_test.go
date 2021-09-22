@@ -36,6 +36,14 @@ func TestBasicMathTree(t *testing.T) {
 		if tree == nil {
 			t.Error("Invalid tree built")
 		}	
-	})
+	})	
+}
+
+func TestVarStatement(t *testing.T) {
+	tokens := lexer.Tokenize(`var foo = 123;`)
 	
+	tree := Parse(tokens)
+	if tree == nil {
+		t.Error("Invalid tree built")
+	}	
 }
