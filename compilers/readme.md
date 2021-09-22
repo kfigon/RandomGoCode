@@ -178,7 +178,7 @@ derivation - sequence of productions. can be drawn as a tree
 
 Abstract syntax tree - parse tree without some details.
 
-BNF (Backus-Naur Form) notation - `<expression> ::= <term> [<addop> <term>]*`
+BNF (Backus-Naur Form) notation for defining CFG - `<expression> ::= <term> [<addop> <term>]*`
 
 nodes
 * expression (right side of assignment)
@@ -190,3 +190,19 @@ nodes
 * predicate (boolean expression)
 * loop
 * function
+
+expression - produces a value, statement does not.
+
+expressions:
+```
+5
+5+1
+true
+add(1,3)
+```
+
+statements:
+```
+var x = 5;
+return 5;
+```
