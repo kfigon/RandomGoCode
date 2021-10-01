@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"programming-lang/lexer"
 )
 
@@ -11,15 +12,25 @@ const (
 	Statement
 )
 
+type pars struct {
+	iter *tokenIterator
+}
+
 func Parse(tokens []lexer.Token) *Tree {
-	iter := newIterator(tokens)
+	p := &pars{newIterator(tokens)}
 	tree := &Tree{}
 	for {
-		tok, ok := iter.next()
+		tok, ok := p.iter.next()
 		if !ok {
 			break
 		}
 		if isVarKeyword(tok) {
+			st, err := p.parseVarExpression()
+			if err != nil {
+				tree.Errors = append(tree.Errors, fmt.Errorf("error in var statement: %v", err))
+				continue
+			}
+			tree.Statements = append(tree.Statements, st)
 		}
 	}
 
@@ -28,11 +39,12 @@ func Parse(tokens []lexer.Token) *Tree {
 
 type Tree struct {
 	Statements []LetStatementNode
+	Errors []error
 }
 
 // should be generalized to a Statement
 type LetStatementNode struct {
-	Name *string
+	Name string
 	Value *ExpressionNode
 }
 
@@ -40,12 +52,41 @@ type ExpressionNode struct {
 
 }
 
+
+func (p *pars) parseVarExpression() (LetStatementNode, error) {
+	tok, ok := p.iter.next()
+	out := LetStatementNode{}
+	if !ok {
+		return out, fmt.Errorf("unexpected end of tokens")
+	} else if !isIdentifier(tok) {
+		return out, fmt.Errorf("expected identifier")
+	}
+
+	out.Name = tok.Lexeme
+
+	tok, ok = p.iter.next()
+	if !ok {
+		return out, fmt.Errorf("unexpected end of tokens")
+	} else if !isAssignmentOperator(tok) {
+		return out, fmt.Errorf("expected assignment after var")
+	}
+
+	// todo: parse expression
+	for {
+		tok, ok = p.iter.next()
+		if !ok || isSemicolon(tok){
+			break
+		}
+	}
+	return out,nil
+}
+
 func isVarKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "var"
 }
 
-func isEqualOperator(token lexer.Token) bool {
-	return token.Class == lexer.Operator && token.Lexeme == "="
+func isAssignmentOperator(token lexer.Token) bool {
+	return token.Class == lexer.Assignment && token.Lexeme == "="
 }
 
 func isSemicolon(token lexer.Token) bool {
@@ -54,4 +95,8 @@ func isSemicolon(token lexer.Token) bool {
 
 func isNumberLiteral(token lexer.Token) bool {
 	return token.Class == lexer.Number
+}
+
+func isIdentifier(token lexer.Token) bool {
+	return token.Class == lexer.Identifier
 }
