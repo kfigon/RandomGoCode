@@ -58,6 +58,20 @@ type ExpressionNode struct {
 
 }
 
+type IntegerLiteralExpression struct {
+	Value int
+}
+
+func (p *pars) parseExpression() (*ExpressionNode, error) {
+	for {
+		tok, ok := p.iter.next()
+		if !ok || isSemicolon(tok){
+			break
+		}
+	}
+	return nil,nil
+}
+
 
 func (p *pars) parseVarExpression() (LetStatementNode, error) {
 	tok, ok := p.iter.next()
@@ -77,24 +91,17 @@ func (p *pars) parseVarExpression() (LetStatementNode, error) {
 		return out, fmt.Errorf("expected assignment after var")
 	}
 
-	// todo: parse expression
-	for {
-		tok, ok = p.iter.next()
-		if !ok || isSemicolon(tok){
-			break
-		}
+	// todo
+	_, err := p.parseExpression()
+	if err != nil {
+		return out, fmt.Errorf("error in parsing expression %v", err)
 	}
 	return out,nil
 }
 
 func (p *pars) parseReturnExpression() (LetStatementNode, error) {
-	// todo: parse expression
-	for {
-		tok, ok := p.iter.next()
-		if !ok || isSemicolon(tok){
-			break
-		}
-	}
+	// todo
+	p.parseExpression()
 	return LetStatementNode{},nil
 }
 
