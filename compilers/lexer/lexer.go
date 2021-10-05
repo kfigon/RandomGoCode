@@ -61,6 +61,7 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^(else)($|\s|\()`), Keyword},
 	{regexp.MustCompile(`^(for)($|\s|\()`), Keyword},
 	{regexp.MustCompile(`^(var)($|\s|\()`), Keyword},
+	{regexp.MustCompile(`^(return)($|\s|\()`), Keyword},
 
 	{regexp.MustCompile(`^(==)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(!=)($|\s?)`), Operator},

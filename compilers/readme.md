@@ -180,6 +180,8 @@ Abstract syntax tree - parse tree without some details.
 
 BNF (Backus-Naur Form) notation for defining CFG - `<expression> ::= <term> [<addop> <term>]*`
 
+alternative to BNF and CFGs - `pratt's parsing`
+
 nodes
 * expression (right side of assignment)
 * binary operations (+,-,*,/)

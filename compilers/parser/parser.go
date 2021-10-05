@@ -23,18 +23,24 @@ func Parse(tokens []lexer.Token) *Tree {
 		tok, ok := p.iter.next()
 		if !ok {
 			break
-		}
-		if isVarKeyword(tok) {
+		} else if isVarKeyword(tok) {
 			st, err := p.parseVarExpression()
-			if err != nil {
-				tree.Errors = append(tree.Errors, fmt.Errorf("error in var statement: %v", err))
-				continue
-			}
-			tree.Statements = append(tree.Statements, st)
+			tree.addResult(st,err, "var")
+		} else if isReturnKeyword(tok) {
+			st, err := p.parseReturnExpression()
+			tree.addResult(st,err, "return")
 		}
 	}
 
 	return tree
+}
+
+func (t *Tree) addResult(st LetStatementNode, err error, statementType string) {
+	if err != nil {
+		t.Errors = append(t.Errors, fmt.Errorf("error in %v statement: %v", statementType, err))
+		return
+	}
+	t.Statements = append(t.Statements, st)
 }
 
 type Tree struct {
@@ -81,6 +87,17 @@ func (p *pars) parseVarExpression() (LetStatementNode, error) {
 	return out,nil
 }
 
+func (p *pars) parseReturnExpression() (LetStatementNode, error) {
+	// todo: parse expression
+	for {
+		tok, ok := p.iter.next()
+		if !ok || isSemicolon(tok){
+			break
+		}
+	}
+	return LetStatementNode{},nil
+}
+
 func isVarKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "var"
 }
@@ -99,4 +116,8 @@ func isNumberLiteral(token lexer.Token) bool {
 
 func isIdentifier(token lexer.Token) bool {
 	return token.Class == lexer.Identifier
+}
+
+func isReturnKeyword(token lexer.Token) bool {
+	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }
