@@ -49,3 +49,19 @@ func assertNoErrors(t *testing.T, errors []error) {
 		}
 	}
 }
+
+func TestInvalidVarStatements(t *testing.T) {
+	input := `var asd 4;
+	var = 432;`
+
+	tree := Parse(lexer.Tokenize(input))
+
+	if len(tree.Errors) != 2 {
+		t.Error("Expected 2 errors, got", tree.Errors)
+	}
+}
+
+func TestVarWithoutAssignment(t *testing.T) {
+	tree := Parse(lexer.Tokenize(`var asd;`))
+	assertNoErrors(t, tree.Errors)
+}

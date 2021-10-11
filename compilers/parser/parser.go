@@ -74,10 +74,10 @@ func (p *parser) parseVarStatement() {
 	tok, ok := p.iter.next()
 	out := VarStatementNode{}
 	if !ok {
-		p.addError(fmt.Errorf("unexpected end of tokens"))
+		p.addError(fmt.Errorf("var error - unexpected end of tokens after var"))
 		return
 	} else if !isIdentifier(tok) {
-		p.addError(fmt.Errorf("expected identifier"))
+		p.addError(fmt.Errorf("var error - expected identifier, got %v", tok.Class))
 		return
 	}
 
@@ -85,10 +85,10 @@ func (p *parser) parseVarStatement() {
 
 	tok, ok = p.iter.next()
 	if !ok {
-		p.addError(fmt.Errorf("unexpected end of tokens"))
+		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
 		return
-	} else if !isAssignmentOperator(tok) {
-		p.addError(fmt.Errorf("expected assignment after var"))
+	} else if !isAssignmentOperator(tok) && !isSemicolon(tok) {
+		p.addError(fmt.Errorf("var error - expected assignment or semicolon after var, got %v", tok.Class))
 		return
 	}
 
