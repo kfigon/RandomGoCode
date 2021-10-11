@@ -32,6 +32,7 @@ type Program struct {
 	Errors []error
 }
 
+// Node is an interface mostly for debugging and testing
 type Node interface {
 	TokenLiteral() string
 }
@@ -92,8 +93,7 @@ func (p *parser) parseVarStatement() {
 	}
 
 	// todo
-	exp := p.parseExpression()
-	out.Value = exp
+	out.Value = p.parseExpression()
 	p.addStatement(&out)
 }
 
