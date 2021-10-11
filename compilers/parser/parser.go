@@ -88,7 +88,7 @@ func (p *parser) parseVarStatement() {
 		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
 		return
 	} else if !isAssignmentOperator(tok) && !isSemicolon(tok) {
-		p.addError(fmt.Errorf("var error - expected assignment or semicolon after var, got %v", tok.Class))
+		p.addError(fmt.Errorf("var error - expected assignment or semicolon after identifier, got %v", tok.Class))
 		return
 	}
 
