@@ -3,107 +3,120 @@ package parser
 import (
 	"fmt"
 	"programming-lang/lexer"
+	"strconv"
 )
 
-type Grammar int
-
-const (
-	Expression Grammar = iota
-	Statement
-)
-
-type pars struct {
+type parser struct {
 	iter *tokenIterator
+	errors []error
+	statements []StatementNode
 }
 
-func Parse(tokens []lexer.Token) *Tree {
-	p := &pars{newIterator(tokens)}
-	tree := &Tree{}
+func Parse(tokens []lexer.Token) *Program {
+	p := &parser{iter: newIterator(tokens)}
 	for {
 		tok, ok := p.iter.next()
 		if !ok {
 			break
 		} else if isVarKeyword(tok) {
-			st, err := p.parseVarExpression()
-			tree.addResult(st,err, "var")
+			p.statements = append(p.statements, p.parseVarStatement())
 		} else if isReturnKeyword(tok) {
-			st, err := p.parseReturnExpression()
-			tree.addResult(st,err, "return")
+			p.statements = append(p.statements, p.parseReturnStatement())
 		}
 	}
 
-	return tree
+	return &Program{p.statements, p.errors}
 }
 
-func (t *Tree) addResult(st LetStatementNode, err error, statementType string) {
-	if err != nil {
-		t.Errors = append(t.Errors, fmt.Errorf("error in %v statement: %v", statementType, err))
-		return
-	}
-	t.Statements = append(t.Statements, st)
-}
-
-type Tree struct {
-	Statements []LetStatementNode
+type Program struct {
+	Statements []StatementNode
 	Errors []error
 }
 
-// should be generalized to a Statement
-type LetStatementNode struct {
+type Node interface {
+	TokenLiteral() string
+}
+
+type StatementNode interface {
+	Node
+	evaluateStatement()
+}
+
+type ExpressionNode interface {
+	Node
+	evaluateExpression()
+}
+
+
+type VarStatementNode struct {
 	Name string
-	Value *ExpressionNode
+	Value ExpressionNode
 }
-
-type ExpressionNode struct {
-
+func (vsn *VarStatementNode) TokenLiteral() string {
+	return vsn.Name
 }
+func (vsn *VarStatementNode) evaluateStatement() {}
+
 
 type IntegerLiteralExpression struct {
 	Value int
 }
+func (ile *IntegerLiteralExpression) TokenLiteral() string {
+	return strconv.Itoa(ile.Value)
+}
+func (ile *IntegerLiteralExpression) evaluateExpression() {}
 
-func (p *pars) parseExpression() (*ExpressionNode, error) {
+func (p *parser) addError(err error) {
+	p.errors = append(p.errors, err)
+}
+
+func (p *parser) parseExpression() ExpressionNode {
 	for {
 		tok, ok := p.iter.next()
 		if !ok || isSemicolon(tok){
 			break
 		}
 	}
-	return nil,nil
+	return nil
 }
 
 
-func (p *pars) parseVarExpression() (LetStatementNode, error) {
+func (p *parser) parseVarStatement() StatementNode {
 	tok, ok := p.iter.next()
-	out := LetStatementNode{}
+	out := VarStatementNode{}
 	if !ok {
-		return out, fmt.Errorf("unexpected end of tokens")
+		p.addError(fmt.Errorf("unexpected end of tokens"))
+		return nil
 	} else if !isIdentifier(tok) {
-		return out, fmt.Errorf("expected identifier")
+		p.addError(fmt.Errorf("expected identifier"))
+		return nil
 	}
 
 	out.Name = tok.Lexeme
 
 	tok, ok = p.iter.next()
 	if !ok {
-		return out, fmt.Errorf("unexpected end of tokens")
+		p.addError(fmt.Errorf("unexpected end of tokens"))
+		return nil
 	} else if !isAssignmentOperator(tok) {
-		return out, fmt.Errorf("expected assignment after var")
+		p.addError(fmt.Errorf("expected assignment after var"))
+		return nil
 	}
 
 	// todo
-	_, err := p.parseExpression()
-	if err != nil {
-		return out, fmt.Errorf("error in parsing expression %v", err)
-	}
-	return out,nil
+	exp := p.parseExpression()
+	out.Value = exp
+	return &out
 }
 
-func (p *pars) parseReturnExpression() (LetStatementNode, error) {
+func (p *parser) parseReturnStatement() StatementNode {
 	// todo
 	p.parseExpression()
-	return LetStatementNode{},nil
+	return nil
 }
+
+
+
 
 func isVarKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "var"

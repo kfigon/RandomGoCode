@@ -14,12 +14,12 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	assertNoErrors(t, tree.Errors)
 
 	if len(tree.Statements) != 2 {
-		t.Fatal("Invalid tree built, should be 2, got",len(tree.Statements))
+		t.Fatal("Invalid tree built, should be 2, got", len(tree.Statements))
 	}
-	if tree.Statements[0].Name != "foo" {
+	if tree.Statements[0].TokenLiteral() != "foo" {
 		t.Error("Invalid first statement", tree.Statements[0])
 	}
-	if tree.Statements[1].Name != "asd" {
+	if tree.Statements[1].TokenLiteral() != "asd" {
 		t.Error("Invalid second statement", tree.Statements[1])
 	}
 	// todo: assert expressions

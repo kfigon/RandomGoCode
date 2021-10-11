@@ -213,3 +213,9 @@ var x = 5;
 return 5;
 var add = func(x,y) { return x+y; }
 ```
+
+### Parser Implementation
+
+storing a tree:
+* as a literal tree with sum types as nodes (rust enums, haskell datatypes, jsons with loosely defined nodes)
+* as oop interfaces (evalExpression and evalStatemnets, both void methods)
