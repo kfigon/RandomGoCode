@@ -19,9 +19,9 @@ func Parse(tokens []lexer.Token) *Program {
 		if !ok {
 			break
 		} else if isVarKeyword(tok) {
-			p.statements = append(p.statements, p.parseVarStatement())
+			p.parseVarStatement()
 		} else if isReturnKeyword(tok) {
-			p.statements = append(p.statements, p.parseReturnStatement())
+			p.parseReturnStatement()
 		}
 	}
 
@@ -58,6 +58,15 @@ func (vsn *VarStatementNode) TokenLiteral() string {
 func (vsn *VarStatementNode) evaluateStatement() {}
 
 
+type ReturnStatementNode struct {
+	Value ExpressionNode
+}
+func (r *ReturnStatementNode) TokenLiteral() string {
+	return "return"
+}
+func (r *ReturnStatementNode) evaluateStatement() {}
+
+
 type IntegerLiteralExpression struct {
 	Value int
 }
@@ -81,15 +90,15 @@ func (p *parser) parseExpression() ExpressionNode {
 }
 
 
-func (p *parser) parseVarStatement() StatementNode {
+func (p *parser) parseVarStatement() {
 	tok, ok := p.iter.next()
 	out := VarStatementNode{}
 	if !ok {
 		p.addError(fmt.Errorf("unexpected end of tokens"))
-		return nil
+		return
 	} else if !isIdentifier(tok) {
 		p.addError(fmt.Errorf("expected identifier"))
-		return nil
+		return
 	}
 
 	out.Name = tok.Lexeme
@@ -97,25 +106,23 @@ func (p *parser) parseVarStatement() StatementNode {
 	tok, ok = p.iter.next()
 	if !ok {
 		p.addError(fmt.Errorf("unexpected end of tokens"))
-		return nil
+		return
 	} else if !isAssignmentOperator(tok) {
 		p.addError(fmt.Errorf("expected assignment after var"))
-		return nil
+		return
 	}
 
 	// todo
 	exp := p.parseExpression()
 	out.Value = exp
-	return &out
+	p.statements = append(p.statements, &out)
 }
 
-func (p *parser) parseReturnStatement() StatementNode {
+func (p *parser) parseReturnStatement() {
 	// todo
-	p.parseExpression()
-	return nil
+	exp := p.parseExpression()
+	p.statements = append(p.statements, &ReturnStatementNode{exp})
 }
-
-
 
 
 func isVarKeyword(token lexer.Token) bool {
