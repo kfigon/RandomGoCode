@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"programming-lang/lexer"
+	"strconv"
 )
 
 type parser struct {
@@ -60,15 +61,35 @@ func (p *parser) addStatement(st StatementNode) {
 }
 
 func (p *parser) parseExpression() ExpressionNode {
-	for {
-		tok, ok := p.iter.next()
-		if !ok || isSemicolon(tok){
-			break
-		}
+	tok, ok := p.iter.next()
+	if !ok {
+		return nil
+	}
+	if isNumberLiteral(tok) {
+		return p.parseIntegerLiteralExpression(tok)
+	} else if isSemicolon(tok) {
+		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))
+		return nil
 	}
 	return nil
 }
 
+func (p *parser) parseIntegerLiteralExpression(tok lexer.Token) ExpressionNode {
+	v, err := strconv.Atoi(tok.Lexeme)
+	if err != nil {
+		p.addError(fmt.Errorf("expression error - error in parsing integer literal in: %v", tok.Lexeme))
+		return nil
+	}
+	tok, ok := p.iter.next()
+	if !ok {
+		p.addError(fmt.Errorf("expression error - unexpected end of tokens"))
+		return nil
+	} else if !isSemicolon(tok) {
+		p.addError(fmt.Errorf("expression error - expected semicolon, got %v", tok.Lexeme))
+		return nil
+	}
+	return &IntegerLiteralExpression{Value: v}		
+}
 
 func (p *parser) parseVarStatement() {
 	tok, ok := p.iter.next()
@@ -92,13 +113,18 @@ func (p *parser) parseVarStatement() {
 		return
 	}
 
-	// todo
-	out.Value = p.parseExpression()
+	exp := p.parseExpression()
+	if exp == nil {
+		return
+	}
+	out.Value = exp
 	p.addStatement(&out)
 }
 
 func (p *parser) parseReturnStatement() {
-	// todo
 	exp := p.parseExpression()
+	if exp == nil {
+		return
+	}
 	p.addStatement(&ReturnStatementNode{exp})
 }

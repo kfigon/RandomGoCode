@@ -1,1 +1,1 @@
-go test -testcache
+go clean -testcache
