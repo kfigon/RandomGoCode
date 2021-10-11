@@ -35,6 +35,9 @@ func TestBasicReturnStatement(t *testing.T) {
 	if len(tree.Statements) != 1 {
 		t.Fatal("Invalid tree built, should be 1, got",len(tree.Statements))
 	}
+	if tree.Statements[0].TokenLiteral() != "return" {
+		t.Error("Invalid literal found", tree.Statements[0])
+	}
 	// todo: assert expressions	
 }
 
