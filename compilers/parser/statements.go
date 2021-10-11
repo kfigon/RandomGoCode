@@ -1,9 +1,5 @@
 package parser
 
-import (
-	"strconv"
-)
-
 type VarStatementNode struct {
 	Name string
 	Value ExpressionNode
@@ -22,11 +18,3 @@ func (r *ReturnStatementNode) TokenLiteral() string {
 }
 func (r *ReturnStatementNode) evaluateStatement() {}
 
-
-type IntegerLiteralExpression struct {
-	Value int
-}
-func (ile *IntegerLiteralExpression) TokenLiteral() string {
-	return strconv.Itoa(ile.Value)
-}
-func (ile *IntegerLiteralExpression) evaluateExpression() {}
