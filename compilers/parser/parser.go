@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"programming-lang/lexer"
-	"strconv"
 )
 
 type parser struct {
@@ -47,36 +46,16 @@ type ExpressionNode interface {
 	evaluateExpression()
 }
 
-
-type VarStatementNode struct {
-	Name string
-	Value ExpressionNode
-}
-func (vsn *VarStatementNode) TokenLiteral() string {
-	return vsn.Name
-}
-func (vsn *VarStatementNode) evaluateStatement() {}
-
-
-type ReturnStatementNode struct {
-	Value ExpressionNode
-}
-func (r *ReturnStatementNode) TokenLiteral() string {
-	return "return"
-}
-func (r *ReturnStatementNode) evaluateStatement() {}
-
-
-type IntegerLiteralExpression struct {
-	Value int
-}
-func (ile *IntegerLiteralExpression) TokenLiteral() string {
-	return strconv.Itoa(ile.Value)
-}
-func (ile *IntegerLiteralExpression) evaluateExpression() {}
-
 func (p *parser) addError(err error) {
-	p.errors = append(p.errors, err)
+	if err != nil {
+		p.errors = append(p.errors, err)
+	}
+}
+
+func (p *parser) addStatement(st StatementNode) {
+	if st != nil {
+		p.statements = append(p.statements, st)
+	}
 }
 
 func (p *parser) parseExpression() ExpressionNode {
@@ -115,36 +94,11 @@ func (p *parser) parseVarStatement() {
 	// todo
 	exp := p.parseExpression()
 	out.Value = exp
-	p.statements = append(p.statements, &out)
+	p.addStatement(&out)
 }
 
 func (p *parser) parseReturnStatement() {
 	// todo
 	exp := p.parseExpression()
-	p.statements = append(p.statements, &ReturnStatementNode{exp})
-}
-
-
-func isVarKeyword(token lexer.Token) bool {
-	return token.Class == lexer.Keyword && token.Lexeme == "var"
-}
-
-func isAssignmentOperator(token lexer.Token) bool {
-	return token.Class == lexer.Assignment && token.Lexeme == "="
-}
-
-func isSemicolon(token lexer.Token) bool {
-	return token.Class == lexer.Semicolon && token.Lexeme == ";"
-}
-
-func isNumberLiteral(token lexer.Token) bool {
-	return token.Class == lexer.Number
-}
-
-func isIdentifier(token lexer.Token) bool {
-	return token.Class == lexer.Identifier
-}
-
-func isReturnKeyword(token lexer.Token) bool {
-	return token.Class == lexer.Keyword && token.Lexeme == "return"
+	p.addStatement(&ReturnStatementNode{exp})
 }
