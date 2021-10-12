@@ -64,8 +64,7 @@ func (p *parser) parseExpression() ExpressionNode {
 	tok, ok := p.iter.next()
 	if !ok {
 		return nil
-	}
-	if isNumberLiteral(tok) {
+	} else if isNumberLiteral(tok) {
 		return p.parseIntegerLiteralExpression(tok)
 	} else if isSemicolon(tok) {
 		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))

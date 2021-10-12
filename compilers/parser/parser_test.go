@@ -5,6 +5,30 @@ import (
 	"programming-lang/lexer"
 )
 
+
+func assertNoErrors(t *testing.T, errors []error) {
+	if len(errors) > 0 {
+		t.Errorf("Got %v errors, expected none", len(errors))
+		for _, v := range errors {
+			t.Error(v)
+		}
+	}
+}
+
+func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
+	varSt, ok := st.(*VarStatementNode)
+	if !ok {
+		t.Error("Expected var node in", st.TokenLiteral())
+	}
+	integer, ok := varSt.Value.(*IntegerLiteralExpression)
+	if !ok {
+		t.Error("Expected integer literal in", varSt.TokenLiteral())
+	}
+	if integer.Value != exp {
+		t.Errorf("Got integer %v, exp %v", integer.Value, exp)
+	}
+}
+
 func TestVarStatement_Identifiers(t *testing.T) {
 	tokens := lexer.Tokenize(`var foo = 123;
 	var asd = 3;`)
@@ -27,20 +51,6 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	assertVarStatementAndIntegerExpression(t, tree.Statements[1], 3)	
 }
 
-func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
-	varSt, ok := st.(*VarStatementNode)
-	if !ok {
-		t.Error("Expected var node in", st.TokenLiteral())
-	}
-	integer, ok := varSt.Value.(*IntegerLiteralExpression)
-	if !ok {
-		t.Error("Expected integer literal in", varSt.TokenLiteral())
-	}
-	if integer.Value != exp {
-		t.Errorf("Got integer %v, exp %v", integer.Value, exp)
-	}
-}
-
 func TestBasicReturnStatement(t *testing.T) {
 	tokens := lexer.Tokenize(`return 123;`)
 	
@@ -55,20 +65,17 @@ func TestBasicReturnStatement(t *testing.T) {
 		t.Error("Invalid literal found", tree.Statements[0])
 	}
 	
-	ret := tree.Statements[0].(*ReturnStatementNode)
-	integer := ret.Value.(*IntegerLiteralExpression)
+	ret,ok := tree.Statements[0].(*ReturnStatementNode)
+	if !ok {
+		t.Fatal("Return node note found")
+	}
 
+	integer,ok := ret.Value.(*IntegerLiteralExpression)
+	if !ok {
+		t.Fatal("Integer literal not found")
+	}
 	if integer.Value != 123 {
 		t.Errorf("Invalid integer literal, got %v, exp %v", integer.Value, 123)
-	}
-}
-
-func assertNoErrors(t *testing.T, errors []error) {
-	if len(errors) > 0 {
-		t.Errorf("Got %v errors, expected none", len(errors))
-		for _, v := range errors {
-			t.Error(v)
-		}
 	}
 }
 
