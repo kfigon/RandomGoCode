@@ -22,6 +22,9 @@ func Parse(tokens []lexer.Token) *Program {
 			p.parseVarStatement()
 		} else if isReturnKeyword(tok) {
 			p.parseReturnStatement()
+		} else if next, nextOk := p.iter.peek(); nextOk && isFunctionCall(tok, next) {
+			// p.parseFunctionCallStatement()
+			// todo
 		}
 	}
 
@@ -70,6 +73,7 @@ func (p *parser) parseExpression() ExpressionNode {
 		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))
 		return nil
 	}
+
 	return nil
 }
 
@@ -126,4 +130,9 @@ func (p *parser) parseReturnStatement() {
 		return
 	}
 	p.addStatement(&ReturnStatementNode{exp})
+}
+
+type parsingFunc func(ex ExpressionNode) ExpressionNode
+func (p *parser) prattExpressionParser(tok lexer.Token) parsingFunc {
+	return nil
 }
