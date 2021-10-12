@@ -112,6 +112,18 @@ func TestTokenizer(t *testing.T) {
 				{Class: Semicolon, Lexeme: ";"},
 			},
 		},
+		{
+			desc:  "function declaration",
+			input: `fn asd(){}`,
+			expectedTokens: []Token{
+				{Class: Keyword, Lexeme: "fn"},
+				{Class: Identifier, Lexeme: "asd"},
+				{Class: OpenParam, Lexeme: "("},
+				{Class: CloseParam, Lexeme: ")"},
+				{Class: OpenParam, Lexeme: "{"},
+				{Class: CloseParam, Lexeme: "}"},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

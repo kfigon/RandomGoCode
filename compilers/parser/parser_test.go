@@ -115,3 +115,4 @@ func TestVarWithoutAssignment(t *testing.T) {
 	tree := Parse(lexer.Tokenize(`var asd;`))
 	assertNoErrors(t, tree.Errors)
 }
+
