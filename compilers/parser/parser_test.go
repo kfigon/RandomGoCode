@@ -15,6 +15,18 @@ func assertNoErrors(t *testing.T, errors []error) {
 	}
 }
 
+func assertStatementLength(t *testing.T, statements []StatementNode, expLen int) {
+	if len(statements) != expLen {
+		t.Fatalf("Invalid statement length, exp %v, got %v", expLen, len(statements))
+	}
+}
+
+func assertErrorLength(t *testing.T, errors []error, expLen int) {
+	if len(errors) != expLen {
+		t.Fatalf("Expected %v errors, got %v: %v", expLen, len(errors), errors)
+	}
+}
+
 func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
 	varSt, ok := st.(*VarStatementNode)
 	if !ok {
@@ -36,10 +48,8 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	tree := Parse(tokens)
 
 	assertNoErrors(t, tree.Errors)
+	assertStatementLength(t, tree.Statements, 2)
 
-	if len(tree.Statements) != 2 {
-		t.Fatal("Invalid tree built, should be 2, got", len(tree.Statements))
-	}
 	if tree.Statements[0].TokenLiteral() != "foo" {
 		t.Error("Invalid first statement", tree.Statements[0])
 	}
@@ -58,9 +68,7 @@ func TestBasicReturnStatement(t *testing.T) {
 
 	assertNoErrors(t, tree.Errors)
 
-	if len(tree.Statements) != 1 {
-		t.Fatal("Invalid tree built, should be 1, got",len(tree.Statements))
-	}
+	assertStatementLength(t, tree.Statements, 1)
 	if tree.Statements[0].TokenLiteral() != "return" {
 		t.Error("Invalid literal found", tree.Statements[0])
 	}
@@ -85,10 +93,8 @@ func TestIdentifierExpression(t *testing.T) {
 	tree := Parse(tokens)
 
 	assertNoErrors(t, tree.Errors)
+	assertStatementLength(t, tree.Statements,1)
 
-	if len(tree.Statements) != 1 {
-		t.Fatal("Invalid tree built, should be 1, got",len(tree.Statements))
-	}
 	if tree.Statements[0].TokenLiteral() != "foo" {
 		t.Error("Invalid literal found", tree.Statements[0])
 	}
@@ -114,9 +120,7 @@ func TestInvalidVarStatements(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	if len(tree.Errors) != 3 {
-		t.Error("Expected 3 errors, got", len(tree.Errors), tree.Errors)
-	}
+	assertErrorLength(t, tree.Errors, 3)
 }
 
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
@@ -125,9 +129,7 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	if len(tree.Errors) != 1 {
-		t.Error("Expected 1 errors, got", len(tree.Errors), tree.Errors)
-	}
+	assertErrorLength(t,tree.Errors,1)
 }
 
 func TestInvalidVarStatementsWithExpressions2(t *testing.T) {
@@ -135,9 +137,7 @@ func TestInvalidVarStatementsWithExpressions2(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	if len(tree.Errors) != 1 {
-		t.Error("Expected 1 errors, got", len(tree.Errors), tree.Errors)
-	}
+	assertErrorLength(t,tree.Errors,1)
 }
 
 func TestVarWithoutAssignment(t *testing.T) {
@@ -145,3 +145,11 @@ func TestVarWithoutAssignment(t *testing.T) {
 	assertNoErrors(t, tree.Errors)
 }
 
+func TestVarWithBinaryOperator(t *testing.T) {
+	input := `var asd = 5 + 1;`
+
+	tree := Parse(lexer.Tokenize(input))
+
+	assertNoErrors(t, tree.Errors)
+	assertStatementLength(t, tree.Statements, 1)
+}
