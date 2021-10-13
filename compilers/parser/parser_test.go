@@ -79,14 +79,43 @@ func TestBasicReturnStatement(t *testing.T) {
 	}
 }
 
+func TestIdentifierExpression(t *testing.T) {
+	tokens := lexer.Tokenize(`var foo = asd;`)
+	
+	tree := Parse(tokens)
+
+	assertNoErrors(t, tree.Errors)
+
+	if len(tree.Statements) != 1 {
+		t.Fatal("Invalid tree built, should be 1, got",len(tree.Statements))
+	}
+	if tree.Statements[0].TokenLiteral() != "foo" {
+		t.Error("Invalid literal found", tree.Statements[0])
+	}
+	
+	ret,ok := tree.Statements[0].(*VarStatementNode)
+	if !ok {
+		t.Fatal("Return node note found")
+	}
+
+	identifier,ok := ret.Value.(*IdentifierExpression)
+	if !ok {
+		t.Fatal("Identifier expression not found")
+	}
+	if identifier.Name != "asd" {
+		t.Errorf("Invalid identifier, got %v, exp %v", identifier.Name, "asd")
+	}
+}
+
 func TestInvalidVarStatements(t *testing.T) {
 	input := `var asd 4;
-	var = 432;`
+	var = 432;
+	var x = foo`
 
 	tree := Parse(lexer.Tokenize(input))
 
-	if len(tree.Errors) != 2 {
-		t.Error("Expected 2 errors, got", tree.Errors)
+	if len(tree.Errors) != 3 {
+		t.Error("Expected 3 errors, got", len(tree.Errors), tree.Errors)
 	}
 }
 

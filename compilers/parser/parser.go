@@ -72,6 +72,8 @@ func (p *parser) parseExpression() ExpressionNode {
 	} else if isSemicolon(tok) {
 		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))
 		return nil
+	} else if isIdentifier(tok) {
+		return p.parseIdentifierExpression(tok)
 	}
 
 	return nil
@@ -80,18 +82,31 @@ func (p *parser) parseExpression() ExpressionNode {
 func (p *parser) parseIntegerLiteralExpression(tok lexer.Token) ExpressionNode {
 	v, err := strconv.Atoi(tok.Lexeme)
 	if err != nil {
-		p.addError(fmt.Errorf("expression error - error in parsing integer literal in: %v", tok.Lexeme))
+		p.addError(fmt.Errorf("int literal expression error - error in parsing integer literal in: %v", tok.Lexeme))
 		return nil
 	}
 	tok, ok := p.iter.next()
 	if !ok {
-		p.addError(fmt.Errorf("expression error - unexpected end of tokens"))
+		p.addError(fmt.Errorf("int literal expression error - unexpected end of tokens"))
 		return nil
 	} else if !isSemicolon(tok) {
-		p.addError(fmt.Errorf("expression error - expected semicolon, got %v", tok.Lexeme))
+		p.addError(fmt.Errorf("int literal expression error - expected semicolon, got %v", tok.Lexeme))
 		return nil
 	}
 	return &IntegerLiteralExpression{Value: v}		
+}
+
+func (p *parser) parseIdentifierExpression(tok lexer.Token) ExpressionNode {
+	out := &IdentifierExpression{Name: tok.Lexeme}
+	tok, ok := p.iter.next()
+	if !ok {
+		p.addError(fmt.Errorf("identifier expression error - unexpected end of tokens"))
+		return nil
+	} else if !isSemicolon(tok) {
+		p.addError(fmt.Errorf("identifier expression error - semicolon not found, got %v", tok))
+		return nil
+	}
+	return out
 }
 
 func (p *parser) parseVarStatement() {
