@@ -8,6 +8,8 @@ import (
 func main() {
 	board := newBoard()
 	fmt.Println(board)
+
+	// todo: code logic, rules and moves
 }
 
 func newBoard() *board {
