@@ -6,20 +6,24 @@ import (
 )
 
 func main() {
-	board := newBoard()
+	board := newBoard(true)
 	fmt.Println(board)
 
 	// todo: code logic, rules and moves
 }
 
-func newBoard() *board {
+func newBoard(putFigures bool) *board {
 	ar := [][]cell{}
 	idx := 0
 	for w := 0; w < 8; w++ {
 		row := []cell{}
 		for h := 0; h < 8; h++ {
 			c := cellIdx(idx)
-			row = append(row, cell{c,figureFromCell(c)})
+			fig := figure{false, empty}
+			if putFigures {
+				fig = figureFromCell(c)
+			}
+			row = append(row, cell{c,fig})
 			idx++
 		}
 		ar = append(ar, row)
