@@ -55,10 +55,7 @@ type cellIdx int
 func (c cellIdx) isBlack() bool {
 	evenRow := c.row() % 2 == 0
 	evenCol := c.col() % 2 == 0
-	if !evenRow {
-		return !evenCol
-	} 
-	return evenCol
+	return evenRow == evenCol
 }
 
 func (c cellIdx) row() int {
