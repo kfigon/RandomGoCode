@@ -54,6 +54,7 @@ func main() {
 	fmt.Println(out)
 }
 
+// var wordReg = regexp.MustCompile(`^(\p{L}+)`)
 var wordReg = regexp.MustCompile(`^(\w+)`)
 func findWord(content []rune) ([]rune, bool) {
 	res := wordReg.FindSubmatch([]byte(string(content)))
@@ -61,6 +62,7 @@ func findWord(content []rune) ([]rune, bool) {
 		return []rune{}, false
 	}
 	bytes := res[1]
+
 	out := []rune{}
 	for _, b := range bytes {
 		out = append(out, rune(b))
