@@ -31,7 +31,7 @@ func main() {
 		return
 	}
 
-	stringContent := string(content)
+	stringContent := []rune(string(content))
 	r := newRander(*randThreshold)
 	
 	out := ""
@@ -39,11 +39,11 @@ func main() {
 	for i < len(stringContent) {
 		wordResult, found := findWord(stringContent[i:])
 		if found {
-			outWord := wordResult
 			if r.pass() {
-				outWord = "......."
+				out += "......."
+			} else {
+				out += string(wordResult)
 			}
-			out += outWord
 			i += len(wordResult)
 		} else {
 			out += string(stringContent[i])
@@ -55,12 +55,17 @@ func main() {
 }
 
 var wordReg = regexp.MustCompile(`^(\w+)`)
-func findWord(content string) (string, bool) {
-	res := wordReg.FindStringSubmatch(content)
+func findWord(content []rune) ([]rune, bool) {
+	res := wordReg.FindSubmatch([]byte(string(content)))
 	if len(res) < 2 {
-		return "", false
+		return []rune{}, false
 	}
-	return res[1],true
+	bytes := res[1]
+	out := []rune{}
+	for _, b := range bytes {
+		out = append(out, rune(b))
+	}
+	return out,true
 }
 
 type rander struct {
