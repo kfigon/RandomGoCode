@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"strings"
+	"regexp"
 	"time"
 )
 
@@ -25,22 +25,53 @@ func main() {
 		return
 	}
 
-	rand.Seed(time.Now().Unix())
 	content, err := os.ReadFile(*pathToFile)
 	if err != nil {
 		fmt.Println("Error during opening file:", err)
 		return
 	}
+
 	stringContent := string(content)
-	words := strings.Fields(stringContent)
+	r := newRander(*randThreshold)
+	
 	out := ""
-	for _, w := range words {
-		if rand.Intn(10) < *randThreshold {
-			out += "......."
+	i := 0
+	for i < len(stringContent) {
+		wordResult, found := findWord(stringContent[i:])
+		if found {
+			outWord := wordResult
+			if r.pass() {
+				outWord = "......."
+			}
+			out += outWord
+			i += len(wordResult)
 		} else {
-			out += w
+			out += string(stringContent[i])
+			i++
 		}
-		out += " "
 	}
+
 	fmt.Println(out)
+}
+
+var wordReg = regexp.MustCompile(`^(\w+)`)
+func findWord(content string) (string, bool) {
+	res := wordReg.FindStringSubmatch(content)
+	if len(res) < 2 {
+		return "", false
+	}
+	return res[1],true
+}
+
+type rander struct {
+	threshold int
+}
+
+func newRander(threshold int) *rander{
+	rand.Seed(time.Now().Unix())
+	return &rander{threshold}
+}
+
+func (r *rander) pass() bool {
+	return rand.Intn(10) < r.threshold
 }
