@@ -31,10 +31,8 @@ func main() {
 		return
 	}
 
-	stringContent := []rune(string(content))
-	r := newRander(*randThreshold)
-	
-	out := processInput(string(stringContent), r)
+	stringContent := string(content)
+	out := processInput(stringContent, newRander(*randThreshold))
 
 	fmt.Println(out)
 }

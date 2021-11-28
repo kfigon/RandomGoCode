@@ -22,9 +22,13 @@ func Test(t *testing.T) {
 		{
 			input: `asd
 dwa trzy
+   
+			tab
 `,
 			expected: `asd
 dwa trzy
+   
+			tab
 `,
 		},
 		{
@@ -32,8 +36,8 @@ dwa trzy
 			expected: `cześć zależność napis`,
 		},
 		{
-			input: `cześć zależność napis   `,
-			expected: `cześć zależność napis   `,
+			input: ` cześć zależność napis   `,
+			expected: ` cześć zależność napis   `,
 		},
 	}
 	for _, tC := range testCases {
