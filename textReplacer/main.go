@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"regexp"
 	"time"
+	"unicode"
 )
 
 // go env to see current settings
@@ -34,40 +34,9 @@ func main() {
 	stringContent := []rune(string(content))
 	r := newRander(*randThreshold)
 	
-	out := ""
-	i := 0
-	for i < len(stringContent) {
-		wordResult, found := findWord(stringContent[i:])
-		if found {
-			if r.pass() {
-				out += "......."
-			} else {
-				out += string(wordResult)
-			}
-			i += len(wordResult)
-		} else {
-			out += string(stringContent[i])
-			i++
-		}
-	}
+	out := processInput(string(stringContent), r)
 
 	fmt.Println(out)
-}
-
-// var wordReg = regexp.MustCompile(`^(\p{L}+)`)
-var wordReg = regexp.MustCompile(`^(\w+)`)
-func findWord(content []rune) ([]rune, bool) {
-	res := wordReg.FindSubmatch([]byte(string(content)))
-	if len(res) < 2 {
-		return []rune{}, false
-	}
-	bytes := res[1]
-
-	out := []rune{}
-	for _, b := range bytes {
-		out = append(out, rune(b))
-	}
-	return out,true
 }
 
 type rander struct {
@@ -81,4 +50,30 @@ func newRander(threshold int) *rander{
 
 func (r *rander) pass() bool {
 	return rand.Intn(10) < r.threshold
+}
+
+
+type randerInterface interface {
+	pass() bool
+}
+func processInput(stringContent string, r randerInterface) string {
+	out := ""
+	word := ""
+	for _, char := range stringContent {
+		if unicode.IsLetter(char) {
+			word += string(char)
+		} else if word != "" {
+			if r.pass() {
+				out += "......."
+			} else {
+				out += word
+			}
+			out += string(char)
+			word = ""
+		} else {
+			out += string(char)
+		}
+	}
+	out += word
+	return out
 }
