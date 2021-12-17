@@ -56,3 +56,7 @@ func TestDeadlock(t *testing.T) {
 	go sum(&b,&a) // b lock first, wait for a
 	wg.Wait()
 }
+
+func TestLivelock(t *testing.T) {
+	t.Fail() // todo
+}
