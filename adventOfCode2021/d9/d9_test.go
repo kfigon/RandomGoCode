@@ -30,7 +30,7 @@ func TestP1(t *testing.T) {
 	}
 }
 func TestP2(t *testing.T) {
-	t.Fail()
+	t.Fatal("todo")
 }
 func parse(data string, sep string) [][]int {
 	lines := strings.Split(data,sep)
