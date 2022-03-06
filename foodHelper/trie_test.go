@@ -26,7 +26,7 @@ func TestTrie(t *testing.T) {
 	words := []string{"hi", "hello", "hell", "howdy", "asd", "as"}
 	for _, tC := range testCases {
 		t.Run(tC.input, func(t *testing.T) {
-			tr := create(words)
+			tr := createTrie(words)
 			assert.ElementsMatch(t, tr.suggestions(tC.input), tC.exp)
 		})
 	}
@@ -34,21 +34,21 @@ func TestTrie(t *testing.T) {
 
 func TestOrderOfAddingDoesNotMatter(t *testing.T) {
 	t.Run("First", func(t *testing.T) {
-		tr := create([]string{"hello", "hell"})
+		tr := createTrie([]string{"hello", "hell"})
 		assert.ElementsMatch(t, tr.suggestions("he"), []string{"hello", "hell"})
 		assert.ElementsMatch(t, tr.suggestions("hell"), []string{"hello", "hell"})
 		assert.ElementsMatch(t, tr.suggestions("hello"), []string{"hello"})
 	})
 	
 	t.Run("Seconds", func(t *testing.T) {
-		tr := create([]string{"hell", "hello"})
+		tr := createTrie([]string{"hell", "hello"})
 		assert.ElementsMatch(t, tr.suggestions("he"), []string{"hello", "hell"})
 		assert.ElementsMatch(t, tr.suggestions("hell"), []string{"hello", "hell"})
 		assert.ElementsMatch(t, tr.suggestions("hello"), []string{"hello"})
 	})
 }
 
-func create(words []string) *trie {
+func createTrie(words []string) *trie {
 	t := &trie{}
 	for _, v := range words {
 		t.add(v)
