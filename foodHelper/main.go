@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -9,24 +10,55 @@ import (
 
 func main() {
 
-	t := initTrie()
+	data := foodProvider()
+	t := initTrie(data)
 	http.HandleFunc("/api/healthcheck", healthcheck)
 	http.HandleFunc("/api/ingredients", handleIngredients(t))
-	http.HandleFunc("/api/suggestions", handleSuggestions(foodProvider()))
+	http.HandleFunc("/api/suggestions", handleSuggestions(data))
 
 	port := 8080
 	log.Println("Starting on port", port)
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
 }
 
-func initTrie() *trie {
-	// todo: fill with data
-	return &trie{}
+func initTrie(data dataProvider) *trie {
+	t := &trie{}
+	for _, v := range data.allSuggestions() {
+		for _, ing := range v.ingredients {
+			t.add(ing)
+		}
+	}
+	return t
+}
+
+type inmemoryDataProvider func() []suggestion
+func (idp inmemoryDataProvider) allSuggestions() []suggestion {
+	return idp()
 }
 
 func foodProvider() dataProvider {
-	// todo
-	return nil
+	// todo: fill data and images
+	results := []suggestion {
+		{
+			name: "Food a",
+			description: "delicious",
+			ingredients: []string{"a", "b", "c", "d"},
+		},
+		{
+			name: "Food B",
+			description: "tasty",
+			ingredients: []string{"b", "c", "d"},
+		},
+		{
+			name: "Food C",
+			description: "wow",
+			ingredients: []string{"a", "b", "c", "e", "f"},
+		},
+	}
+	f := func() []suggestion {
+		return results
+	}
+	return inmemoryDataProvider(f)
 }
 
 func healthcheck(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +97,7 @@ type suggestion struct {
 	name string
 	description string
 	ingredients []string
+	img []byte
 }
 
 type dataProvider interface {
@@ -89,6 +122,7 @@ func handleSuggestions(db dataProvider) http.HandlerFunc {
 			Name string `json:"Name"`
 			Description string `json:"Description"`
 			Ingredients []string `json:"Ingredients"`
+			Image string `json:"image"`
 		}
 		type response struct {
 			Results []result `json:"results"`
@@ -100,10 +134,15 @@ func handleSuggestions(db dataProvider) http.HandlerFunc {
 				Name: s.name,
 				Description: s.description,
 				Ingredients: s.ingredients,
+				Image: encodeImage(s.img),
 			})
 		}
 		toJson(w, &out)
 	}
+}
+
+func encodeImage(data []byte) string {
+	return "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(data)
 }
 
 type void struct{}

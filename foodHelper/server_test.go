@@ -89,10 +89,6 @@ func TestSuggestions(t *testing.T) {
 	assert.Equal(t, "delicious", out.Results[0].Description)
 }
 
-type testDataProvider func() []suggestion
-func (t testDataProvider) allSuggestions() []suggestion {
-	return t()
-}
 
 func testData() dataProvider {
 	results := []suggestion {
@@ -115,5 +111,5 @@ func testData() dataProvider {
 	f := func() []suggestion {
 		return results
 	}
-	return testDataProvider(f)
+	return inmemoryDataProvider(f)
 }
