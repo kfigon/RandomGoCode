@@ -1,5 +1,5 @@
-module foodHelper
+module foodhelper
 
 go 1.16
 
-require github.com/stretchr/testify v1.7.0
+require github.com/stretchr/testify v1.7.0 // indirect

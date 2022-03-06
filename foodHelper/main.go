@@ -1,24 +1,24 @@
 package main
 
 import (
-	"foodHelper/recommendfood"
+	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
+	port := 8080
 
-	controller := recommendfood.NewRecommendationController(recommendfood.CreateMockIngredientsDb(), recommendfood.NewSearch(recommendfood.CreateMockFoodDb()))
+	http.HandleFunc("/api/healthcheck", healthcheck)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		recommendfood.RecommendationForm(writer)
-	})
+	log.Println("Starting on port", port)
+	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
+}
 
-	mux.HandleFunc("/recommend", func(writer http.ResponseWriter, request *http.Request) {
-		names := recommendfood.GetNamesFromRequest(request)
-		results := controller.FindFoods(names)
-		recommendfood.RecommendationView(writer, results)
-	})
-	log.Fatal(http.ListenAndServe(":8080", mux))
+func healthcheck(w http.ResponseWriter, r *http.Request) {
+	out := struct {
+		Status string `json:"status"`
+	}{"ok"}
+	json.NewEncoder(w).Encode(&out)
 }
