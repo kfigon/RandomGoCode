@@ -12,11 +12,13 @@ func main() {
 
 	data := foodProvider()
 	t := initTrie(data)
+
+	http.Handle("/", http.FileServer(http.Dir("./client/public")))
 	http.HandleFunc("/api/healthcheck", healthcheck)
 	http.HandleFunc("/api/ingredients", handleIngredients(t))
 	http.HandleFunc("/api/suggestions", handleSuggestions(data))
 
-	port := 8080
+	port := 8000
 	log.Println("Starting on port", port)
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
 }
