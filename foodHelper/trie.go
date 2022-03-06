@@ -16,6 +16,7 @@ type trie struct {
 }
 
 func (t *trie) add(text string) {
+	// todo: tolower!
 	if t.root == nil {
 		t.root = newNode()
 	}

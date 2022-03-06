@@ -42,19 +42,19 @@ func foodProvider() dataProvider {
 	// todo: fill data and images
 	results := []suggestion {
 		{
-			name: "Food a",
-			description: "delicious",
-			ingredients: []string{"a", "b", "c", "d"},
+			name: "Jajecznica",
+			description: "Smaczna lol",
+			ingredients: []string{"jajko", "chlebek", "maslo"},
 		},
 		{
-			name: "Food B",
+			name: "Jajko sadzone",
 			description: "tasty",
-			ingredients: []string{"b", "c", "d"},
+			ingredients: []string{"jajko", "chlebek", "olej"},
 		},
 		{
-			name: "Food C",
+			name: "Kurczak po chinsku",
 			description: "wow",
-			ingredients: []string{"a", "b", "c", "e", "f"},
+			ingredients: []string{"kurczak", "makaron", "warzywa", "grzyby mun", "sos sojowy"},
 		},
 	}
 	f := func() []suggestion {
