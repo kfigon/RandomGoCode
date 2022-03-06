@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	t := &trie{}
+	t := initTrie()
 	http.HandleFunc("/api/healthcheck", healthcheck)
 	http.HandleFunc("/api/ingredients", handleIngredients(t))
 	http.HandleFunc("/api/suggestions", handleSuggestions(foodProvider()))
@@ -19,7 +19,13 @@ func main() {
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
 }
 
+func initTrie() *trie {
+	// todo: fill with data
+	return &trie{}
+}
+
 func foodProvider() dataProvider {
+	// todo
 	return nil
 }
 
@@ -62,7 +68,7 @@ type suggestion struct {
 }
 
 type dataProvider interface {
-	findSuggestions([]string) []suggestion
+	allSuggestions() []suggestion
 }
 func handleSuggestions(db dataProvider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -77,8 +83,8 @@ func handleSuggestions(db dataProvider) http.HandlerFunc {
 		var reqBody request
 		json.NewDecoder(r.Body).Decode(&reqBody)
 
-		suggestions := db.findSuggestions(reqBody.Ingredients)
-
+		suggestions := findSuggestions(db.allSuggestions(), reqBody.Ingredients)
+		
 		type result struct {
 			Name string `json:"Name"`
 			Description string `json:"Description"`
@@ -98,4 +104,40 @@ func handleSuggestions(db dataProvider) http.HandlerFunc {
 		}
 		toJson(w, &out)
 	}
+}
+
+type void struct{}
+type set map[string]void
+
+func findSuggestions(allSuggestions []suggestion, givenIngredients []string) []suggestion {
+	givenSet := buildSet(givenIngredients)
+
+	var out []suggestion
+	for _, v := range allSuggestions {
+		res := match(v, givenSet)
+		if res >= 70 {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func buildSet(ing []string) set {
+	s := set{}
+	for _, v := range ing {
+		s[v] = void{}
+	}
+	return s
+}
+
+func match(s suggestion, givenSet set) int {
+	allIngSet := buildSet(s.ingredients)
+	matched := 0
+	for k := range allIngSet {
+		if _, ok := givenSet[k]; ok {
+			matched++
+		}
+	}
+
+	return (100*matched)/len(allIngSet)
 }
