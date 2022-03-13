@@ -118,17 +118,16 @@ func (p *parser) parseVarStatement() {
 	if !ok {
 		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
 		return
-	} else if !(isAssignmentOperator(tok) || isSemicolon(tok)) {
-		p.addError(fmt.Errorf("var error - expected assignment or semicolon after identifier, got %v", tok.Class))
+	} else if isSemicolon(tok) {
+		out := VarStatementNode{Name: identifierTok.Lexeme}
+		p.addStatement(&out)
+		return
+	} else if !isAssignmentOperator(tok) {
+		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", tok.Class))
 		return
 	}
 
 	out := VarStatementNode{Name: identifierTok.Lexeme}
-	if isSemicolon(tok) {
-		p.addStatement(&out)
-		return
-	}
-
 	exp := p.parseExpression()
 	if exp == nil {
 		return

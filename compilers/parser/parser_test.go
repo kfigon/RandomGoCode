@@ -3,7 +3,6 @@ package parser
 import (
 	"programming-lang/lexer"
 	"testing"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -76,21 +75,27 @@ func TestInvalidVarStatements(t *testing.T) {
 	var x = foo`
 
 	tree := parse(input)
-
 	assert.Len(t, tree.Errors, 3)
 }
 
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
-	input := `var asd = 4
-	var asd = ;`
+	test := func(t *testing.T, input string) {
+		tree := parse(input)
+		assert.Len(t, tree.Errors, 1)
+	}
 
-	tree := parse(input)
-	assert.Len(t, tree.Errors, 1)
-}
+	t.Run("int literal not terminated", func(t *testing.T) {
+		test(t,`var asd = 4
+		var asd = ;`)
+	})
+	
+	t.Run("missing expression after assignment", func(t *testing.T) {
+		test(t, `var asd = ;`)
+	})
 
-func TestInvalidVarStatementsWithExpressions2(t *testing.T) {
-	tree := parse(`var asd = ;`)
-	assert.Len(t,tree.Errors,1)
+	t.Run("var return", func(t *testing.T) {
+		test(t, `var return 123;`)
+	})
 }
 
 func TestVarWithoutAssignment(t *testing.T) {
