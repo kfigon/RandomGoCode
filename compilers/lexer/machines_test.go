@@ -2,6 +2,8 @@ package lexer
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLessSimpleAutomaton(t *testing.T) {
@@ -17,33 +19,25 @@ func TestLessSimpleAutomaton(t *testing.T) {
 	t.Run("Simple run, invalid", func(t *testing.T) {
 		machine := anyNumberOfOnes("11")
 		state := drain(machine)
-		if state != "reject" {
-			t.Error("Invalid state, expected reject, got", state)
-		}
+		assert.Equal(t, "reject", state)
 	})
 
 	t.Run("Simple run, no ones, valid", func(t *testing.T) {
 		machine := anyNumberOfOnes("0")
 		state := drain(machine)
-		if state != "accept" {
-			t.Error("Invalid state, expected accept, got", state)
-		}
+		assert.Equal(t, "accept", state)
 	})
 
 	t.Run("Simple run, invalid2", func(t *testing.T) {
 		machine := anyNumberOfOnes("100")
 		state := drain(machine)
-		if state != "reject" {
-			t.Error("Invalid state, expected reject, got", state)
-		}
+		assert.Equal(t, "reject", state)
 	})
 
 	t.Run("Simple run - ok", func(t *testing.T) {
 		machine := anyNumberOfOnes("110")
 		state := drain(machine)
-		if state != "accept" {
-			t.Error("Invalid state, expected accept, got", state)
-		}
+		assert.Equal(t, "accept", state)
 	})
 }
 
@@ -61,24 +55,19 @@ func TestSimpleAutomaton(t *testing.T) {
 	t.Run("Simple run", func(t *testing.T) {
 		machine := simpleState("1")
 		state := drain(machine)
-		if state != "accept" {
-			t.Error("Invalid state, expected accept, got", state)
-		}
+		assert.Equal(t, "accept", state)
+
 	})
 
 	t.Run("Simple run - invalid", func(t *testing.T) {
 		machine := simpleState("0")
 		state := drain(machine)
-		if state != "reject" {
-			t.Error("Invalid state, expected reject, got", state)
-		}
+		assert.Equal(t, "reject", state)
 	})
 
 	t.Run("Simple run - too long string", func(t *testing.T) {
 		machine := simpleState("10")
 		state := drain(machine)
-		if state != "reject" {
-			t.Error("Invalid state, expected reject, got", state)
-		}
+		assert.Equal(t, "reject", state)
 	})
 }

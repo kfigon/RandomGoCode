@@ -2,24 +2,8 @@ package lexer
 
 import (
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
-
-func assertTokens(t *testing.T, exp, got []Token) {
-	if len(exp) != len(got) {
-		t.Errorf("Invalid array lengths, exp %v, got %v", len(exp), len(got))
-		t.Errorf("Got: %v", got)
-		t.Fatalf("Exp: %v", exp)
-	}
-
-	for i := 0; i < len(got); i++ {
-		g := got[i]
-		e := exp[i]
-
-		if g != e {
-			t.Errorf("Invalid element on position %v, exp %v, got %v", i, e, g)
-		}
-	}
-}
 
 func TestTokenizer(t *testing.T) {
 	testCases := []struct {
@@ -128,7 +112,7 @@ func TestTokenizer(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			got := Tokenize(tC.input)
-			assertTokens(t, tC.expectedTokens, got)
+			assert.Equal(t, tC.expectedTokens, got)
 		})
 	}
 }

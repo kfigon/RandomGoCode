@@ -1,44 +1,19 @@
 package parser
 
 import (
-	"testing"
 	"programming-lang/lexer"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
-
-
-func assertNoErrors(t *testing.T, errors []error) {
-	if len(errors) > 0 {
-		t.Errorf("Got %v errors, expected none", len(errors))
-		for _, v := range errors {
-			t.Error(v)
-		}
-	}
-}
-
-func assertStatementLength(t *testing.T, statements []StatementNode, expLen int) {
-	if len(statements) != expLen {
-		t.Fatalf("Invalid statement length, exp %v, got %v", expLen, len(statements))
-	}
-}
-
-func assertErrorLength(t *testing.T, errors []error, expLen int) {
-	if len(errors) != expLen {
-		t.Fatalf("Expected %v errors, got %v: %v", expLen, len(errors), errors)
-	}
-}
 
 func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
 	varSt, ok := st.(*VarStatementNode)
-	if !ok {
-		t.Error("Expected var node in", st.TokenLiteral())
-	}
+	assert.True(t, ok, "expected var statement")
+
 	integer, ok := varSt.Value.(*IntegerLiteralExpression)
-	if !ok {
-		t.Error("Expected integer literal in", varSt.TokenLiteral())
-	}
-	if integer.Value != exp {
-		t.Errorf("Got integer %v, exp %v", integer.Value, exp)
-	}
+	assert.True(t, ok, "expected integer literal")
+	assert.Equal(t, exp, integer.Value)
 }
 
 func TestVarStatement_Identifiers(t *testing.T) {
@@ -47,15 +22,11 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assertNoErrors(t, tree.Errors)
-	assertStatementLength(t, tree.Statements, 2)
+	assert.Nil(t, tree.Errors)
+	assert.Len(t, tree.Statements, 2)
 
-	if tree.Statements[0].TokenLiteral() != "foo" {
-		t.Error("Invalid first statement", tree.Statements[0])
-	}
-	if tree.Statements[1].TokenLiteral() != "asd" {
-		t.Error("Invalid second statement", tree.Statements[1])
-	}
+	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral(), "invalid first literal")
+	assert.Equal(t, "asd", tree.Statements[0].TokenLiteral(), "invalid second literal")
 
 	assertVarStatementAndIntegerExpression(t, tree.Statements[0], 123)
 	assertVarStatementAndIntegerExpression(t, tree.Statements[1], 3)	
@@ -66,25 +37,17 @@ func TestBasicReturnStatement(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assertNoErrors(t, tree.Errors)
+	assert.Nil(t, tree.Errors)
 
-	assertStatementLength(t, tree.Statements, 1)
-	if tree.Statements[0].TokenLiteral() != "return" {
-		t.Error("Invalid literal found", tree.Statements[0])
-	}
+	assert.Len(t, tree.Statements, 1)
+	assert.Equal(t, "return", tree.Statements[0].TokenLiteral())
 	
 	ret,ok := tree.Statements[0].(*ReturnStatementNode)
-	if !ok {
-		t.Fatal("Return node note found")
-	}
+	assert.True(t, ok, "return node not found")
 
 	integer,ok := ret.Value.(*IntegerLiteralExpression)
-	if !ok {
-		t.Fatal("Integer literal not found")
-	}
-	if integer.Value != 123 {
-		t.Errorf("Invalid integer literal, got %v, exp %v", integer.Value, 123)
-	}
+	assert.True(t, ok, "integer literal not found")
+	assert.Equal(t, 123, integer.Value)
 }
 
 func TestIdentifierExpression(t *testing.T) {
@@ -92,25 +55,17 @@ func TestIdentifierExpression(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assertNoErrors(t, tree.Errors)
-	assertStatementLength(t, tree.Statements,1)
-
-	if tree.Statements[0].TokenLiteral() != "foo" {
-		t.Error("Invalid literal found", tree.Statements[0])
-	}
+	assert.Nil(t, tree.Errors)
+	assert.Len(t, tree.Statements, 1)
+	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral())
 	
 	ret,ok := tree.Statements[0].(*VarStatementNode)
-	if !ok {
-		t.Fatal("Return node note found")
-	}
+	assert.True(t, ok)
 
 	identifier,ok := ret.Value.(*IdentifierExpression)
-	if !ok {
-		t.Fatal("Identifier expression not found")
-	}
-	if identifier.Name != "asd" {
-		t.Errorf("Invalid identifier, got %v, exp %v", identifier.Name, "asd")
-	}
+	assert.True(t, ok)
+
+	assert.Equal(t, "asd", identifier.Name)
 }
 
 func TestInvalidVarStatements(t *testing.T) {
@@ -120,7 +75,7 @@ func TestInvalidVarStatements(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	assertErrorLength(t, tree.Errors, 3)
+	assert.Len(t, tree.Errors, 3)
 }
 
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
@@ -128,21 +83,19 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 	var asd = ;`
 
 	tree := Parse(lexer.Tokenize(input))
-
-	assertErrorLength(t,tree.Errors,1)
+	assert.Len(t, tree.Errors, 1)
 }
 
 func TestInvalidVarStatementsWithExpressions2(t *testing.T) {
 	input := `var asd = ;`
 
 	tree := Parse(lexer.Tokenize(input))
-
-	assertErrorLength(t,tree.Errors,1)
+	assert.Len(t,tree.Errors,1)
 }
 
 func TestVarWithoutAssignment(t *testing.T) {
 	tree := Parse(lexer.Tokenize(`var asd;`))
-	assertNoErrors(t, tree.Errors)
+	assert.Nil(t, tree.Errors)
 }
 
 func TestVarWithBinaryOperator(t *testing.T) {
@@ -150,6 +103,6 @@ func TestVarWithBinaryOperator(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	assertNoErrors(t, tree.Errors)
-	assertStatementLength(t, tree.Statements, 1)
+	assert.Nil(t, tree.Errors)	
+	assert.Len(t, tree.Statements, 1)
 }

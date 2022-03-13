@@ -2,6 +2,7 @@ package lexerbybook
 
 import (
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLexerByTheBook(t *testing.T) {
@@ -37,19 +38,7 @@ for(i=1;i<3; i++){}`
 		got = append(got, token)
 	}
 
-	if len(expected) != len(got) {
-		t.Error("GOT", got)
-		t.Error("EXP", expected)
-		t.Fatal("Invalid lengths got", len(got), "exp", len(expected))
-	}
-
-	for i := 0; i < len(got); i++ {
-		g := got[i]
-		e := expected[i]
-		if g != e {
-			t.Errorf("Error in %v, got %v, exp %v", i, g, e)
-		}
-	}
+	assert.Equal(t, expected, got)
 }
 
 func TestLexerByTheBookSimpleIdentifier(t *testing.T) {
