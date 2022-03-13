@@ -7,6 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func assertNoErrors(t *testing.T, errors []error) {
+	assert.Len(t, errors, 0, "no errors were expected")
+}
+
 func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
 	varSt, ok := st.(*VarStatementNode)
 	assert.True(t, ok, "expected var statement")
@@ -22,7 +26,7 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assert.Nil(t, tree.Errors)
+	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 2)
 
 	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral(), "invalid first literal")
@@ -37,7 +41,7 @@ func TestBasicReturnStatement(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assert.Nil(t, tree.Errors)
+	assertNoErrors(t, tree.Errors)
 
 	assert.Len(t, tree.Statements, 1)
 	assert.Equal(t, "return", tree.Statements[0].TokenLiteral())
@@ -55,7 +59,7 @@ func TestIdentifierExpression(t *testing.T) {
 	
 	tree := Parse(tokens)
 
-	assert.Nil(t, tree.Errors)
+	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 1)
 	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral())
 	
@@ -95,7 +99,7 @@ func TestInvalidVarStatementsWithExpressions2(t *testing.T) {
 
 func TestVarWithoutAssignment(t *testing.T) {
 	tree := Parse(lexer.Tokenize(`var asd;`))
-	assert.Nil(t, tree.Errors)
+	assertNoErrors(t, tree.Errors)
 }
 
 func TestVarWithBinaryOperator(t *testing.T) {
@@ -103,6 +107,6 @@ func TestVarWithBinaryOperator(t *testing.T) {
 
 	tree := Parse(lexer.Tokenize(input))
 
-	assert.Nil(t, tree.Errors)	
+	assertNoErrors(t, tree.Errors)	
 	assert.Len(t, tree.Statements, 1)
 }
