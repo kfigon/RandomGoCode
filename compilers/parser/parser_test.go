@@ -102,6 +102,10 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 	t.Run("var return", func(t *testing.T) {
 		test(t, `var return 123;`)
 	})
+
+	t.Run("unexpected eof", func(t *testing.T) {
+		test(t, `var foo = `)
+	})
 }
 
 func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {

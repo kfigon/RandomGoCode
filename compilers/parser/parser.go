@@ -18,9 +18,9 @@ func Parse(tokens []lexer.Token) *Program {
 
 	for !p.eof(){
 		if isVarKeyword(p.currentToken) {
-			p.parseVarStatement()
+			p.addStatement(p.parseVarStatement())
 		} else if isReturnKeyword(p.currentToken) {
-			p.parseReturnStatement()
+			p.addStatement(p.parseReturnStatement())
 		} else {
 			p.advanceToken()
 		}
@@ -87,8 +87,7 @@ func (p *parser) parseExpression() ExpressionNode {
 	p.advanceToken()
 	tok := p.currentToken
 	switch {
-	case p.eof(): return nil
-	case isSemicolon(tok): {
+	case p.eof() || isSemicolon(tok): {
 		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))
 		return nil
 	}
@@ -118,8 +117,7 @@ func (p *parser) parseIntegerLiteralExpression() ExpressionNode {
 }
 
 func (p *parser) parseIdentifierExpression() ExpressionNode {
-	token := p.currentToken
-	out := &IdentifierExpression{Name: token.Lexeme}
+	identifierToken := p.currentToken
 	p.advanceToken()
 	if p.eof() {
 		p.addError(fmt.Errorf("identifier expression error - unexpected end of tokens"))
@@ -129,47 +127,44 @@ func (p *parser) parseIdentifierExpression() ExpressionNode {
 		return nil
 	}
 	p.advanceToken()
-	return out
+	return &IdentifierExpression{Name: identifierToken.Lexeme}
 }
 
-func (p *parser) parseVarStatement() {
+func (p *parser) parseVarStatement() StatementNode {
 	p.advanceToken()
 	identifierTok := p.currentToken
 	if p.eof() {
 		p.addError(fmt.Errorf("var error - unexpected end of tokens after var"))
-		return
+		return nil
 	} else if !isIdentifier(identifierTok) {
 		p.addError(fmt.Errorf("var error - expected identifier, got %v", identifierTok.Class))
-		return
+		return nil
 	}
 
 	p.advanceToken()
 	if p.eof() {
 		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
-		return
+		return nil
 	} else if isSemicolon(p.currentToken) {
 		out := VarStatementNode{Name: identifierTok.Lexeme}
-		p.addStatement(&out)
 		p.advanceToken()
-		return
+		return &out
 	} else if !isAssignmentOperator(p.currentToken) {
 		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.currentToken.Class))
-		return
+		return nil
 	}
 
-	out := VarStatementNode{Name: identifierTok.Lexeme}
 	exp := p.parseExpression()
 	if exp == nil {
-		return
+		return nil
 	}
-	out.Value = exp
-	p.addStatement(&out)
+	return &VarStatementNode{Name: identifierTok.Lexeme, Value: exp}
 }
 
-func (p *parser) parseReturnStatement() {
+func (p *parser) parseReturnStatement() StatementNode {
 	exp := p.parseExpression()
 	if exp == nil {
-		return
+		return nil
 	}
-	p.addStatement(&ReturnStatementNode{exp})
+	return &ReturnStatementNode{exp}
 }
