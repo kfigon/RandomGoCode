@@ -55,22 +55,16 @@ type ExpressionNode interface {
 }
 
 func (p *parser) advanceToken() {
-	nextToken := func() lexer.Token {
+	currentToken := func() lexer.Token {
 		if p.idx >= len(p.tokens) {
 			return lexer.Token{Class: lexer.EOF}
 		}
-		toRet := p.tokens[p.idx]
-		p.idx++
-		return toRet
-	}
-	if p.idx >= len(p.tokens) {
-		p.currentToken = nextToken()
-		p.nextToken = nextToken()
-		return
+		return p.tokens[p.idx]
 	}
 
-	p.currentToken = p.tokens[p.idx]
-	p.nextToken = nextToken()
+	p.currentToken = currentToken()
+	p.idx++
+	p.nextToken = currentToken()
 }
 
 func (p *parser) eof() bool {
