@@ -35,6 +35,7 @@ const (
 	CloseParam
 	Semicolon
 	Assignment
+	EOF
 )
 
 var classesStrings = []string{
@@ -47,6 +48,7 @@ var classesStrings = []string{
 	"CloseParam",
 	"Semicolon",
 	"Assignment",
+	"EOF",
 }
 
 type tokenizerEntry struct {
@@ -115,6 +117,7 @@ func Tokenize(input string) []Token {
 		}
 		tokens = append(tokens, token)
 	}
+	tokens = append(tokens, Token{Class: EOF})
 	return tokens
 }
 

@@ -23,6 +23,17 @@ func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp 
 	assert.Equal(t, exp, integer.Value)
 }
 
+func TestVarStatement_Identifier(t *testing.T) {
+	tree := parse(`var foo = 123;`)
+
+	assertNoErrors(t, tree.Errors)
+	assert.Len(t, tree.Statements, 1)
+
+	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral(), "invalid first literal")
+
+	assertVarStatementAndIntegerExpression(t, tree.Statements[0], 123)
+}
+
 func TestVarStatement_Identifiers(t *testing.T) {
 	tree := parse(`var foo = 123;
 	var asd = 3;`)
@@ -83,11 +94,6 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 		tree := parse(input)
 		assert.Len(t, tree.Errors, 1)
 	}
-
-	t.Run("int literal not terminated", func(t *testing.T) {
-		test(t,`var asd = 4
-		var asd = ;`)
-	})
 	
 	t.Run("missing expression after assignment", func(t *testing.T) {
 		test(t, `var asd = ;`)
@@ -96,6 +102,14 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 	t.Run("var return", func(t *testing.T) {
 		test(t, `var return 123;`)
 	})
+}
+
+func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
+	input := `var asd = 4
+	var asd = ;`
+
+	tree := parse(input)
+	assert.Len(t, tree.Errors, 2)
 }
 
 func TestVarWithoutAssignment(t *testing.T) {

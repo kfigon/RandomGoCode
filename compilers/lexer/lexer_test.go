@@ -17,6 +17,7 @@ func TestTokenizer(t *testing.T) {
 			expectedTokens: []Token{
 				{Identifier, "i"},
 				{Semicolon, ";"},
+				{EOF,""},
 			},
 		},
 		{
@@ -39,6 +40,7 @@ func TestTokenizer(t *testing.T) {
 				{Assignment, "="},
 				{Number, "123"},
 				{Semicolon, ";"},
+				{EOF,""},
 			},
 		},
 		{
@@ -61,6 +63,7 @@ func TestTokenizer(t *testing.T) {
 				{Operator, "+"},
 				{Number, "2"},
 				{Semicolon, ";"},
+				{EOF,""},
 			},
 		},
 		{
@@ -81,6 +84,7 @@ func TestTokenizer(t *testing.T) {
 				{Operator, "++"},
 				{CloseParam, ")"},
 				{OpenParam, "{"},
+				{EOF,""},
 			},
 		},
 		{
@@ -94,6 +98,7 @@ func TestTokenizer(t *testing.T) {
 				{Class: Operator, Lexeme: "!="},
 				{Class: Number, Lexeme: "3"},
 				{Class: Semicolon, Lexeme: ";"},
+				{EOF,""},
 			},
 		},
 		{
@@ -106,6 +111,7 @@ func TestTokenizer(t *testing.T) {
 				{Class: CloseParam, Lexeme: ")"},
 				{Class: OpenParam, Lexeme: "{"},
 				{Class: CloseParam, Lexeme: "}"},
+				{EOF,""},
 			},
 		},
 	}
