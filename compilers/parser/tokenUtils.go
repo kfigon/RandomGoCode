@@ -26,8 +26,6 @@ func isReturnKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }
 
-func isFunctionCall(token lexer.Token, next lexer.Token) bool {
-	return token.Class == lexer.Identifier && 
-			next.Class == lexer.OpenParam && 
-			next.Lexeme == "("
+func eof(token lexer.Token) bool {
+	return token.Class == lexer.EOF
 }

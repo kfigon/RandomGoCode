@@ -68,7 +68,7 @@ func (p *parser) advanceToken() {
 }
 
 func (p *parser) eof() bool {
-	return p.currentToken.Class == lexer.EOF
+	return eof(p.currentToken)
 }
 
 func (p *parser) addError(err error) {
@@ -150,6 +150,7 @@ func (p *parser) parseVarStatement() {
 	} else if isSemicolon(p.currentToken) {
 		out := VarStatementNode{Name: identifierTok.Lexeme}
 		p.addStatement(&out)
+		p.advanceToken()
 		return
 	} else if !isAssignmentOperator(p.currentToken) {
 		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.currentToken.Class))
