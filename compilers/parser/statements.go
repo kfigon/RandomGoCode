@@ -9,7 +9,6 @@ func (vsn *VarStatementNode) TokenLiteral() string {
 }
 func (vsn *VarStatementNode) evaluateStatement() {}
 
-
 type ReturnStatementNode struct {
 	Value ExpressionNode
 }
