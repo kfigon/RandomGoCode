@@ -27,6 +27,12 @@ func (s set[T]) len() int {
 	return len(s)
 }
 
+func (s set[T]) iterate(fn func(T)) {
+	for v := range s {
+		fn(v)
+	}
+}
+
 func perform[T key](t *testing.T, val T) {
 	s := newSet[T]()
 	assertEqual(t, 0, s.len())
@@ -45,4 +51,19 @@ func TestNewStringSet(t *testing.T) {
 	t.Run("int set", func(t *testing.T) {
 		perform(t, 5)
 	})
+}
+
+func TestIterate(t *testing.T) {
+	s := newSet[int]()
+	for _, v := range []int{1,2,3,4} {
+		s.add(v)
+	}
+
+	var filtered []int
+	s.iterate(func(i int) {
+		if i % 2 == 0 {
+			filtered = append(filtered, i)
+		}
+	})
+	assertEqualArr(t, []int{2,4}, filtered)
 }
