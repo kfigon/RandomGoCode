@@ -2,31 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 )
 
 func main() {
 	fmt.Println("Hello")
-	fmt.Println(sumInt([]int{1,2,3,4}))
-	fmt.Println(sum([]int{1,2,3,4}))
-	fmt.Println(sum([]float32{1,2,3,4}))
-}
+	http.HandleFunc("/map", healthcheckMap)
+	http.HandleFunc("/type", healthcheckTyped)
 
-func sumInt(vals []int) int {
-	var out int
-	for _, v := range vals {
-		out += v
-	}
-	return out
-}
-
-// or use number type:
-type Number interface {
-    int | float64
-}
-func sum[T int | float32](vals []T) T {
-	var out T
-	for _, v := range vals {
-		out += v
-	}
-	return out
+	fmt.Println("running 8080")
+	http.ListenAndServe(":8080", nil)
 }
