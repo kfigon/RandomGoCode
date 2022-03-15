@@ -15,7 +15,7 @@ func assertEqualArr[T comparable](t *testing.T, exp, got []T) {
 
 	for i := 0; i < len(got); i++ {
 		if exp[i] != got[i] {
-			t.Errorf("Error on idx %v, exp %v, got %v", i, exp[i], got[i])
+			t.Errorf("%v != %v", exp, got)
 		}
 	}
 }
