@@ -12,7 +12,12 @@ type Program struct {
 }
 
 func Parse(tokens []lexer.Token) *Program {
-	p := &parser{tokens: tokens}
+	p := &parser{
+		tokens: tokens,
+		prefixParsingFns: registerParsingFns[prefixFn](),
+		infixParsingFns: registerParsingFns[infixFn](),
+	}
+	
 	// populate current and next
 	p.advanceToken()
 
@@ -34,6 +39,9 @@ type parser struct {
 	idx int
 	currentToken lexer.Token
 	nextToken lexer.Token
+
+	prefixParsingFns map[lexer.TokenClass]prefixFn
+	infixParsingFns map[lexer.TokenClass]infixFn
 
 	errors []error
 	statements []StatementNode
