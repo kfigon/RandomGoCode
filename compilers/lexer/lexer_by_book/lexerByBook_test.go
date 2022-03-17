@@ -46,13 +46,10 @@ func TestLexerByTheBookSimpleIdentifier(t *testing.T) {
 	to := l.emit()
 	semi := l.emit()
 
-	if next := l.emit(); next.token != "EOF" {
-		t.Error("Found not terminating token", next)
-	}
-	if to.token != "KEYWORD" || to.lexeme != "let" {
-		t.Error("First token invalid", to)
-	}
-	if semi.token != "SEMICOLON" || semi.lexeme != ";" {
-		t.Error("Second token invalid", semi)
-	}
+	assert.Equal(t, "EOF", l.emit().token)
+	assert.Equal(t, "KEYWORD", to.token)
+	assert.Equal(t, "let", to.lexeme)
+	
+	assert.Equal(t, "SEMICOLON", semi.token)
+	assert.Equal(t, ";", semi.lexeme)
 }

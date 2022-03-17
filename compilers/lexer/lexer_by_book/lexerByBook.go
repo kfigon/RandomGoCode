@@ -42,7 +42,6 @@ func (l *llex) emit() llexToken {
 	switch char {
 
 	case ';': return llexToken{"SEMICOLON", string(char)}
-	
 	case '+': {
 		if !l.eof() && l.peekChar() == '+' {
 			l.readChar()
