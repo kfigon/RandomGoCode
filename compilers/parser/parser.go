@@ -10,11 +10,7 @@ type Program struct {
 }
 
 func Parse(tokens []lexer.Token) *Program {
-	p := &parser{
-		tokens: tokens,
-		prefixParsingFns: prefixFns(),
-		infixParsingFns: infixFns(),
-	}
+	p := &parser{tokens: tokens}
 
 	// populate current and next
 	p.advanceToken()
@@ -37,9 +33,6 @@ type parser struct {
 	idx int
 	currentToken lexer.Token
 	nextToken lexer.Token
-
-	prefixParsingFns map[lexer.TokenClass]prefixFn
-	infixParsingFns map[lexer.TokenClass]infixFn
 
 	errors []error
 	statements []StatementNode
