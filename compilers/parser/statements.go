@@ -1,6 +1,15 @@
 package parser
 
-import "programming-lang/lexer"
+import (
+	"fmt"
+	"programming-lang/lexer"
+)
+
+type StatementNode interface {
+	Node
+	evaluateStatement()
+}
+
 
 type VarStatementNode struct {
 	Name  string
@@ -31,3 +40,52 @@ func (e *ExpressionStatementNode) TokenLiteral() string {
 	return e.Token.Lexeme
 }
 func (e *ExpressionStatementNode) evaluateStatement() {}
+
+
+
+func (p *parser) parseVarStatement() StatementNode {
+	p.advanceToken()
+	identifierTok := p.currentToken
+	if p.eof() {
+		p.addError(fmt.Errorf("var error - unexpected end of tokens after var"))
+		return nil
+	} else if !isIdentifier(identifierTok) {
+		p.addError(fmt.Errorf("var error - expected identifier, got %v", identifierTok.Class))
+		return nil
+	}
+
+	p.advanceToken()
+	if p.eof() {
+		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
+		return nil
+	} else if isSemicolon(p.currentToken) {
+		out := VarStatementNode{Name: identifierTok.Lexeme}
+		p.advanceToken()
+		return &out
+	} else if !isAssignmentOperator(p.currentToken) {
+		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.currentToken.Class))
+		return nil
+	}
+
+	exp := p.parseExpression()
+	if exp == nil {
+		return nil
+	}
+	return &VarStatementNode{Name: identifierTok.Lexeme, Value: exp}
+}
+
+func (p *parser) parseReturnStatement() StatementNode {
+	exp := p.parseExpression()
+	if exp == nil {
+		return nil
+	}
+	return &ReturnStatementNode{exp}
+}
+
+func (p *parser) parseExpressionStatement() StatementNode {
+	smt := &ExpressionStatementNode{
+		Token: p.currentToken,
+		Value: p.parseExpression(), //LOWEST
+	}
+	return smt
+}

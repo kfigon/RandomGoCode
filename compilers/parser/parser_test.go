@@ -86,25 +86,23 @@ func TestInvalidVarStatements(t *testing.T) {
 	var x = foo`
 
 	tree := parse(input)
-	assert.Len(t, tree.Errors, 3)
+	assert.Len(t, tree.Errors, 4)
 }
 
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
-	test := func(t *testing.T, input string) {
-		tree := parse(input)
-		assert.Len(t, tree.Errors, 1)
-	}
-	
 	t.Run("missing expression after assignment", func(t *testing.T) {
-		test(t, `var asd = ;`)
+		tree := parse(`var asd = ;`)
+		assert.Len(t, tree.Errors, 2)
 	})
 
 	t.Run("var return", func(t *testing.T) {
-		test(t, `var return 123;`)
+		tree := parse(`var return 123;`)
+		assert.Len(t, tree.Errors, 1)
 	})
 
 	t.Run("unexpected eof", func(t *testing.T) {
-		test(t, `var foo = `)
+		tree := parse(`var foo = `)
+		assert.Len(t, tree.Errors, 1)
 	})
 }
 
@@ -113,7 +111,7 @@ func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
 	var asd = ;`
 
 	tree := parse(input)
-	assert.Len(t, tree.Errors, 2)
+	assert.Len(t, tree.Errors, 3)
 }
 
 func TestVarWithoutAssignment(t *testing.T) {
