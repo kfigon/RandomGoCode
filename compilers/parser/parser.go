@@ -14,10 +14,10 @@ type Program struct {
 func Parse(tokens []lexer.Token) *Program {
 	p := &parser{
 		tokens: tokens,
-		prefixParsingFns: registerParsingFns[prefixFn](),
-		infixParsingFns: registerParsingFns[infixFn](),
+		prefixParsingFns: prefixFns(),
+		infixParsingFns: infixFns(),
 	}
-	
+
 	// populate current and next
 	p.advanceToken()
 
@@ -27,7 +27,7 @@ func Parse(tokens []lexer.Token) *Program {
 		} else if isReturnKeyword(p.currentToken) {
 			p.addStatement(p.parseReturnStatement())
 		} else {
-			p.advanceToken()
+			p.addStatement(p.parseExpressionStatement())
 		}
 	}
 
@@ -175,4 +175,9 @@ func (p *parser) parseReturnStatement() StatementNode {
 		return nil
 	}
 	return &ReturnStatementNode{exp}
+}
+
+func (p *parser) parseExpressionStatement() StatementNode {
+	p.advanceToken()
+	return nil
 }

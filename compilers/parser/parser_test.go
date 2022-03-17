@@ -126,3 +126,17 @@ func TestVarWithoutAssignment(t *testing.T) {
 	assert.Equal(t, "asd", st.Name)
 	assert.Nil(t, st.Value)
 }
+
+func TestExpressionStatement(t *testing.T) {
+	tree := parse(`foobar;`)
+	assertNoErrors(t, tree.Errors)
+	assert.Len(t, tree.Statements, 1)
+
+	exp,ok := tree.Statements[0].(*ExpressionStatementNode)
+	assert.True(t, ok)
+
+	identifier, ok := exp.Value.(*IdentifierExpression)
+	assert.True(t, ok)
+	assert.Equal(t, "foobar", identifier.Name)
+	assert.Equal(t, "foobar", identifier.TokenLiteral())
+}

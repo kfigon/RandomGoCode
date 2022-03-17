@@ -2,8 +2,8 @@ package parser
 
 import "programming-lang/lexer"
 
-type infixFn func(leftSide *ExpressionNode) *ExpressionNode
-type prefixFn func() *ExpressionNode
+type infixFn func(leftSide ExpressionNode) ExpressionNode
+type prefixFn func() ExpressionNode
 
 type mapPair[V any] struct {
 	key lexer.TokenClass
@@ -17,4 +17,12 @@ func registerParsingFns[T any](fns ...mapPair[T]) map[lexer.TokenClass]T {
 	}
 
 	return out
+}
+
+func prefixFns() map[lexer.TokenClass]prefixFn {
+	return registerParsingFns[prefixFn]()
+}
+
+func infixFns() map[lexer.TokenClass]infixFn {
+	return registerParsingFns[infixFn]()
 }
