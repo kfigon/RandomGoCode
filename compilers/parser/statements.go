@@ -67,7 +67,7 @@ func (p *parser) parseVarStatement() StatementNode {
 		return nil
 	}
 
-	exp := p.parseExpression()
+	exp := p.parseExpression(LOWEST)
 	if exp == nil {
 		return nil
 	}
@@ -75,7 +75,7 @@ func (p *parser) parseVarStatement() StatementNode {
 }
 
 func (p *parser) parseReturnStatement() StatementNode {
-	exp := p.parseExpression()
+	exp := p.parseExpression(LOWEST)
 	if exp == nil {
 		return nil
 	}
@@ -85,7 +85,7 @@ func (p *parser) parseReturnStatement() StatementNode {
 func (p *parser) parseExpressionStatement() StatementNode {
 	smt := &ExpressionStatementNode{
 		Token: p.currentToken,
-		Value: p.parseExpression(), //LOWEST
+		Value: p.parseExpression(LOWEST),
 	}
 	return smt
 }

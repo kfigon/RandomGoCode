@@ -65,7 +65,7 @@ func infixFns() map[lexer.TokenClass]infixFn {
 	return registerParsingFns[infixFn]()
 }
 
-func (p *parser) parseExpression() ExpressionNode {
+func (p *parser) parseExpression(predescense int) ExpressionNode {
 	p.advanceToken()
 	tok := p.currentToken
 	switch {

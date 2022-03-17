@@ -3,7 +3,9 @@ package parser
 import (
 	"programming-lang/lexer"
 	"testing"
+
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func assertNoErrors(t *testing.T, errors []error) {
@@ -131,10 +133,11 @@ func TestExpressionStatement(t *testing.T) {
 	assert.Len(t, tree.Statements, 1)
 
 	exp,ok := tree.Statements[0].(*ExpressionStatementNode)
-	assert.True(t, ok)
+	require.True(t, ok)
 
 	identifier, ok := exp.Value.(*IdentifierExpression)
-	assert.True(t, ok)
+	require.True(t, ok)
+	
 	assert.Equal(t, "foobar", identifier.Name)
 	assert.Equal(t, "foobar", identifier.TokenLiteral())
 }
