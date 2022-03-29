@@ -58,7 +58,9 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 	case isNumberLiteral(tok): return p.parseIntegerLiteralExpression()
 	case isIdentifier(tok): return p.parseIdentifierExpression()
 	case bang(tok) || minus(tok): return p.parsePrefixExpression()
-	default: return nil
+	default: 
+	p.addError(fmt.Errorf("expression error - syntax error %q", tok.Lexeme))
+	return nil
 	}
 }
 

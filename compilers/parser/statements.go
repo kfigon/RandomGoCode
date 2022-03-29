@@ -46,6 +46,7 @@ func (e *ExpressionStatementNode) evaluateStatement() {}
 func (p *parser) parseVarStatement() StatementNode {
 	p.advanceToken()
 	identifierTok := p.currentToken
+	
 	if p.eof() {
 		p.addError(fmt.Errorf("var error - unexpected end of tokens after var"))
 		return nil
@@ -70,6 +71,7 @@ func (p *parser) parseVarStatement() StatementNode {
 	p.advanceToken()
 	exp := p.parseExpression(LOWEST)
 	if exp == nil {
+		p.advanceToken()
 		return nil
 	}
 	return &VarStatementNode{Name: identifierTok.Lexeme, Value: exp}
@@ -80,6 +82,7 @@ func (p *parser) parseReturnStatement() StatementNode {
 
 	exp := p.parseExpression(LOWEST)
 	if exp == nil {
+		p.advanceToken()
 		return nil
 	}
 	return &ReturnStatementNode{exp}
@@ -87,11 +90,15 @@ func (p *parser) parseReturnStatement() StatementNode {
 
 func (p *parser) parseExpressionStatement() StatementNode {
 	tok := p.currentToken
-	p.advanceToken()
 
-	smt := &ExpressionStatementNode{
-		Token: tok,
-		Value: p.parseExpression(LOWEST),
+	exp := p.parseExpression(LOWEST)
+	if exp == nil {
+		p.advanceToken()
+		return nil
 	}
-	return smt
+
+	return &ExpressionStatementNode{
+		Token: tok,
+		Value: exp,
+	}
 }

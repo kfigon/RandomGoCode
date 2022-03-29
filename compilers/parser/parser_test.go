@@ -82,19 +82,10 @@ func TestIdentifierExpression(t *testing.T) {
 	assert.Equal(t, "asd", identifier.Name)
 }
 
-func TestInvalidVarStatements(t *testing.T) {
-	input := `var asd 4;
-	var = 432;
-	var x = foo`
-
-	tree := parse(input)
-	assert.Len(t, tree.Errors, 4)
-}
-
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 	t.Run("missing expression after assignment", func(t *testing.T) {
 		tree := parse(`var asd = ;`)
-		assert.Len(t, tree.Errors, 2)
+		assert.Len(t, tree.Errors, 1)
 	})
 
 	t.Run("var return", func(t *testing.T) {
@@ -106,6 +97,15 @@ func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 		tree := parse(`var foo = `)
 		assert.Len(t, tree.Errors, 1)
 	})
+}
+
+func TestInvalidVarStatements(t *testing.T) {
+	input := `var asd 4;
+	var = 432;
+	var x = foo`
+
+	tree := parse(input)
+	assert.Len(t, tree.Errors, 4)
 }
 
 func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
