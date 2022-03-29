@@ -128,12 +128,12 @@ func TestVarWithoutAssignment(t *testing.T) {
 }
 
 func TestExpressionStatement(t *testing.T) {
-	tree := parse(`foobar;`)
+	tree := parse(`foobar`)
 	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 1)
 
 	exp,ok := tree.Statements[0].(*ExpressionStatementNode)
-	require.True(t, ok)
+	require.True(t, ok, "ExpressionStatementNode not found")
 
 	identifier, ok := exp.Value.(*IdentifierExpression)
 	require.True(t, ok)

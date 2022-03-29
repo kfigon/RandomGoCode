@@ -27,6 +27,15 @@ func (ide *IdentifierExpression) TokenLiteral() string {
 }
 func (ide *IdentifierExpression) evaluateExpression() {}
 
+type PrefixExpression struct {
+	Operator string
+	Right ExpressionNode
+}
+func (p *PrefixExpression) TokenLiteral() string {
+	return p.Operator
+}
+func (p *PrefixExpression) evaluateExpression() {}
+
 
 const (
 	_ int = iota
@@ -40,15 +49,15 @@ const (
 )
 
 func (p *parser) parseExpression(predescense int) ExpressionNode {
-	p.advanceToken()
 	tok := p.currentToken
 	switch {
 	case p.eof() || isSemicolon(tok): {
-		p.addError(fmt.Errorf("expression error - no expresion found, got %v", tok.Lexeme))
+		p.addError(fmt.Errorf("expression error - no expresion found, got %q", tok.Lexeme))
 		return nil
 	}
 	case isNumberLiteral(tok): return p.parseIntegerLiteralExpression()
 	case isIdentifier(tok): return p.parseIdentifierExpression()
+	case bang(tok) || minus(tok): return p.parsePrefixExpression()
 	default: return nil
 	}
 }
@@ -84,4 +93,10 @@ func (p *parser) parseIdentifierExpression() ExpressionNode {
 	}
 	p.advanceToken()
 	return &IdentifierExpression{Name: identifierToken.Lexeme}
+}
+
+func (p *parser) parsePrefixExpression() ExpressionNode {
+	operator := p.currentToken
+	p.advanceToken()
+	return &PrefixExpression{Operator: operator.Lexeme, Right: p.parseExpression(PREFIX)}
 }

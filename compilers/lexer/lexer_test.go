@@ -114,6 +114,18 @@ func TestTokenizer(t *testing.T) {
 				{EOF,""},
 			},
 		},
+		{
+			desc:  "prefix operator",
+			input: `var foo = -5`,
+			expectedTokens: []Token{
+				{Class: Keyword, Lexeme: "var"},
+				{Class: Identifier, Lexeme: "foo"},
+				{Class: Assignment, Lexeme: "="},
+				{Class: Operator, Lexeme: "-"},
+				{Class: Number, Lexeme: "5"},
+				{EOF,""},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

@@ -78,6 +78,8 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^(>)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(<=)($|\s?)`), Operator},
 	{regexp.MustCompile(`^(>=)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(!)($|\s?)`), Operator},
+	{regexp.MustCompile(`^(-)($|\s?)`), Operator},
 
 	{regexp.MustCompile(`^(=)($|\s?)`), Assignment},
 

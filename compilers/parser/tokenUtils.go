@@ -29,3 +29,11 @@ func isReturnKeyword(token lexer.Token) bool {
 func eof(token lexer.Token) bool {
 	return token.Class == lexer.EOF
 }
+
+func bang(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "!"
+}
+
+func minus(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "-"
+}
