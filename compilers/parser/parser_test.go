@@ -128,7 +128,7 @@ func TestVarWithoutAssignment(t *testing.T) {
 }
 
 func TestExpressionStatement(t *testing.T) {
-	tree := parse(`foobar`)
+	tree := parse(`foobar;`)
 	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 1)
 
@@ -140,4 +140,22 @@ func TestExpressionStatement(t *testing.T) {
 	
 	assert.Equal(t, "foobar", identifier.Name)
 	assert.Equal(t, "foobar", identifier.TokenLiteral())
+}
+
+func TestPrefixExpression(t *testing.T) {
+	tree := parse(`-5;`)
+	assertNoErrors(t, tree.Errors)
+	assert.Len(t, tree.Statements, 1)
+
+	exp,ok := tree.Statements[0].(*ExpressionStatementNode)
+	require.True(t, ok, "ExpressionStatementNode not found")
+
+	prefix, ok := exp.Value.(*PrefixExpression)
+	require.True(t, ok, "prefix expression expected")
+	
+	assert.Equal(t, "-", prefix.Operator)
+	
+	val, ok :=  prefix.Right.(*IntegerLiteralExpression)
+	require.True(t, ok, "integer expression expected")
+	assert.Equal(t, 5, val.Value)
 }
