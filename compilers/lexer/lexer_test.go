@@ -126,6 +126,26 @@ func TestTokenizer(t *testing.T) {
 				{EOF,""},
 			},
 		},
+		{
+			desc:  "infix operators",
+			input: `5 == 3 > 1 >= 1 < <= != -- / *`,
+			expectedTokens: []Token{
+				{Class: Number, Lexeme: "5"},
+				{Class: Operator, Lexeme: "=="},
+				{Class: Number, Lexeme: "3"},
+				{Class: Operator, Lexeme: ">"},
+				{Class: Number, Lexeme: "1"},
+				{Class: Operator, Lexeme: ">="},
+				{Class: Number, Lexeme: "1"},
+				{Class: Operator, Lexeme: "<"},
+				{Class: Operator, Lexeme: "<="},
+				{Class: Operator, Lexeme: "!="},
+				{Class: Operator, Lexeme: "--"},
+				{Class: Operator, Lexeme: "/"},
+				{Class: Operator, Lexeme: "*"},
+				{EOF,""},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
