@@ -159,3 +159,47 @@ func TestPrefixExpression(t *testing.T) {
 	require.True(t, ok, "integer expression expected")
 	assert.Equal(t, 5, val.Value)
 }
+
+func TestInfixExpression(t *testing.T) {
+	testCases := []struct {
+		input	string
+		expectedOperator string
+		left int
+		right int
+	}{
+		{"1+2", "+", 1, 2},
+		{"1 + 2", "+", 1, 2},
+		{"1*2", "*", 1, 2},
+		{"1 * 2", "*", 1, 2},
+		{"4/2", "/",4, 2},
+		{"3 == 4", "==",3, 4},
+		{"3 != 4", "!=",3, 4},
+		{"3 > 4", ">",3, 4},
+		{"3 >= 4", ">=",3, 4},
+		{"3 < 4", "<",3, 4},
+		{"3 <= 4", "<=",3, 4},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.input, func(t *testing.T) {
+			tree := parse(tC.input)
+			assertNoErrors(t, tree.Errors)
+			require.Len(t, tree.Statements, 1, "statement not found")
+		
+			exp,ok := tree.Statements[0].(*ExpressionStatementNode)
+			require.True(t, ok, "ExpressionStatementNode not found")
+		
+			infix, ok := exp.Value.(*InfixExpressionNode)
+			require.True(t, ok, "infix expression expected")
+			
+			assert.Equal(t, tC.expectedOperator, infix.Operator)
+			
+			left, ok :=  infix.Left.(*IntegerLiteralExpression)
+			require.True(t, ok, "integer expression expected for left")
+			assert.Equal(t, tC.left, left.Value)
+
+			right, ok :=  infix.Right.(*IntegerLiteralExpression)
+			require.True(t, ok, "integer expression expected for right")
+			assert.Equal(t, tC.right, right.Value)
+		})
+	}
+}

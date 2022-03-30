@@ -36,6 +36,16 @@ func (p *PrefixExpression) TokenLiteral() string {
 }
 func (p *PrefixExpression) evaluateExpression() {}
 
+type InfixExpressionNode struct {
+	Operator string
+	Left ExpressionNode
+	Right ExpressionNode
+}
+
+func (i *InfixExpressionNode) TokenLiteral() string {
+	return i.Operator
+}
+func (i *InfixExpressionNode) evaluateExpression() {}
 
 const (
 	_ int = iota
