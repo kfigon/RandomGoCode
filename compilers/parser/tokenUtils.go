@@ -37,3 +37,39 @@ func bang(token lexer.Token) bool {
 func minus(token lexer.Token) bool {
 	return token.Class == lexer.Operator && token.Lexeme == "-"
 }
+
+func product(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "*"
+}
+
+func plus(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "+"
+}
+
+func divide(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "/"
+}
+
+func equals(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "=="
+}
+
+func notEquals(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "!="
+}
+
+func lessThan(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "<"
+}
+
+func lessEqThan(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == "<="
+}
+
+func greaterThan(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == ">"
+}
+
+func greaterEqThan(token lexer.Token) bool {
+	return token.Class == lexer.Operator && token.Lexeme == ">="
+}

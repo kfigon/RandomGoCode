@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"programming-lang/lexer"
 	"strconv"
 )
 
@@ -68,9 +69,28 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 	case isNumberLiteral(tok): return p.parseIntegerLiteralExpression()
 	case isIdentifier(tok): return p.parseIdentifierExpression()
 	case bang(tok) || minus(tok): return p.parsePrefixExpression()
-	default: 
+	}
+
 	p.addError(fmt.Errorf("expression error - syntax error %q", tok.Lexeme))
 	return nil
+}
+
+func predescense(tok lexer.Token) int {
+	switch {
+	case equals(tok): return EQUALS
+	case notEquals(tok): return EQUALS
+	
+	case lessThan(tok): return LESSGREATER
+	case lessEqThan(tok): return LESSGREATER
+	case greaterEqThan(tok): return LESSGREATER
+	case greaterThan(tok): return LESSGREATER
+
+	case plus(tok): return SUM
+	case minus(tok): return SUM
+	
+	case product(tok): return PRODUCT
+	case divide(tok): return PRODUCT
+	default: return LOWEST
 	}
 }
 
@@ -111,4 +131,15 @@ func (p *parser) parsePrefixExpression() ExpressionNode {
 	operator := p.currentToken
 	p.advanceToken()
 	return &PrefixExpression{Operator: operator.Lexeme, Right: p.parseExpression(PREFIX)}
+}
+
+func (p *parser) parseInfixExpression(left ExpressionNode) ExpressionNode {
+	out := &InfixExpressionNode{
+		Operator: p.currentToken.Lexeme,
+		Left: left,
+	}
+	pred := predescense(p.currentToken)
+	p.advanceToken()
+	out.Right = p.parseExpression(pred)
+	return out
 }
