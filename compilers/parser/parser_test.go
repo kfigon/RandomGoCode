@@ -161,7 +161,7 @@ func TestPrefixExpression(t *testing.T) {
 }
 
 func TestInfixExpression(t *testing.T) {
-	t.Skip("todo")
+	t.Fatal("todo")
 	
 	testCases := []struct {
 		input	string
