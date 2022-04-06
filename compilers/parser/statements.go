@@ -43,60 +43,60 @@ func (e *ExpressionStatementNode) evaluateStatement() {}
 
 
 
-func (p *parser) parseVarStatement() StatementNode {
+func (p *parser) parseVarStatement() StatementNode {	
+	if !isIdentifier(p.nextToken) {
+		p.addError(fmt.Errorf("var error - expected identifier, got %v", p.nextToken.Class))
+		return nil
+	}
 	p.advanceToken()
 	identifierTok := p.currentToken
-	
-	if p.eof() {
-		p.addError(fmt.Errorf("var error - unexpected end of tokens after var"))
-		return nil
-	} else if !isIdentifier(identifierTok) {
-		p.addError(fmt.Errorf("var error - expected identifier, got %v", identifierTok.Class))
-		return nil
-	}
 
-	p.advanceToken()
-	if p.eof() {
-		p.addError(fmt.Errorf("var error - unexpected end of tokens after identifier"))
-		return nil
-	} else if isSemicolon(p.currentToken) {
-		out := VarStatementNode{Name: identifierTok.Lexeme}
+	if isSemicolon(p.nextToken) {
 		p.advanceToken()
-		return &out
-	} else if !isAssignmentOperator(p.currentToken) {
-		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.currentToken.Class))
+		return &VarStatementNode{Name: identifierTok.Lexeme}
+	}
+
+	if !isAssignmentOperator(p.nextToken) {
+		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.nextToken.Class))
 		return nil
 	}
 
-	p.advanceToken()
+	p.advanceToken() // assignment
+	p.advanceToken() // expression
+
 	exp := p.parseExpression(LOWEST)
-	if exp == nil {
-		p.advanceToken()
+	out := &VarStatementNode{Name: identifierTok.Lexeme, Value: exp}
+	if !isSemicolon(p.nextToken) {
+		p.addError(fmt.Errorf("var error - expected semicolon after expression, got %v", p.nextToken.Class))
 		return nil
 	}
-	return &VarStatementNode{Name: identifierTok.Lexeme, Value: exp}
+	p.advanceToken()
+	return out
 }
 
 func (p *parser) parseReturnStatement() StatementNode {
 	p.advanceToken()
 
 	exp := p.parseExpression(LOWEST)
-	if exp == nil {
-		p.advanceToken()
+	out := &ReturnStatementNode{exp}
+	if !isSemicolon(p.nextToken) {
+		p.addError(fmt.Errorf("var error - expected semicolon after expression, got %v", p.nextToken.Class))
 		return nil
 	}
-	return &ReturnStatementNode{exp}
+	p.advanceToken()
+	return out
 }
 
 func (p *parser) parseExpressionStatement() StatementNode {
 	tok := p.currentToken
 
 	exp := p.parseExpression(LOWEST)
-	if exp == nil {
-		p.advanceToken()
+
+	if !isSemicolon(p.nextToken) {
+		p.addError(fmt.Errorf("var error - expected semicolon after expression, got %v", p.nextToken.Class))
 		return nil
 	}
-
+	p.advanceToken()
 	return &ExpressionStatementNode{
 		Token: tok,
 		Value: exp,

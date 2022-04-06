@@ -23,6 +23,8 @@ func Parse(tokens []lexer.Token) *Program {
 		} else {
 			p.addStatement(p.parseExpressionStatement())
 		}
+		
+		p.advanceToken()
 	}
 
 	return &Program{p.statements, p.errors}

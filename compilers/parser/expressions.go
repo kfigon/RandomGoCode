@@ -64,16 +64,9 @@ const (
 func (p *parser) parseExpression(predescense int) ExpressionNode {
 	tok := p.currentToken
 	switch {
-	case p.eof() || isSemicolon(tok): {
-		p.addError(fmt.Errorf("expression error - no expresion found, got %q", tok.Lexeme))
-		return nil
-	}
 	case isNumberLiteral(tok): return p.parseIntegerLiteralExpression()
 	case isIdentifier(tok): return p.parseIdentifierExpression()
-	}
-
-	if bang(tok) || minus(tok) {
-		return p.parsePrefixExpression() 
+	case bang(tok) || minus(tok): return p.parsePrefixExpression()
 	}
 
 	// // prefix
@@ -98,7 +91,7 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 	// }
 
 	// return left
-	p.addError(fmt.Errorf("expression error - syntax error %q", tok.Lexeme))
+	// p.addError(fmt.Errorf("expression error - syntax error %q", tok.Lexeme))
 	return nil
 }
 
@@ -139,29 +132,11 @@ func (p *parser) parseIntegerLiteralExpression() ExpressionNode {
 		p.addError(fmt.Errorf("int literal expression error - error in parsing integer literal in: %v", tok.Lexeme))
 		return nil
 	}
-	p.advanceToken()
-	if p.eof() {
-		p.addError(fmt.Errorf("int literal expression error - unexpected end of tokens"))
-		return nil
-	} else if !isSemicolon(p.currentToken) {
-		p.addError(fmt.Errorf("int literal expression error - expected semicolon, got %v", p.currentToken.Lexeme))
-		return nil
-	}
-	p.advanceToken()
 	return &IntegerLiteralExpression{Value: v}
 }
 
 func (p *parser) parseIdentifierExpression() ExpressionNode {
 	identifierToken := p.currentToken
-	p.advanceToken()
-	if p.eof() {
-		p.addError(fmt.Errorf("identifier expression error - unexpected end of tokens"))
-		return nil
-	} else if !isSemicolon(p.currentToken) {
-		p.addError(fmt.Errorf("identifier expression error - semicolon not found, got %v", p.currentToken))
-		return nil
-	}
-	p.advanceToken()
 	return &IdentifierExpression{Name: identifierToken.Lexeme}
 }
 
