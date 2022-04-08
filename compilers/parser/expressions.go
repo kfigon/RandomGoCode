@@ -63,16 +63,15 @@ const (
 
 func (p *parser) parseExpression(predescense int) ExpressionNode {
 	tok := p.currentToken
-	if isNumberLiteral(tok){
-		return p.parseIntegerLiteralExpression()
-	} else if isIdentifier(tok) {
-		return p.parseIdentifierExpression()
-	} 
 
 	var left ExpressionNode
 	if bang(tok) || minus(tok) {
 		 left = p.parsePrefixExpression()
-	}
+	} else if isNumberLiteral(tok){
+		left = p.parseIntegerLiteralExpression()
+	} else if isIdentifier(tok) {
+		left = p.parseIdentifierExpression()
+	} 
 
 
 	// // infix
