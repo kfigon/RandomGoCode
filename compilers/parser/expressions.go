@@ -63,36 +63,40 @@ const (
 
 func (p *parser) parseExpression(predescense int) ExpressionNode {
 	tok := p.currentToken
-	switch {
-	case isNumberLiteral(tok): return p.parseIntegerLiteralExpression()
-	case isIdentifier(tok): return p.parseIdentifierExpression()
-	case bang(tok) || minus(tok): return p.parsePrefixExpression()
+	if isNumberLiteral(tok){
+		return p.parseIntegerLiteralExpression()
+	} else if isIdentifier(tok) {
+		return p.parseIdentifierExpression()
+	} 
+
+	var left ExpressionNode
+	if bang(tok) || minus(tok) {
+		 left = p.parsePrefixExpression()
 	}
 
-	// // prefix
-	// var left ExpressionNode
-	// if bang(tok) || minus(tok) {
-	// 	left = p.parsePrefixExpression() 
-	// }
 
 	// // infix
-	// for !isSemicolon(p.nextToken) && predescense < tokensPredescense(p.nextToken) {
+	for !isSemicolon(p.nextToken) && predescense < tokensPredescense(p.nextToken) {
 
-	// 	if equals(p.nextToken) || notEquals(p.nextToken) || lessThan(p.nextToken) || 
-	// 		lessEqThan(p.nextToken) || greaterEqThan(p.nextToken) || 
-	// 		greaterThan(p.nextToken) || plus(p.nextToken) || minus(p.nextToken) || 
-	// 		product(p.nextToken) || divide(p.nextToken) {
+		if equals(p.nextToken) || 
+			notEquals(p.nextToken) || 
+			lessThan(p.nextToken) || 
+			lessEqThan(p.nextToken) || 
+			greaterEqThan(p.nextToken) || 
+			greaterThan(p.nextToken) || 
+			plus(p.nextToken) || 
+			minus(p.nextToken) || 
+			product(p.nextToken) || 
+			divide(p.nextToken) {
 			
-	// 		p.advanceToken()
-	// 		left = p.parseInfixExpression(left)
-	// 	} else {
-	// 		return left
-	// 	}
-	// }
+			p.advanceToken()
+			left = p.parseInfixExpression(left)
+		} else {
+			return left
+		}
+	}
 
-	// return left
-	// p.addError(fmt.Errorf("expression error - syntax error %q", tok.Lexeme))
-	return nil
+	return left
 }
 
 func tokensPredescense(tok lexer.Token) int {
