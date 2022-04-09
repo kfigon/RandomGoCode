@@ -71,7 +71,7 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 		left = p.parseIntegerLiteralExpression()
 	} else if isIdentifier(tok) {
 		left = p.parseIdentifierExpression()
-	} 
+	}
 
 
 	// // infix
