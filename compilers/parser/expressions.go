@@ -18,6 +18,9 @@ type IntegerLiteralExpression struct {
 func (ile *IntegerLiteralExpression) TokenLiteral() string {
 	return strconv.Itoa(ile.Value)
 }
+func (ile *IntegerLiteralExpression) String() string {
+	return strconv.Itoa(ile.Value)
+}
 func (ile *IntegerLiteralExpression) evaluateExpression() {}
 
 type IdentifierExpression struct {
@@ -27,6 +30,11 @@ type IdentifierExpression struct {
 func (ide *IdentifierExpression) TokenLiteral() string {
 	return ide.Name
 }
+
+func (ide *IdentifierExpression) String() string {
+	return ide.Name
+}
+
 func (ide *IdentifierExpression) evaluateExpression() {}
 
 type PrefixExpression struct {
@@ -37,6 +45,11 @@ type PrefixExpression struct {
 func (p *PrefixExpression) TokenLiteral() string {
 	return p.Operator
 }
+
+func (p *PrefixExpression) String() string {
+	return "(" + p.Operator + p.Right.String() + ")"
+}
+
 func (p *PrefixExpression) evaluateExpression() {}
 
 type InfixExpressionNode struct {
@@ -48,6 +61,10 @@ type InfixExpressionNode struct {
 func (i *InfixExpressionNode) TokenLiteral() string {
 	return i.Operator
 }
+func (i *InfixExpressionNode) String() string {
+	return "("+ i.Left.String() + i.Operator + i.Right.String() +")"
+}
+
 func (i *InfixExpressionNode) evaluateExpression() {}
 
 const (

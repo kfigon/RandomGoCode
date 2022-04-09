@@ -243,3 +243,35 @@ func TestComplicatedExpressionStatements(t *testing.T) {
 	assertInteger(t, product.Left, 5)
 	assertInteger(t, product.Right, 3)
 }
+
+func TestOperatorPredescence(t *testing.T) {
+	tdt := []struct {
+		input string
+		expected string
+	}{
+		{"foo + 5 * 3;", "(foo+(5*3))"},
+		{"foo + 5 * 3 * 1;", "(foo+((5*3)*1))"},
+		{"foo + 5 + 3 * 1;", "((foo+5)+(3*1))"},
+		{"foo + 5 * 3 + 1;", "((foo+(5*3))+1)"},
+		{"-a *b;", "((-a)*b)"},
+		{"!-b;", "(!(-b))"},
+		{"a+b-c;", "((a+b)-c)"},
+		{"a+b/c;", "(a+(b/c))"},
+		{ "a + b * c + d / e - f;", "(((a+(b*c))+(d/e))-f)" },
+		{"3 + 4; -5 * 5;", "(3+4)((-5)*5)" },
+		{"5 > 4 == 3 < 4;", "((5>4)==(3<4))" },
+		{"5 < 4 != 3 > 4;", "((5<4)!=(3>4))" },
+		{"3 + 4 * 5 == 3 * 1 + 4 * 5;", "((3+(4*5))==((3*1)+(4*5)))"},
+		{"3 + 4 * 5 == 3 * 1 + 4 * 5;","((3+(4*5))==((3*1)+(4*5)))" },
+	}
+
+	for _, tc := range tdt {
+		t.Run(tc.input, func(t *testing.T) {
+			tree := parse(tc.input)
+			assertNoErrors(t, tree.Errors)
+			assert.Equal(t, tc.expected, tree.String())
+		})
+	}
+	
+	
+}

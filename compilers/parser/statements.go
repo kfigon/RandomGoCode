@@ -19,6 +19,15 @@ type VarStatementNode struct {
 func (vsn *VarStatementNode) TokenLiteral() string {
 	return vsn.Name
 }
+
+func (vsn *VarStatementNode) String() string {
+	str := "var " + vsn.Name
+	if vsn.Value != nil {
+		str += vsn.String()
+	}
+	return str
+}
+
 func (vsn *VarStatementNode) evaluateStatement() {}
 
 type ReturnStatementNode struct {
@@ -27,6 +36,13 @@ type ReturnStatementNode struct {
 
 func (r *ReturnStatementNode) TokenLiteral() string {
 	return "return"
+}
+func (r *ReturnStatementNode) String() string {
+	str := "return"
+	if r.Value != nil {
+		str += r.String()
+	}
+	return str
 }
 func (r *ReturnStatementNode) evaluateStatement() {}
 
@@ -39,6 +55,11 @@ type ExpressionStatementNode struct {
 func (e *ExpressionStatementNode) TokenLiteral() string {
 	return e.Token.Lexeme
 }
+
+func (e *ExpressionStatementNode) String() string {
+	return e.Value.String()
+}
+
 func (e *ExpressionStatementNode) evaluateStatement() {}
 
 

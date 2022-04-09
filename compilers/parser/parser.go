@@ -9,6 +9,14 @@ type Program struct {
 	Errors []error
 }
 
+func (p *Program) String() string {
+	var out string
+	for _, s := range p.Statements {
+		out += s.String()
+	}
+	return out
+}
+
 func Parse(tokens []lexer.Token) *Program {
 	p := &parser{tokens: tokens}
 
@@ -43,6 +51,7 @@ type parser struct {
 // Node is an interface mostly for debugging and testing
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 func (p *parser) advanceToken() {
