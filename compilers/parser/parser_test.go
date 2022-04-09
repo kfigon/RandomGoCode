@@ -161,8 +161,6 @@ func TestPrefixExpression(t *testing.T) {
 }
 
 func TestInfixExpression(t *testing.T) {
-	// t.Fatal("todo")
-	
 	testCases := []struct {
 		input	string
 		expectedOperator string
@@ -204,4 +202,44 @@ func TestInfixExpression(t *testing.T) {
 			assert.Equal(t, tC.right, right.Value)
 		})
 	}
+}
+
+func assertExpressionStatement(t *testing.T, st StatementNode) *ExpressionStatementNode {
+	exp, ok := st.(*ExpressionStatementNode)
+	require.True(t, ok, "expression statement not found")
+	return exp
+}
+
+func assertInfixExpr(t *testing.T, expression ExpressionNode, expectedOperator string) *InfixExpressionNode {
+	inf, ok := expression.(*InfixExpressionNode)
+	require.True(t, ok, "infix expression not found")
+	require.Equal(t, expectedOperator, inf.Operator)
+	return inf
+}
+
+func assertIdentifier(t *testing.T, expression ExpressionNode, expectedName string) {
+	ident, ok := expression.(*IdentifierExpression)
+	require.True(t, ok, "identifier expression not found")
+	require.Equal(t, expectedName, ident.Name)
+}
+
+func assertInteger(t *testing.T, expression ExpressionNode, expectedNum int) {
+	inte, ok := expression.(*IntegerLiteralExpression)
+	require.True(t, ok, "integer expression not found")
+	require.Equal(t, expectedNum, inte.Value)
+}
+
+func TestComplicatedExpressionStatements(t *testing.T) {
+	tree := parse(`foo + 5 * 3;`)
+	assertNoErrors(t, tree.Errors)
+	require.Len(t, tree.Statements, 1)
+
+	exp := assertExpressionStatement(t, tree.Statements[0])
+	plusInfix := assertInfixExpr(t, exp.Value, "+")
+
+	assertIdentifier(t, plusInfix.Left, "foo")
+	product := assertInfixExpr(t, plusInfix.Right, "*")
+	
+	assertInteger(t, product.Left, 5)
+	assertInteger(t, product.Right, 3)
 }

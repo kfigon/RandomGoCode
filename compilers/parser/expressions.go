@@ -74,7 +74,7 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 	}
 
 
-	// // infix
+	// infix - left associated
 	for !isSemicolon(p.nextToken) && predescense < tokensPredescense(p.nextToken) {
 
 		if equals(p.nextToken) || 
