@@ -148,12 +148,14 @@ func TestTokenizer(t *testing.T) {
 		},
 		{
 			desc:  "boolean",
-			input: `true false falset truet`,
+			input: `true false falset truet true;`,
 			expectedTokens: []Token{
 				{Class: Boolean, Lexeme: "true"},
 				{Class: Boolean, Lexeme: "false"},
 				{Class: Identifier, Lexeme: "falset"},
 				{Class: Identifier, Lexeme: "truet"},
+				{Class: Boolean, Lexeme: "true"},
+				{Class: Semicolon, Lexeme: ";"},
 				{EOF,""},
 			},
 		},

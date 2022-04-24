@@ -22,6 +22,10 @@ func isIdentifier(token lexer.Token) bool {
 	return token.Class == lexer.Identifier
 }
 
+func isBoolean(token lexer.Token) bool {
+	return token.Class == lexer.Boolean
+}
+
 func isReturnKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }

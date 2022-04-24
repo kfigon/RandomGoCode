@@ -16,13 +16,20 @@ func parse(input string) *Program {
 	return Parse(lexer.Tokenize(input))
 }
 
-func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, exp int) {
+func assertVarStatement(t *testing.T, st StatementNode, name string) *VarStatementNode {
 	varSt, ok := st.(*VarStatementNode)
 	assert.True(t, ok, "expected var statement")
+	assert.Equal(t, name, varSt.Name)
+	return varSt
+}
+func assertVarStatementAndIntegerExpression(t *testing.T, st StatementNode, name string, exp int) {
+	varSt := assertVarStatement(t, st, name)
+	assertInteger(t, varSt.Value, exp)
+}
 
-	integer, ok := varSt.Value.(*IntegerLiteralExpression)
-	assert.True(t, ok, "expected integer literal")
-	assert.Equal(t, exp, integer.Value)
+func assertVarStatementAndBooleanExpression(t *testing.T, st StatementNode, name string, exp bool) {
+	varSt := assertVarStatement(t, st, name)
+	assertBoolean(t, varSt.Value, exp)
 }
 
 func TestVarStatement_Identifier(t *testing.T) {
@@ -31,9 +38,7 @@ func TestVarStatement_Identifier(t *testing.T) {
 	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 1)
 
-	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral(), "invalid first literal")
-
-	assertVarStatementAndIntegerExpression(t, tree.Statements[0], 123)
+	assertVarStatementAndIntegerExpression(t, tree.Statements[0], "foo", 123)
 }
 
 func TestVarStatement_Identifiers(t *testing.T) {
@@ -43,11 +48,8 @@ func TestVarStatement_Identifiers(t *testing.T) {
 	assertNoErrors(t, tree.Errors)
 	assert.Len(t, tree.Statements, 2)
 
-	assert.Equal(t, "foo", tree.Statements[0].TokenLiteral(), "invalid first literal")
-	assert.Equal(t, "asd", tree.Statements[1].TokenLiteral(), "invalid second literal")
-
-	assertVarStatementAndIntegerExpression(t, tree.Statements[0], 123)
-	assertVarStatementAndIntegerExpression(t, tree.Statements[1], 3)	
+	assertVarStatementAndIntegerExpression(t, tree.Statements[0], "foo", 123)
+	assertVarStatementAndIntegerExpression(t, tree.Statements[1], "asd", 3)	
 }
 
 func TestBasicReturnStatement(t *testing.T) {
@@ -229,6 +231,12 @@ func assertInteger(t *testing.T, expression ExpressionNode, expectedNum int) {
 	require.Equal(t, expectedNum, inte.Value)
 }
 
+func assertBoolean(t *testing.T, expression ExpressionNode, expected bool) {
+	b, ok := expression.(*BooleanExpression)
+	require.True(t, ok, "boolean expression not found")
+	require.Equal(t, expected, b.Value)
+}
+
 func TestComplicatedExpressionStatements(t *testing.T) {
 	tree := parse(`foo + 5 * 3;`)
 	assertNoErrors(t, tree.Errors)
@@ -270,6 +278,61 @@ func TestOperatorPredescence(t *testing.T) {
 			tree := parse(tc.input)
 			assertNoErrors(t, tree.Errors)
 			assert.Equal(t, tc.expected, tree.String())
+		})
+	}
+}
+
+func TestSimpleBooleanExpressions(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		code string
+		exp bool
+	}{
+		{
+			desc: "true",
+			code: `true;`,
+			exp: true,
+		},
+		{
+			desc: "false",
+			code: `false;`,
+			exp: false,
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			tree := parse(tC.code)
+			assertNoErrors(t, tree.Errors)
+			assert.Len(t, tree.Statements, 1)
+			exp := assertExpressionStatement(t, tree.Statements[0])
+			assertBoolean(t, exp.Value, tC.exp)
+		})
+	}
+}
+
+func TestParsingBoolean(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		code string
+		exp bool
+	}{
+		{
+			desc: "true",
+			code: `var foo = true;`,
+			exp: true,
+		},
+		{
+			desc: "false",
+			code: `var foo = false;`,
+			exp: false,
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			tree := parse(tC.code)
+			assertNoErrors(t, tree.Errors)
+			assert.Len(t, tree.Statements, 1)
+			assertVarStatementAndBooleanExpression(t, tree.Statements[0], "foo", tC.exp)
 		})
 	}
 }

@@ -90,8 +90,8 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^({)`), OpenParam},
 	{regexp.MustCompile(`^(})`), CloseParam},
 
-	{regexp.MustCompile(`^(true)($|\s)`), Boolean},
-	{regexp.MustCompile(`^(false)($|\s)`), Boolean},
+	{regexp.MustCompile(`^(true)($|\s|;|,)`), Boolean},
+	{regexp.MustCompile(`^(false)($|\s|;|,)`), Boolean},
 	{regexp.MustCompile(`^([0-9]+\.[0-9]+)`), Number},
 	{regexp.MustCompile(`^([0-9]+)`), Number},
 

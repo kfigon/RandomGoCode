@@ -99,6 +99,8 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 		 left = p.parsePrefixExpression()
 	} else if isNumberLiteral(tok){
 		left = p.parseIntegerLiteralExpression()
+	} else if isBoolean(tok) {
+		left = p.parseBooleanExpression()
 	} else if isIdentifier(tok) {
 		left = p.parseIdentifierExpression()
 	}
@@ -172,6 +174,16 @@ func (p *parser) parseIdentifierExpression() ExpressionNode {
 	identifierToken := p.currentToken
 	return &IdentifierExpression{Name: identifierToken.Lexeme}
 }
+
+func (p *parser) parseBooleanExpression() ExpressionNode {
+	v, err := strconv.ParseBool(p.currentToken.Lexeme)
+	if err != nil {
+		p.addError(fmt.Errorf("boolean literal expression error: %v, token: %v", err, p.currentToken))
+		return nil
+	}
+	return &BooleanExpression{v}
+}
+
 
 func (p *parser) parsePrefixExpression() ExpressionNode {
 	operator := p.currentToken
