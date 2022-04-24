@@ -162,7 +162,7 @@ func TestPrefixExpression(t *testing.T) {
 	assert.Equal(t, 5, val.Value)
 }
 
-func TestInfixExpression(t *testing.T) {
+func TestInfixExpressionInteger(t *testing.T) {
 	testCases := []struct {
 		input	string
 		expectedOperator string
@@ -202,6 +202,33 @@ func TestInfixExpression(t *testing.T) {
 			right, ok :=  infix.Right.(*IntegerLiteralExpression)
 			require.True(t, ok, "integer expression expected for right")
 			assert.Equal(t, tC.right, right.Value)
+		})
+	}
+}
+
+func TestInfixBoolean(t *testing.T) {
+	testCases := []struct {
+		code	string
+		left bool
+		operator string
+		right bool
+	}{
+		{"true == true;", true, "==", true},
+		{"true != false;", true, "!=", false},
+		{"false == false;", false, "==", false},	
+	}
+	for _, tC := range testCases {
+		t.Run(tC.code, func(t *testing.T) {
+			tree := parse(tC.code)
+			assertNoErrors(t, tree.Errors)
+
+			require.Len(t, tree.Statements, 1, "statement not found")
+		
+			exp := assertExpressionStatement(t, tree.Statements[0])
+			inf := assertInfixExpr(t, exp.Value, tC.operator)
+			
+			assertBoolean(t, inf.Left, tC.left)
+			assertBoolean(t, inf.Right, tC.right)
 		})
 	}
 }
