@@ -52,20 +52,33 @@ func (p *PrefixExpression) String() string {
 
 func (p *PrefixExpression) evaluateExpression() {}
 
-type InfixExpressionNode struct {
+type InfixExpression struct {
 	Operator string
 	Left     ExpressionNode
 	Right    ExpressionNode
 }
 
-func (i *InfixExpressionNode) TokenLiteral() string {
+func (i *InfixExpression) TokenLiteral() string {
 	return i.Operator
 }
-func (i *InfixExpressionNode) String() string {
+func (i *InfixExpression) String() string {
 	return "("+ i.Left.String() + i.Operator + i.Right.String() +")"
 }
 
-func (i *InfixExpressionNode) evaluateExpression() {}
+func (i *InfixExpression) evaluateExpression() {}
+
+type BooleanExpression struct {
+	Value    bool
+}
+
+func (b *BooleanExpression) TokenLiteral() string {
+	return b.String()
+}
+func (b *BooleanExpression) String() string {
+	return strconv.FormatBool(b.Value)
+}
+
+func (b *BooleanExpression) evaluateExpression() {}
 
 const (
 	_ int = iota
@@ -167,7 +180,7 @@ func (p *parser) parsePrefixExpression() ExpressionNode {
 }
 
 func (p *parser) parseInfixExpression(left ExpressionNode) ExpressionNode {
-	out := &InfixExpressionNode{
+	out := &InfixExpression{
 		Operator: p.currentToken.Lexeme,
 		Left:     left,
 	}

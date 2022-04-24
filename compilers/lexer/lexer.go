@@ -29,6 +29,7 @@ const (
 	Keyword
 	Identifier // variables
 	Number
+	Boolean
 	Operator
 
 	OpenParam
@@ -43,6 +44,7 @@ var classesStrings = []string{
 	"Keyword",
 	"Identifier",
 	"Number",
+	"Boolean",
 	"Operator",
 	"OpenParam",
 	"CloseParam",
@@ -88,6 +90,8 @@ var tokenizerEntries []tokenizerEntry = []tokenizerEntry{
 	{regexp.MustCompile(`^({)`), OpenParam},
 	{regexp.MustCompile(`^(})`), CloseParam},
 
+	{regexp.MustCompile(`^(true)($|\s)`), Boolean},
+	{regexp.MustCompile(`^(false)($|\s)`), Boolean},
 	{regexp.MustCompile(`^([0-9]+\.[0-9]+)`), Number},
 	{regexp.MustCompile(`^([0-9]+)`), Number},
 

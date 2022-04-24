@@ -146,6 +146,17 @@ func TestTokenizer(t *testing.T) {
 				{EOF,""},
 			},
 		},
+		{
+			desc:  "boolean",
+			input: `true false falset truet`,
+			expectedTokens: []Token{
+				{Class: Boolean, Lexeme: "true"},
+				{Class: Boolean, Lexeme: "false"},
+				{Class: Identifier, Lexeme: "falset"},
+				{Class: Identifier, Lexeme: "truet"},
+				{EOF,""},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

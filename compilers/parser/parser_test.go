@@ -188,7 +188,7 @@ func TestInfixExpression(t *testing.T) {
 			exp,ok := tree.Statements[0].(*ExpressionStatementNode)
 			require.True(t, ok, "ExpressionStatementNode not found")
 		
-			infix, ok := exp.Value.(*InfixExpressionNode)
+			infix, ok := exp.Value.(*InfixExpression)
 			require.True(t, ok, "infix expression expected")
 			
 			assert.Equal(t, tC.expectedOperator, infix.Operator)
@@ -210,8 +210,8 @@ func assertExpressionStatement(t *testing.T, st StatementNode) *ExpressionStatem
 	return exp
 }
 
-func assertInfixExpr(t *testing.T, expression ExpressionNode, expectedOperator string) *InfixExpressionNode {
-	inf, ok := expression.(*InfixExpressionNode)
+func assertInfixExpr(t *testing.T, expression ExpressionNode, expectedOperator string) *InfixExpression {
+	inf, ok := expression.(*InfixExpression)
 	require.True(t, ok, "infix expression not found")
 	require.Equal(t, expectedOperator, inf.Operator)
 	return inf
@@ -272,6 +272,4 @@ func TestOperatorPredescence(t *testing.T) {
 			assert.Equal(t, tc.expected, tree.String())
 		})
 	}
-	
-	
 }
