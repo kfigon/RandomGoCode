@@ -233,6 +233,30 @@ func TestInfixBoolean(t *testing.T) {
 	}
 }
 
+func TestPrefixBoolean(t *testing.T) {
+	testCases := []struct {
+		code	string
+		operator string
+		val bool
+	}{
+		{"!true;", "!", true},
+		{"!false;", "!", false},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.code, func(t *testing.T) {
+			tree := parse(tC.code)
+			assertNoErrors(t, tree.Errors)
+
+			require.Len(t, tree.Statements, 1, "statement not found")
+		
+			exp := assertExpressionStatement(t, tree.Statements[0])
+			pr := assertPrefixExpr(t, exp.Value, tC.operator)
+			
+			assertBoolean(t, pr.Right, tC.val)
+		})
+	}
+}
+
 func assertExpressionStatement(t *testing.T, st StatementNode) *ExpressionStatementNode {
 	exp, ok := st.(*ExpressionStatementNode)
 	require.True(t, ok, "expression statement not found")
@@ -244,6 +268,13 @@ func assertInfixExpr(t *testing.T, expression ExpressionNode, expectedOperator s
 	require.True(t, ok, "infix expression not found")
 	require.Equal(t, expectedOperator, inf.Operator)
 	return inf
+}
+
+func assertPrefixExpr(t *testing.T, expression ExpressionNode, expectedOperator string) *PrefixExpression {
+	pr, ok := expression.(*PrefixExpression)
+	require.True(t, ok, "prefix expression not found")
+	require.Equal(t, expectedOperator, pr.Operator)
+	return pr
 }
 
 func assertIdentifier(t *testing.T, expression ExpressionNode, expectedName string) {
