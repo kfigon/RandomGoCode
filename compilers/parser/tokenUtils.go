@@ -26,6 +26,14 @@ func isBoolean(token lexer.Token) bool {
 	return token.Class == lexer.Boolean
 }
 
+func isOpeningParent(token lexer.Token) bool {
+	return token.Class == lexer.OpenParam && token.Lexeme == "("
+}
+
+func isClosingParent(token lexer.Token) bool {
+	return token.Class == lexer.CloseParam && token.Lexeme == ")"
+}
+
 func isReturnKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }

@@ -103,6 +103,8 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 		left = p.parseBooleanExpression()
 	} else if isIdentifier(tok) {
 		left = p.parseIdentifierExpression()
+	} else if isOpeningParent(tok) {
+		left = p.parseGroupedExpression()
 	}
 
 
@@ -199,5 +201,15 @@ func (p *parser) parseInfixExpression(left ExpressionNode) ExpressionNode {
 	pred := tokensPredescense(p.currentToken)
 	p.advanceToken()
 	out.Right = p.parseExpression(pred)
+	return out
+}
+
+func (p *parser) parseGroupedExpression() ExpressionNode {
+	p.advanceToken()
+
+	out := p.parseExpression(LOWEST)
+	if !isClosingParent(p.nextToken) {
+		return nil
+	}
 	return out
 }
