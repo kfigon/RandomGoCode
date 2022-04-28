@@ -101,7 +101,7 @@ func (p *parser) parseReturnStatement() StatementNode {
 	exp := p.parseExpression(LOWEST)
 	out := &ReturnStatementNode{exp}
 	if !isSemicolon(p.nextToken) {
-		p.addError(fmt.Errorf("var error - expected semicolon after expression, got %v", p.nextToken.Class))
+		p.addError(fmt.Errorf("return error - expected semicolon after expression, got %v", p.nextToken.Class))
 		return nil
 	}
 	p.advanceToken()
@@ -114,7 +114,7 @@ func (p *parser) parseExpressionStatement() StatementNode {
 	exp := p.parseExpression(LOWEST)
 
 	if !isSemicolon(p.nextToken) {
-		p.addError(fmt.Errorf("var error - expected semicolon after expression, got %v", p.nextToken.Class))
+		p.addError(fmt.Errorf("expression error - expected semicolon after expression, got %v", p.nextToken.Class))
 		return nil
 	}
 	p.advanceToken()
