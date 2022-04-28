@@ -113,7 +113,6 @@ func (p *parser) parseReturnStatement() StatementNode {
 
 func (p *parser) parseExpressionStatement() StatementNode {
 	tok := p.currentToken
-
 	exp := p.parseExpression(LOWEST)
 
 	if isSemicolon(p.nextToken) {
