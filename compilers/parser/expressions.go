@@ -211,5 +211,7 @@ func (p *parser) parseGroupedExpression() ExpressionNode {
 	if !isClosingParent(p.nextToken) {
 		return nil
 	}
+	p.advanceToken()
+
 	return out
 }

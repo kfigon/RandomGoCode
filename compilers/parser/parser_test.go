@@ -107,7 +107,7 @@ func TestInvalidVarStatements(t *testing.T) {
 	var x = foo`
 
 	tree := parse(input)
-	assert.Len(t, tree.Errors, 4)
+	assert.Len(t, tree.Errors, 3)
 }
 
 func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
@@ -334,6 +334,7 @@ func TestOperatorPredescence(t *testing.T) {
 		{"false;","false" },
 		{"3 > 5 == true;","((3>5)==true)" },
 
+		{ "(2 + 3) + 4;", "((2+3)+4)" },
 		{ "1 + (2 + 3) + 4;", "((1+(2+3))+4)" },
 		{"(5 + 5) * 2;", "((5+5)*2)" },
 		{"2 / (5 + 5);", "(2/(5+5))" },

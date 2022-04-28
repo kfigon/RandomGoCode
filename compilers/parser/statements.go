@@ -57,6 +57,9 @@ func (e *ExpressionStatementNode) TokenLiteral() string {
 }
 
 func (e *ExpressionStatementNode) String() string {
+	if e.Value == nil {
+		return ""
+	}
 	return e.Value.String()
 }
 
@@ -113,11 +116,10 @@ func (p *parser) parseExpressionStatement() StatementNode {
 
 	exp := p.parseExpression(LOWEST)
 
-	if !isSemicolon(p.nextToken) {
-		p.addError(fmt.Errorf("expression error - expected semicolon after expression, got %v", p.nextToken.Class))
-		return nil
+	if isSemicolon(p.nextToken) {
+		p.advanceToken()
 	}
-	p.advanceToken()
+
 	return &ExpressionStatementNode{
 		Token: tok,
 		Value: exp,
