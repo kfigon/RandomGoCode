@@ -66,6 +66,24 @@ func (e *ExpressionStatementNode) String() string {
 func (e *ExpressionStatementNode) evaluateStatement() {}
 
 
+type BlockStatement struct {
+	Statements []StatementNode
+}
+
+func (b *BlockStatement) TokenLiteral() string {
+	return "{"
+}
+
+func (b *BlockStatement) String() string {
+	out := ""
+	for _, s := range b.Statements {
+		out += s.String()
+	}
+	return out
+}
+
+func (b *BlockStatement) evaluateStatement() {}
+
 
 func (p *parser) parseVarStatement() StatementNode {	
 	if !isIdentifier(p.nextToken) {

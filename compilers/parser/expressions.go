@@ -80,6 +80,26 @@ func (b *BooleanExpression) String() string {
 
 func (b *BooleanExpression) evaluateExpression() {}
 
+type IfExpression struct {
+	Condition ExpressionNode
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (i *IfExpression) TokenLiteral() string {
+	return "if"
+}
+
+func (i *IfExpression) String() string {
+	out := "if" + i.Condition.String() + " " + i.Consequence.String()
+	if i.Alternative != nil {
+		out += " else " + i.Alternative.String()
+	}
+	return out
+}
+
+func (i *IfExpression) evaluateExpression() {}
+
 const (
 	_ int = iota
 	LOWEST
