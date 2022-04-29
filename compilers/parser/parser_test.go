@@ -263,6 +263,12 @@ func assertExpressionStatement(t *testing.T, st StatementNode) *ExpressionStatem
 	return exp
 }
 
+func assertIfExpression(t *testing.T, expSt *ExpressionStatementNode) *IfExpression {
+	exp, ok := expSt.Value.(*IfExpression)
+	require.True(t, ok, "if expression not found")
+	return exp
+}
+
 func assertInfixExpr(t *testing.T, expression ExpressionNode, expectedOperator string) *InfixExpression {
 	inf, ok := expression.(*InfixExpression)
 	require.True(t, ok, "infix expression not found")
@@ -404,4 +410,42 @@ func TestParsingBoolean(t *testing.T) {
 			assertVarStatementAndBooleanExpression(t, tree.Statements[0], "foo", tC.exp)
 		})
 	}
+}
+
+func TestIfExpression(t *testing.T) {
+	getIf := func(t *testing.T, tree *Program) *IfExpression{
+		assertNoErrors(t, tree.Errors)
+		assert.Len(t, tree.Statements, 1)
+		exp := assertExpressionStatement(t, tree.Statements[0])
+		return assertIfExpression(t, exp)
+	}
+
+	t.Run("Without else", func(t *testing.T) {
+		tree := parse(`if (x < y) { x }`)
+		ifExp := getIf(t, tree)
+
+		inf := assertInfixExpr(t, ifExp.Condition, "<")
+		assertIdentifier(t, inf.Left, "x")
+		assertIdentifier(t, inf.Right, "y")
+
+		assert.Len(t, ifExp.Consequence.Statements, 1)
+		assert.Len(t, ifExp.Alternative.Statements, 0)
+		
+		assertIdentifier(t, assertExpressionStatement(t, ifExp.Consequence.Statements[0]).Value, "x")
+	})
+
+	t.Run("With else", func(t *testing.T) {
+		tree := parse(`if (x < y) { x } else {y}`)
+		ifExp := getIf(t, tree)
+		
+		inf := assertInfixExpr(t, ifExp.Condition, "<")
+		assertIdentifier(t, inf.Left, "x")
+		assertIdentifier(t, inf.Right, "y")
+
+		assert.Len(t, ifExp.Consequence.Statements, 1)
+		assert.Len(t, ifExp.Alternative.Statements, 1)
+
+		assertIdentifier(t, assertExpressionStatement(t, ifExp.Consequence.Statements[0]).Value, "x")
+		assertIdentifier(t, assertExpressionStatement(t, ifExp.Alternative.Statements[0]).Value, "y")
+	})
 }
