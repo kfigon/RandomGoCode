@@ -38,6 +38,14 @@ func isReturnKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }
 
+func ifKeyword(token lexer.Token) bool {
+	return token.Class == lexer.Keyword && token.Lexeme == "if"
+}
+
+func elseKeyword(token lexer.Token) bool {
+	return token.Class == lexer.Keyword && token.Lexeme == "else"
+}
+
 func eof(token lexer.Token) bool {
 	return token.Class == lexer.EOF
 }

@@ -125,6 +125,9 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 		left = p.parseIdentifierExpression()
 	} else if isOpeningParent(tok) {
 		left = p.parseGroupedExpression()
+	} else {
+		p.addError(fmt.Errorf("no prefix parsing function for token %s", tok.Lexeme))
+		return nil
 	}
 
 
