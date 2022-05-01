@@ -34,6 +34,14 @@ func isClosingParent(token lexer.Token) bool {
 	return token.Class == lexer.CloseParam && token.Lexeme == ")"
 }
 
+func isOpeningCurly(token lexer.Token) bool {
+	return token.Class == lexer.OpenParam && token.Lexeme == "{"
+}
+
+func isClosingCurly(token lexer.Token) bool {
+	return token.Class == lexer.CloseParam && token.Lexeme == "}"
+}
+
 func isReturnKeyword(token lexer.Token) bool {
 	return token.Class == lexer.Keyword && token.Lexeme == "return"
 }

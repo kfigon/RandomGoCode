@@ -142,3 +142,20 @@ func (p *parser) parseExpressionStatement() StatementNode {
 		Value: exp,
 	}
 }
+
+func (p *parser) parseBlockStatement() *BlockStatement {
+	out := &BlockStatement{}
+	out.Statements = []StatementNode{}
+
+	p.advanceToken()
+
+	for !isClosingCurly(p.currentToken) && !p.eof() {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			out.Statements = append(out.Statements, stmt)
+		}
+		p.advanceToken()
+	}
+
+	return out
+}

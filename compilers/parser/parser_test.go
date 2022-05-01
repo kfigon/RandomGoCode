@@ -433,7 +433,7 @@ func TestIfExpression(t *testing.T) {
 		assertIdentifier(t, inf.Right, "y")
 
 		assert.Len(t, ifExp.Consequence.Statements, 1)
-		assert.Len(t, ifExp.Alternative.Statements, 0)
+		assert.Nil(t, ifExp.Alternative)
 		
 		assertIdentifier(t, assertExpressionStatement(t, ifExp.Consequence.Statements[0]).Value, "x")
 	})

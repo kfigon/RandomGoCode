@@ -125,6 +125,8 @@ func (p *parser) parseExpression(predescense int) ExpressionNode {
 		left = p.parseIdentifierExpression()
 	} else if isOpeningParent(tok) {
 		left = p.parseGroupedExpression()
+	}else if ifKeyword(tok){
+		left = p.parseIfExpression()
 	} else {
 		p.addError(fmt.Errorf("no prefix parsing function for token %s", tok.Lexeme))
 		return nil
@@ -236,6 +238,37 @@ func (p *parser) parseGroupedExpression() ExpressionNode {
 		return nil
 	}
 	p.advanceToken()
+
+	return out
+}
+
+func (p *parser) parseIfExpression() ExpressionNode {
+	if !isOpeningParent(p.nextToken) {
+		p.addError(fmt.Errorf("if expression error - missing opening brace, got %v", p.nextToken.Lexeme))
+		return nil
+	}
+	p.advanceToken()
+
+	out := &IfExpression{}
+	out.Condition = p.parseExpression(LOWEST)
+	
+	if !isClosingParent(p.currentToken) {
+		p.addError(fmt.Errorf("if expression error - missing closing brace, got %v", p.nextToken.Lexeme))
+		return nil
+	}
+	p.advanceToken()
+
+	if !isOpeningCurly(p.currentToken) {
+		p.addError(fmt.Errorf("if expression error - missing opening curly brace, got %v", p.nextToken.Lexeme))
+		return nil
+	} 
+
+	out.Consequence = p.parseBlockStatement()
+
+	if !isClosingCurly(p.currentToken) {
+		p.addError(fmt.Errorf("if expression error - missing closing curly brace, got %v", p.nextToken.Lexeme))
+		return nil
+	}
 
 	return out
 }

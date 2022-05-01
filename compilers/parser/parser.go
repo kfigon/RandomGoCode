@@ -24,18 +24,20 @@ func Parse(tokens []lexer.Token) *Program {
 	p.advanceToken()
 
 	for !p.eof(){
-		if isVarKeyword(p.currentToken) {
-			p.addStatement(p.parseVarStatement())
-		} else if isReturnKeyword(p.currentToken) {
-			p.addStatement(p.parseReturnStatement())
-		} else {
-			p.addStatement(p.parseExpressionStatement())
-		}
-		
+		p.addStatement(p.parseStatement())
 		p.advanceToken()
 	}
 
 	return &Program{p.statements, p.errors}
+}
+
+func (p *parser) parseStatement() StatementNode {
+	if isVarKeyword(p.currentToken) {
+		return p.parseVarStatement()
+	} else if isReturnKeyword(p.currentToken) {
+		return p.parseReturnStatement()
+	}
+	return p.parseExpressionStatement()
 }
 
 type parser struct {
