@@ -232,6 +232,7 @@ func (p *parser) parseGroupedExpression() ExpressionNode {
 
 	out := p.parseExpression(LOWEST)
 	if !isClosingParent(p.nextToken) {
+		p.addError(fmt.Errorf("grouped expression error - missing closing brace, got %v", p.nextToken.Lexeme))
 		return nil
 	}
 	p.advanceToken()

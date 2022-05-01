@@ -12,6 +12,10 @@ func assertNoErrors(t *testing.T, errors []error) {
 	assert.Len(t, errors, 0, "no errors were expected")
 }
 
+func assertSomeErrors(t *testing.T, errors []error) {
+	assert.GreaterOrEqual(t, len(errors), 1, "some errors were expected")
+}
+
 func parse(input string) *Program {
 	return Parse(lexer.Tokenize(input))
 }
@@ -87,17 +91,17 @@ func TestIdentifierExpression(t *testing.T) {
 func TestInvalidVarStatementsWithExpressions(t *testing.T) {
 	t.Run("missing expression after assignment", func(t *testing.T) {
 		tree := parse(`var asd = ;`)
-		assert.Len(t, tree.Errors, 1)
+		assertSomeErrors(t, tree.Errors)
 	})
 
 	t.Run("var return", func(t *testing.T) {
 		tree := parse(`var return 123;`)
-		assert.Len(t, tree.Errors, 1)
+		assertSomeErrors(t, tree.Errors)
 	})
 
 	t.Run("unexpected eof", func(t *testing.T) {
 		tree := parse(`var foo = `)
-		assert.Len(t, tree.Errors, 1)
+		assertSomeErrors(t, tree.Errors)
 	})
 }
 
@@ -107,7 +111,7 @@ func TestInvalidVarStatements(t *testing.T) {
 	var x = foo`
 
 	tree := parse(input)
-	assert.Len(t, tree.Errors, 3)
+	assert.Len(t, tree.Errors, 4)
 }
 
 func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
@@ -115,7 +119,7 @@ func TestFirstVarNotTerminated_SecondExpressionles(t *testing.T) {
 	var asd = ;`
 
 	tree := parse(input)
-	assert.Len(t, tree.Errors, 2)
+	assert.Len(t, tree.Errors, 3)
 }
 
 func TestVarWithoutAssignment(t *testing.T) {
