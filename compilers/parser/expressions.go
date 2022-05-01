@@ -253,21 +253,26 @@ func (p *parser) parseIfExpression() ExpressionNode {
 	out.Condition = p.parseExpression(LOWEST)
 	
 	if !isClosingParent(p.currentToken) {
-		p.addError(fmt.Errorf("if expression error - missing closing brace, got %v", p.nextToken.Lexeme))
+		p.addError(fmt.Errorf("if expression error - missing closing brace, got %v", p.currentToken.Lexeme))
 		return nil
 	}
 	p.advanceToken()
 
 	if !isOpeningCurly(p.currentToken) {
-		p.addError(fmt.Errorf("if expression error - missing opening curly brace, got %v", p.nextToken.Lexeme))
+		p.addError(fmt.Errorf("if expression error - missing opening curly brace, got %v", p.currentToken.Lexeme))
 		return nil
 	} 
 
 	out.Consequence = p.parseBlockStatement()
-
-	if !isClosingCurly(p.currentToken) {
-		p.addError(fmt.Errorf("if expression error - missing closing curly brace, got %v", p.nextToken.Lexeme))
-		return nil
+	
+	if elseKeyword(p.nextToken) {
+		p.advanceToken()
+		if !isOpeningCurly(p.nextToken) {
+			p.addError(fmt.Errorf("else expression error - missing opening curly brace, got %v", p.nextToken.Lexeme))
+			return nil
+		}
+		p.advanceToken()
+		out.Alternative = p.parseBlockStatement()
 	}
 
 	return out
