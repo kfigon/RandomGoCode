@@ -96,9 +96,7 @@ func (p *parser) parseVarStatement() StatementNode {
 	if isSemicolon(p.nextToken) {
 		p.advanceToken()
 		return &VarStatementNode{Name: identifierTok.Lexeme}
-	}
-
-	if !isAssignmentOperator(p.nextToken) {
+	} else if !isAssignmentOperator(p.nextToken) {
 		p.addError(fmt.Errorf("var error - expected assignment after identifier, got %v", p.nextToken.Class))
 		return nil
 	}
