@@ -453,3 +453,11 @@ func TestIfExpression(t *testing.T) {
 		assertIdentifier(t, assertExpressionStatement(t, ifExp.Alternative.Statements[0]).Value, "y")
 	})
 }
+
+func TestFunctionLiteral(t *testing.T) {
+	t.Skip("todo")
+}
+
+func TestFunctionCall(t *testing.T) {
+	t.Skip("todo")
+}
