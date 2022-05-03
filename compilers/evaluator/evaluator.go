@@ -19,7 +19,7 @@ func Eval(node parser.Node) object.Object {
 	case *parser.IntegerLiteralExpression:
 		return &object.Integer{Value: n.Value}
 	case *parser.BooleanExpression:
-		return &object.Boolean{Value: n.Value}
+		return evalBoolean(n)
 	case *parser.ExpressionStatementNode:
 		return Eval(n.Value)
 	case *parser.PrefixExpression:
@@ -34,6 +34,14 @@ func evalStatemnets(node *parser.Program) object.Object {
 		out = Eval(v)
 	}
 	return out
+}
+
+func evalBoolean(node *parser.BooleanExpression) object.Object {
+	switch node.Value {
+	case true: return TRUE_VAL
+	case false: return FALSE_VAL
+	}
+	return nil
 }
 
 func evalPrefix(node *parser.PrefixExpression) object.Object {
