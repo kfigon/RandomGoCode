@@ -42,6 +42,12 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"false", false},
 		{"!false", true},
 		{"!true", false},
+		
+		{"!!true", true},
+		{"!!false", false},
+		
+		{"!5", false},
+		{"!!5", true},
 	}
 	for _, tc := range tdt {
 		t.Run(tc.input, func(t *testing.T) {
