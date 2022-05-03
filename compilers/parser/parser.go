@@ -9,6 +9,10 @@ type Program struct {
 	Errors []error
 }
 
+func (p *Program) TokenLiteral() string {
+	return p.Statements[0].TokenLiteral()
+}
+
 func (p *Program) String() string {
 	var out string
 	for _, s := range p.Statements {

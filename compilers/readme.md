@@ -153,3 +153,7 @@ var add = func(x,y) { return x+y; }
 storing a tree:
 * as a literal tree with sum types as nodes (rust enums, haskell datatypes, jsons with loosely defined nodes)
 * as oop interfaces (evalExpression and evalStatemnets, both void methods)
+
+# Evaluation
+
+walking through the AST and interpreting each tree node
