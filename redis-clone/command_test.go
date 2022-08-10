@@ -61,3 +61,39 @@ func TestValidCommands(t *testing.T) {
 		})
 	}
 }
+
+func TestParseString(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		input 	[]byte
+		exp		string
+	}{
+		{
+			desc: "ok1",
+			input: []byte("+OK\r\n"),
+			exp: "OK",
+		},
+		{
+			desc: "ok2",
+			input: []byte{'+', 'O', 'K', 0x0D, 0x0A},
+			exp: "OK",
+		},
+		{
+			desc: "ok3",
+			input: []byte{'+', 'O', 'K', '\r', '\n'},
+			exp: "OK",
+		},
+		{
+			desc: "some long msg",
+			input: []byte("+hello world\r\n"),
+			exp: "hello world",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			cmd := command(tC.input)
+			assert.NoError(t, cmd.validate())
+			assert.Equal(t, tC.exp, cmd.simpleString())
+		})
+	}
+}

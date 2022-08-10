@@ -24,6 +24,10 @@ func (c command) termination() []byte {
 	return x
 }
 
+func (c command) simpleString() string {
+	return string(c[1:len(c)-2])
+}
+
 func equal[T comparable](a []T, b []T) bool {
 	if len(a) != len(b) {
 		return false
