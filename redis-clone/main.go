@@ -1,8 +1,54 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+)
 
 func main() {
-	fmt.Println("asd")
-	startServer()
+	conf := parseCliConfig()
+	fmt.Println(conf)
+	if err := conf.validate(); err != nil {
+		fmt.Println("invalid config", err)
+		return
+	}
+
+	if conf.mode == server {
+		fmt.Println("starting a server on port", conf.port)
+		startServer()
+	} else if conf.mode == client {
+		fmt.Println("sending data to port", conf.port)
+		sendData(conf.port, []byte(conf.data))
+	}
+}
+
+type cliMode int
+const (
+	server cliMode = iota
+	client
+)
+
+type config struct {
+	mode cliMode
+	port int
+	data string
+}
+
+func parseCliConfig() *config {
+	conf := config{}
+	conf.data = *flag.String("data", "", "data you want to send")
+	conf.port = *flag.Int("port", 6379, "Port you want to use")
+	mode := *flag.Int("mode", 0, "application mode. 0 - server; 1 - client")
+	conf.mode = cliMode(mode)
+	flag.Parse()
+
+	return &conf
+}
+
+func (c *config) validate() error {
+	if c.mode != server && c.mode != client {
+		return fmt.Errorf("invalid mode provided: %v", c.mode)
+	}
+
+	return nil
 }

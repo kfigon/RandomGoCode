@@ -16,7 +16,6 @@ func startServer() {
 	}
 	defer ln.Close()
 
-	
 	conn, err := ln.Accept()
 	if err != nil {
 		fmt.Println("error when accepting connection", err)
