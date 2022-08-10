@@ -36,12 +36,15 @@ type config struct {
 
 func parseCliConfig() *config {
 	conf := config{}
-	conf.data = *flag.String("data", "", "data you want to send")
-	conf.port = *flag.Int("port", 6379, "Port you want to use")
-	mode := *flag.Int("mode", 0, "application mode. 0 - server; 1 - client")
-	conf.mode = cliMode(mode)
+	flag.StringVar(&conf.data, "data", "", "data you want to send")
+	flag.IntVar(&conf.port, "port", 6379, "Port you want to use")
+	
+	var mode int
+	flag.IntVar(&mode, "mode", 0, "application mode. 0 - server; 1 - client")
+	
 	flag.Parse()
 
+	conf.mode = cliMode(mode)
 	return &conf
 }
 
