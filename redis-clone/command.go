@@ -7,7 +7,7 @@ type command []byte
 func (c command) validate() error {
 	if len(c) < 3 {
 		return fmt.Errorf("too short")
-	} else if !c.isStringCmd() && c[0] != '*' && c[0] != '$' {
+	} else if !c.isStringCmd() && !c.isBulk() && !c.isArray() {
 		return fmt.Errorf("invalid first character: %v", c[0])
 	} else if !equal(c.termination(), []byte{0x0d, 0x0a}) {
 		return fmt.Errorf("invalid termination: %q", string(c.termination()))
@@ -19,9 +19,16 @@ func (c command) isStringCmd() bool {
 	return c[0] == '+'
 }
 
+func (c command) isArray() bool {
+	return c[0] == '*'
+}
+
+func (c command) isBulk() bool {
+	return c[0] == '$'
+}
+
 func (c command) termination() []byte {
-	x := c[len(c)-2:]
-	return x
+	return c[len(c)-2:]
 }
 
 func (c command) simpleString() string {

@@ -41,6 +41,10 @@ func handleCommand(data []byte) {
 	}
 
 	if cmd.isStringCmd() {
-		fmt.Println("got STRING")
+		fmt.Println("got STRING", cmd.simpleString())
+	} else if cmd.isBulk() {
+		fmt.Println("got BULK")
+	}else if cmd.isArray() {
+		fmt.Println("got ARRAY")
 	}
 }
