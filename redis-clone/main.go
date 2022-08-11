@@ -18,6 +18,7 @@ func main() {
 		startServer()
 	} else if conf.mode == client {
 		fmt.Println("sending data to port", conf.port)
+		fmt.Printf("%x\n", conf.data)
 		sendData(conf.port, []byte(conf.data))
 	}
 }

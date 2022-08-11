@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"net"
 )
 
@@ -23,10 +23,23 @@ func startServer() {
 	}
 	defer conn.Close()
 
-	scanner := bufio.NewScanner(conn)
-	for scanner.Scan() {
-		data := scanner.Bytes()
-		handleCommand(data)
+	// bufio scanner will listen up to specific token.
+	// it's better to handle full message and parse manualy
+	
+	// todo: add timeout and grow the buffer if needed. For now 64k will do
+	for {
+		data := make([]byte, 64*1024)
+		b, err := conn.Read(data)
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				fmt.Println("error when reading buffer", err)
+				return 
+			}
+		}
+		fmt.Println("read", b ,"bytes")
+		handleCommand(data[0:b])
 	}
 	fmt.Println("that's all folks")
 }
