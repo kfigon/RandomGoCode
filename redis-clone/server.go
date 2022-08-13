@@ -6,9 +6,9 @@ import (
 	"net"
 )
 
-const port int = 6379
+const defaultPort int = 6379
 
-func startServer() {
+func startServer(port int) {
 	ln, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		fmt.Println("Error during creating connection", err)

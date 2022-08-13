@@ -6,21 +6,12 @@ import (
 )
 
 func main() {
-	conf := parseCliConfig()
-	fmt.Println(conf)
-	if err := conf.validate(); err != nil {
-		fmt.Println("invalid config", err)
+	conf, err := parseCliConfig()
+	if err != nil {
+		fmt.Println("invalid config:", err)
 		return
 	}
-
-	if conf.mode == server {
-		fmt.Println("starting a server on port", conf.port)
-		startServer()
-	} else if conf.mode == client {
-		fmt.Println("sending data to port", conf.port)
-		fmt.Printf("%x\n", conf.data)
-		sendData(conf.port, []byte(conf.data))
-	}
+	conf.run()
 }
 
 type cliMode int
@@ -29,30 +20,41 @@ const (
 	client
 )
 
-type config struct {
-	mode cliMode
+func parseCliConfig() (cliCommand, error) {
+	data := flag.String("data", "", "data you want to send")
+	port := flag.Int("port", defaultPort, "Port you want to use")
+	modeInt := flag.Int("mode", 0, "application mode. 0 - server; 1 - client")
+	flag.Parse()
+
+	mode := cliMode(*modeInt)
+	if mode == client && *data == "" {
+		return nil, fmt.Errorf("no data provided in client mode")
+	}
+
+	switch mode {
+	case server: return &serverCliCommand{port: *port}, nil
+	case client: return &clientCliCommand{port: *port, data: *data}, nil
+	default: return nil, fmt.Errorf("invalid mode provided: %v", mode)
+	}
+}
+
+type cliCommand interface {
+	run()
+}
+
+type serverCliCommand struct {
+	port int
+}
+func (s *serverCliCommand) run() {
+	fmt.Println("starting a server on port", s.port)
+	startServer(s.port)
+}
+
+type clientCliCommand struct {
 	port int
 	data string
 }
-
-func parseCliConfig() *config {
-	conf := config{}
-	flag.StringVar(&conf.data, "data", "", "data you want to send")
-	flag.IntVar(&conf.port, "port", 6379, "Port you want to use")
-	
-	var mode int
-	flag.IntVar(&mode, "mode", 0, "application mode. 0 - server; 1 - client")
-	
-	flag.Parse()
-
-	conf.mode = cliMode(mode)
-	return &conf
-}
-
-func (c *config) validate() error {
-	if c.mode != server && c.mode != client {
-		return fmt.Errorf("invalid mode provided: %v", c.mode)
-	}
-
-	return nil
+func (c *clientCliCommand) run() {
+	fmt.Println("client mode - sending data to port", c.port)
+	sendData(c.port, []byte(c.data))
 }
