@@ -47,3 +47,20 @@ func equal[T comparable](a []T, b []T) bool {
 	}
 	return true
 }
+
+type bulkCommand struct {
+	command
+}
+
+func newBulkString(c command) (*bulkCommand,error) {
+	
+	return &bulkCommand{c}, nil
+}
+
+func (b *bulkCommand) simpleString() string {
+	return ""
+}
+
+func (b *bulkCommand) byteLen() int {
+	return 0
+}
