@@ -56,5 +56,11 @@ type clientCliCommand struct {
 }
 func (c *clientCliCommand) run() {
 	fmt.Println("client mode - sending data to port", c.port)
-	sendData(c.port, []byte(c.data))
+	res, err := sendData(c.port, []byte(c.data))
+	if err != nil {
+		fmt.Println("client error:", err)
+		return
+	}
+	fmt.Println("Got response:")
+	fmt.Printf("%q\n", string(res))
 }

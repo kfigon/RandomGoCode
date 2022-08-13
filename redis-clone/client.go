@@ -5,18 +5,22 @@ import (
 	"net"
 )
 
-func sendData(port int, data []byte) {
+func sendData(port int, data []byte) ([]byte, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
-		fmt.Println("error connecting to the server", err)
-		return
+		return nil, fmt.Errorf("error connecting to the server: %v", err)
 	}
 	defer conn.Close()
 
 	n, err := conn.Write(data)
 	if err != nil {
-		fmt.Println("error sending data",err)
-		return
+		return nil, fmt.Errorf("error sending data to the server: %v", err)
 	}
 	fmt.Println("send", n, "bytes")
+	out, b, err := readSocket(conn)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response: %v", err)
+	}
+
+	return out[:b], nil
 }

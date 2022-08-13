@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"net"
 )
 
@@ -16,32 +15,27 @@ func startServer(port int) {
 	}
 	defer ln.Close()
 
-	conn, err := ln.Accept()
-	if err != nil {
-		fmt.Println("error when accepting connection", err)
-		return
-	}
-	defer conn.Close()
-
-	// bufio scanner will listen up to specific token.
-	// it's better to handle full message and parse manualy
-	
-	// todo: add timeout and grow the buffer if needed. For now 64k will do
 	for {
-		data := make([]byte, 64*1024)
-		b, err := conn.Read(data)
+		conn, err := ln.Accept()
 		if err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				fmt.Println("error when reading buffer", err)
-				return 
-			}
+			fmt.Println("error when accepting connection", err)
+			return
 		}
-		fmt.Println("read", b ,"bytes")
-		handleCommand(data[0:b])
+		handleConnection(conn)
 	}
 	fmt.Println("that's all folks")
+}
+
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+
+	data, b, err := readSocket(conn)
+	if err != nil {
+		fmt.Println("error reading socket", err)
+		return
+	}
+	handleCommand(data[0:b])
+	conn.Write([]byte("+ok\r\n"))
 }
 
 func handleCommand(data []byte) {
