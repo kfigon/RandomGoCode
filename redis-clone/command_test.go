@@ -104,26 +104,31 @@ func TestBulkString(t *testing.T) {
 		desc	string
 		input 	[]byte
 		expected string
+		expectedByteLen int
 	}{
 		{
 			desc: "short string",
 			input: []byte("$3\r\nHEY\r\n"),
 			expected: "HEY",
+			expectedByteLen: 3,
 		},
 		{
 			desc: "longer string",
 			input: []byte("$18\r\nHELLO WORLD my man\r\n"),
 			expected: "HELLO WORLD my man",
+			expectedByteLen: 18,
 		},
 		{
 			desc: "string with delimiters inside",
-			input: []byte("$30\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n"),
+			input: []byte("$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n"),
 			expected: "THIS CONTAINS A \r\n INSIDE IT",
+			expectedByteLen: 28,
 		},
 		{
-			desc: "Invalid length",
+			desc: "Too small length provided, but correct",
 			input: []byte("$11\r\nHELLO WORLD my man\r\n"),
 			expected: "HELLO WORLD",
+			expectedByteLen: 11,
 		},
 	}
 	for _, tC := range testCases {
@@ -131,7 +136,8 @@ func TestBulkString(t *testing.T) {
 			cmd,err := newBulkString(tC.input)
 			require.NoError(t, err)
 			
-			assert.Equal(t, tC.expected, cmd.simpleString())
+			assert.Equal(t, tC.expected, cmd.bulkString(), "invalid string parsed")
+			assert.Equal(t, tC.expectedByteLen, cmd.byteLen, "invalid byte len")
 		})
 	}
 }
@@ -143,9 +149,14 @@ func TestInvalidBulkStrings(t *testing.T) {
 		expectedError string
 	}{
 		{
-			desc: "missing bytes",
+			desc: "Invalid first byte",
+			input: []byte("+5\r\nHEY\r\n"),
+			expectedError: "invalid first byte",
+		},
+		{
+			desc: "missing length",
 			input: []byte("$\r\nHEY\r\n"),
-			expectedError: "missing bytes",
+			expectedError: "missing length",
 		},
 		{
 			desc: "missing delimiter",
