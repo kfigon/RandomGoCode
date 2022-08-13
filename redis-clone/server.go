@@ -26,6 +26,7 @@ func startServer(port int) {
 	fmt.Println("that's all folks")
 }
 
+// todo: accept conn io.ReadWriteCloser for better testability
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
@@ -34,17 +35,17 @@ func handleConnection(conn net.Conn) {
 		fmt.Println("error reading socket", err)
 		return
 	}
-	handleCommand(data[0:b])
-	conn.Write([]byte("+ok\r\n"))
+	resp := handleCommand(data[0:b])
+	conn.Write(resp)
 }
 
-func handleCommand(data []byte) {
+func handleCommand(data []byte) []byte {
 	fmt.Println(string(data))
 	cmd := command(data)
 
 	if err := cmd.validate(); err != nil {
 		fmt.Println("Invalid command:", err)
-		return
+		return nil
 	}
 
 	if cmd.isStringCmd() {
@@ -54,4 +55,5 @@ func handleCommand(data []byte) {
 	}else if cmd.isArray() {
 		fmt.Println("got ARRAY")
 	}
+	return []byte("+ok\r\n")
 }
