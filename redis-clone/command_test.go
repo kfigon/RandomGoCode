@@ -105,30 +105,28 @@ func TestBulkString(t *testing.T) {
 		input 	[]byte
 		expected string
 		expectedByteLen int
+		expectedLen int
 	}{
 		{
 			desc: "short string",
 			input: []byte("$3\r\nHEY\r\n"),
 			expected: "HEY",
 			expectedByteLen: 3,
+			expectedLen: 9,
 		},
 		{
 			desc: "longer string",
 			input: []byte("$18\r\nHELLO WORLD my man\r\n"),
 			expected: "HELLO WORLD my man",
 			expectedByteLen: 18,
+			expectedLen: 25,
 		},
 		{
 			desc: "string with delimiters inside",
 			input: []byte("$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n"),
 			expected: "THIS CONTAINS A \r\n INSIDE IT",
 			expectedByteLen: 28,
-		},
-		{
-			desc: "Too small length provided, but correct",
-			input: []byte("$11\r\nHELLO WORLD my man\r\n"),
-			expected: "HELLO WORLD",
-			expectedByteLen: 11,
+			expectedLen: 35,
 		},
 	}
 	for _, tC := range testCases {
@@ -138,6 +136,7 @@ func TestBulkString(t *testing.T) {
 			
 			assert.Equal(t, tC.expected, cmd.bulkString(), "invalid string parsed")
 			assert.Equal(t, tC.expectedByteLen, cmd.byteLen, "invalid byte len")
+			assert.Equal(t, tC.expectedLen, cmd.len(), "invalid len")
 		})
 	}
 }
@@ -167,6 +166,11 @@ func TestInvalidBulkStrings(t *testing.T) {
 			desc: "too big size",
 			input: []byte("$15\r\nHEY\r\n"),
 			expectedError: "too big size",
+		},
+		{
+			desc: "missing termination",
+			input: []byte("$15\r\nHEY"),
+			expectedError: "invalid termination",
 		},
 	}
 	for _, tC := range testCases {

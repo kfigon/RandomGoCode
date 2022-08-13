@@ -13,10 +13,18 @@ func (c command) validate() error {
 		return fmt.Errorf("too short")
 	} else if !c.isStringCmd() && !c.isBulk() && !c.isArray() {
 		return fmt.Errorf("invalid first character: %v", c[0])
-	} else if (c.isStringCmd() || c.isBulk()) && !equal(c.termination(), []byte{0x0d, 0x0a}) {
-		return fmt.Errorf("invalid termination: %q", string(c.termination()))
+	} else if (c.isStringCmd() || c.isBulk()) && !stringTerminated(c) {
+		return terminationError(c)
 	}
 	return nil
+}
+
+func terminationError(c command) error {
+	return fmt.Errorf("invalid termination: %q", string(c.termination()))
+}
+
+func stringTerminated(c command) bool {
+	return equal(c.termination(), []byte{0x0d, 0x0a})
 }
 
 func (c command) isStringCmd() bool {
@@ -60,6 +68,8 @@ type bulkCommand struct {
 func newBulkString(c command) (*bulkCommand,error) {
 	if !c.isBulk() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
+	} else if !stringTerminated(c) {
+		return nil, terminationError(c)
 	}
 
 	byteLenStr := ""
@@ -80,7 +90,7 @@ func newBulkString(c command) (*bulkCommand,error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid byte len %q: %v", byteLenStr, err)
 	}
-	if 1 + len(byteLenStr) + 2 + byteLen + 2 > len(c) {
+	if  expectedBulkLen(byteLen) > len(c) {
 		return nil, fmt.Errorf("too big size")
 	}
 	return &bulkCommand{c, byteLen}, nil
@@ -91,6 +101,15 @@ func (b *bulkCommand) bulkString() string {
 	start := 1+charsOfByteLen+2
 	end := start + b.byteLen
 	return string(b.command)[start:end]
+}
+
+func expectedBulkLen(ln int) int {
+	byteLenStr := int(math.Log10(float64(ln)))+1
+	return 1 + byteLenStr + 2 + ln + 2
+}
+
+func (b *bulkCommand) len() int {
+	return expectedBulkLen(b.byteLen)
 }
 
 type arrayCommand struct {
