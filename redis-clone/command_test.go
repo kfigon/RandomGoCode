@@ -178,3 +178,7 @@ func TestInvalidBulkStrings(t *testing.T) {
 		})
 	}
 }
+
+func TestArrayCommand(t *testing.T) {
+	t.Fatal("todo")
+}

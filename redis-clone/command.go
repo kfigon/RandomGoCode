@@ -13,7 +13,7 @@ func (c command) validate() error {
 		return fmt.Errorf("too short")
 	} else if !c.isStringCmd() && !c.isBulk() && !c.isArray() {
 		return fmt.Errorf("invalid first character: %v", c[0])
-	} else if !equal(c.termination(), []byte{0x0d, 0x0a}) {
+	} else if (c.isStringCmd() || c.isBulk()) && !equal(c.termination(), []byte{0x0d, 0x0a}) {
 		return fmt.Errorf("invalid termination: %q", string(c.termination()))
 	}
 	return nil
@@ -91,4 +91,17 @@ func (b *bulkCommand) bulkString() string {
 	start := 1+charsOfByteLen+2
 	end := start + b.byteLen
 	return string(b.command)[start:end]
+}
+
+type arrayCommand struct {
+	command
+	elements int
+}
+
+func newArrayString(c command) (*arrayCommand,error) {
+	return nil, nil
+}
+
+func (a *arrayCommand) commands() []command {
+	return nil
 }
