@@ -165,11 +165,16 @@ func TestInvalidBulkStrings(t *testing.T) {
 		{
 			desc: "too big size",
 			input: []byte("$15\r\nHEY\r\n"),
-			expectedError: "too big size",
+			expectedError: "invalid length",
 		},
 		{
 			desc: "missing termination",
-			input: []byte("$15\r\nHEY"),
+			input: []byte("$3\r\nHEY"),
+			expectedError: "invalid length",
+		},
+		{
+			desc: "Too little length",
+			input: []byte("$3\r\nHELLO WORLD\r\n"),
 			expectedError: "invalid termination",
 		},
 	}
