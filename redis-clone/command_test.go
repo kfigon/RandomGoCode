@@ -189,5 +189,50 @@ func TestInvalidBulkStrings(t *testing.T) {
 }
 
 func TestArrayCommand(t *testing.T) {
+	build := func(t *testing.T, data []byte) *arrayCommand {
+		arr, err := newArrayString(data)
+		require.NoError(t, err)
+		return arr
+	}
+
+	t.Run("simple array", func(t *testing.T) {
+		data := []byte("*2\r\n" + "+OK\r\n" + "+hello world\r\n")
+		arr := build(t, data)	
+		
+		assert.Len(t, arr.commands(), 2)
+
+		assert.True(t, arr.commands()[0].isStringCmd())
+		assert.Equal(t, "OK", arr.commands()[0].simpleString())
+		
+		assert.True(t, arr.commands()[1].isStringCmd())
+		assert.Equal(t, "hello world", arr.commands()[1].simpleString())
+	})
+
+	t.Run("array with bulk", func(t *testing.T) {
+		data := []byte("*2\r\n" + "+OK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
+		arr := build(t, data)	
+		
+		assert.Len(t, arr.commands(), 2)
+
+		assert.True(t, arr.commands()[0].isStringCmd())
+		assert.Equal(t, "OK", arr.commands()[0].simpleString())
+		
+		assert.True(t, arr.commands()[1].isBulk())
+		blk, err := newBulkString(arr.commands()[1])
+		require.NoError(t, err)
+
+		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", blk.bulkString())
+	})
+
+	t.Run("array with bulks", func(t *testing.T) {
+		t.Fatal("todo")
+	})
+
+	t.Run("many arrays", func(t *testing.T) {
+		t.Fatal("todo")
+	})
+}
+
+func TestInvalidArrays(t *testing.T) {
 	t.Fatal("todo")
 }

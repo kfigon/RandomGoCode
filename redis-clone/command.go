@@ -114,14 +114,14 @@ func (b *bulkCommand) len() int {
 }
 
 type arrayCommand struct {
-	command
+	cmds []command
 	elements int
 }
 
-func newArrayString(c command) (*arrayCommand,error) {
+func newArrayString(c command) (*arrayCommand, error) {
 	return nil, nil
 }
 
 func (a *arrayCommand) commands() []command {
-	return nil
+	return a.cmds
 }
