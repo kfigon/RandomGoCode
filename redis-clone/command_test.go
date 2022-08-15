@@ -135,7 +135,7 @@ func TestBulkString(t *testing.T) {
 			require.NoError(t, err)
 			
 			assert.Equal(t, tC.expected, cmd.bulkString(), "invalid string parsed")
-			assert.Equal(t, tC.expectedByteLen, cmd.byteLen, "invalid byte len")
+			assert.Equal(t, tC.expectedByteLen, cmd.byteLen, "invalid len")
 			assert.Equal(t, tC.expectedLen, cmd.len(), "invalid len")
 		})
 	}
@@ -199,7 +199,7 @@ func TestArrayCommand(t *testing.T) {
 		data := []byte("*2\r\n" + "+OK\r\n" + "+hello world\r\n")
 		arr := build(t, data)	
 		
-		assert.Len(t, arr.commands(), 2)
+		require.Len(t, arr.commands(), 2)
 
 		assert.True(t, arr.commands()[0].isStringCmd())
 		assert.Equal(t, "OK", arr.commands()[0].simpleString())
@@ -212,7 +212,7 @@ func TestArrayCommand(t *testing.T) {
 		data := []byte("*2\r\n" + "+OK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
 		arr := build(t, data)	
 		
-		assert.Len(t, arr.commands(), 2)
+		require.Len(t, arr.commands(), 2)
 
 		assert.True(t, arr.commands()[0].isStringCmd())
 		assert.Equal(t, "OK", arr.commands()[0].simpleString())

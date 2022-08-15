@@ -67,11 +67,7 @@ type bulkCommand struct {
 	byteLen int
 }
 
-func newBulkString(c command) (*bulkCommand,error) {
-	if !c.isBulk() {
-		return nil, fmt.Errorf("invalid first byte: %q", c[0])
-	}
-
+func validateInitialLength(c command) (int, error) {
 	byteLenStr := ""
 	for i := 1; i < len(c)-1; i++ {
 		this := c[i]
@@ -79,16 +75,28 @@ func newBulkString(c command) (*bulkCommand,error) {
 		if unicode.IsDigit(rune(this)) {
 			byteLenStr += string(this)
 		} else if byteLenStr == "" && this == '\r' && next == '\n' {
-			return nil, fmt.Errorf("missing length")
+			return 0, fmt.Errorf("missing length")
 		} else if byteLenStr != "" &&  this == '\r' && next == '\n' {
 			break
 		} else {
-			return nil, fmt.Errorf("missing delimiter")
+			return 0, fmt.Errorf("missing delimiter")
 		}
 	}
 	byteLen, err := strconv.Atoi(byteLenStr)
 	if err != nil {
-		return nil, fmt.Errorf("invalid byte len %q: %v", byteLenStr, err)
+		return 0, fmt.Errorf("invalid len %q: %v", byteLenStr, err)
+	}
+	return byteLen, nil
+}
+
+func newBulkString(c command) (*bulkCommand,error) {
+	if !c.isBulk() {
+		return nil, fmt.Errorf("invalid first byte: %q", c[0])
+	}
+
+	byteLen, err := validateInitialLength(c)
+	if err != nil {
+		return nil, err
 	} else if expectedBulkLen(byteLen) > len(c) {
 		return nil, fmt.Errorf("invalid length")
 	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2:expectedBulkLen(byteLen)]) {
@@ -115,11 +123,18 @@ func (b *bulkCommand) len() int {
 
 type arrayCommand struct {
 	cmds []command
-	elements int
 }
 
 func newArrayString(c command) (*arrayCommand, error) {
-	return nil, nil
+	if !c.isArray() {
+		return nil, fmt.Errorf("invalid first byte: %q", c[0])
+	}
+	arrayLen, err := validateInitialLength(c)
+	if err != nil {
+		return nil, err
+	}
+	cmds := make([]command, arrayLen)
+	return &arrayCommand{cmds}, nil
 }
 
 func (a *arrayCommand) commands() []command {
