@@ -62,11 +62,6 @@ func equal[T comparable](a []T, b []T) bool {
 	return true
 }
 
-type bulkCommand struct {
-	command
-	byteLen int
-}
-
 func validateInitialLength(c command) (int, error) {
 	byteLenStr := ""
 	for i := 1; i < len(c)-1; i++ {
@@ -89,7 +84,12 @@ func validateInitialLength(c command) (int, error) {
 	return byteLen, nil
 }
 
-func newBulkString(c command) (*bulkCommand,error) {
+type bulkCommand struct {
+	command
+	byteLen int
+}
+
+func newBulkString(c command) (*bulkCommand, error) {
 	if !c.isBulk() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
@@ -106,15 +106,19 @@ func newBulkString(c command) (*bulkCommand,error) {
 }
 
 func (b *bulkCommand) bulkString() string {
-	charsOfByteLen := int(math.Log10(float64(b.byteLen)))+1
+	charsOfByteLen := charLenOfNum(b.byteLen)
 	start := 1+charsOfByteLen+2
 	end := start + b.byteLen
 	return string(b.command)[start:end]
 }
 
 func expectedBulkLen(ln int) int {
-	byteLenStr := int(math.Log10(float64(ln)))+1
+	byteLenStr := charLenOfNum(ln)
 	return 1 + byteLenStr + DELIMITER_LENGTH + ln + DELIMITER_LENGTH
+}
+
+func charLenOfNum(ln int) int {
+	return int(math.Log10(float64(ln)))+1
 }
 
 func (b *bulkCommand) len() int {
@@ -134,6 +138,24 @@ func newArrayString(c command) (*arrayCommand, error) {
 		return nil, err
 	}
 	cmds := make([]command, arrayLen)
+
+	i := 1 + charLenOfNum(arrayLen) + DELIMITER_LENGTH
+	for i < len(c) {
+		subCmd := command(c[i:])
+		
+		if err := subCmd.validate(); err != nil {
+			return nil, err
+		}
+		
+		//  todo: find a way to easily split and classify these cmd chains
+		switch {
+		case subCmd.isArray(): break
+		case subCmd.isStringCmd(): break // todo: potentialy need simple string abstraction
+		case subCmd.isBulk(): break 
+		default: return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
+		}
+	}
+
 	return &arrayCommand{cmds}, nil
 }
 
