@@ -126,7 +126,7 @@ func newBulkString(c command) (*bulkCommand, error) {
 	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)]) {
 		return nil, terminationError(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)])
 	}
-	return &bulkCommand{c, byteLen}, nil
+	return &bulkCommand{c[0:expectedBulkLen(byteLen)], byteLen}, nil
 }
 
 func (b *bulkCommand) bulkString() string {
@@ -161,7 +161,7 @@ func newArrayString(c command) (*arrayCommand, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmds := make([]command, arrayLen)
+	cmds := []command{}
 
 	i := 1 + charLenOfNum(arrayLen) + DELIMITER_LENGTH
 	for i < len(c) {
