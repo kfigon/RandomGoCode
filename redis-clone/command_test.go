@@ -195,41 +195,33 @@ func TestArrayCommand(t *testing.T) {
 	}
 
 	t.Run("simple array", func(t *testing.T) {
-		t.Fatal("fix tests")
-
 		data := []byte("*2\r\n" + "+OK\r\n" + "+hello world\r\n")
 		arr := build(t, data)
 
 		require.Len(t, arr.commands(), 2)
 
-		assert.True(t, arr.commands()[0].isStringCmd())
-		// assert.Equal(t, "OK", arr.commands()[0].simpleString())
-
-		assert.True(t, arr.commands()[1].isStringCmd())
-		// assert.Equal(t, "hello world", arr.commands()[1].simpleString())
-
+		assert.Equal(t, "OK", arr.commands()[0])
+		assert.Equal(t, "hello world", arr.commands()[1])
 	})
 
 	t.Run("array with bulk", func(t *testing.T) {
-		t.Fatal("fix tests")
-
 		data := []byte("*2\r\n" + "+OK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
 		arr := build(t, data)
 
 		require.Len(t, arr.commands(), 2)
 
-		assert.True(t, arr.commands()[0].isStringCmd())
-		// assert.Equal(t, "OK", arr.commands()[0].simpleString())
-
-		assert.True(t, arr.commands()[1].isBulk())
-		blk, err := newBulkString(arr.commands()[1])
-		require.NoError(t, err)
-
-		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", blk.bulkString())
+		assert.Equal(t, "OK", arr.commands()[0])
+		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.commands()[1])
 	})
 
 	t.Run("array with bulks", func(t *testing.T) {
-		t.Fatal("todo")
+		data := []byte("*2\r\n" + "$2\r\nOK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
+		arr := build(t, data)
+
+		require.Len(t, arr.commands(), 2)
+
+		assert.Equal(t, "OK", arr.commands()[0])
+		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.commands()[1])
 	})
 
 	t.Run("many arrays", func(t *testing.T) {

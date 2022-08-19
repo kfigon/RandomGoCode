@@ -171,14 +171,29 @@ func newArrayString(c command) (*arrayCommand, error) {
 			return nil, err
 		}
 
-		//  todo: find a way to easily split and classify these cmd chains
 		switch {
 		case subCmd.isArray():
+			_, err := newArrayString(subCmd)
+			if err != nil {
+				return nil, err
+			}
+			// todo: store it somehow
+			i++
 			break
 		case subCmd.isStringCmd():
-			break // todo: potentialy need simple string abstraction
+			s, err := newSimpleString(subCmd)
+			if err != nil {
+				return nil, err
+			}
+			cmds = append(cmds, s.command)
+			i += len(s.command)
 		case subCmd.isBulk():
-			break
+			b, err := newBulkString(subCmd)
+			if err != nil {
+				return nil, err
+			}
+			cmds = append(cmds, b.command)
+			i += len(b.command)
 		default:
 			return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
 		}
@@ -187,6 +202,18 @@ func newArrayString(c command) (*arrayCommand, error) {
 	return &arrayCommand{cmds}, nil
 }
 
-func (a *arrayCommand) commands() []command {
-	return a.cmds
+func (a *arrayCommand) commands() []string {
+	var out []string
+	for _, c := range a.cmds {
+		if c.isStringCmd() {
+			s, _ := newSimpleString(c)
+			out = append(out, s.simpleString())
+		} else if c.isBulk() {
+			b, _ := newBulkString(c)
+			out = append(out, b.bulkString())
+		} else if c.isArray() {
+			// todo
+		}
+	}
+	return out
 }
