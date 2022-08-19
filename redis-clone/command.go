@@ -172,7 +172,7 @@ func (b *bulkCommand) len() int {
 }
 
 type arrayCommand struct {
-	cmds []command
+	cmds []commandBase
 }
 
 func newArrayString(c command) (*arrayCommand, error) {
@@ -183,7 +183,7 @@ func newArrayString(c command) (*arrayCommand, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmds := []command{}
+	cmds := []commandBase{}
 
 	i := 1 + charLenOfNum(arrayLen) + DELIMITER_LENGTH
 	for i < len(c) {
@@ -207,14 +207,14 @@ func newArrayString(c command) (*arrayCommand, error) {
 			if err != nil {
 				return nil, err
 			}
-			cmds = append(cmds, s.command)
+			cmds = append(cmds, s)
 			i += len(s.command)
 		case subCmd.isBulk():
 			b, err := newBulkString(subCmd)
 			if err != nil {
 				return nil, err
 			}
-			cmds = append(cmds, b.command)
+			cmds = append(cmds, b)
 			i += len(b.command)
 		default:
 			return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
@@ -229,13 +229,12 @@ func (_ *arrayCommand) dummy(){}
 func (a *arrayCommand) commands() []string {
 	var out []string
 	for _, c := range a.cmds {
-		if c.isStringCmd() {
-			s, _ := newSimpleString(c)
-			out = append(out, s.simpleString())
-		} else if c.isBulk() {
-			b, _ := newBulkString(c)
-			out = append(out, b.bulkString())
-		} else if c.isArray() {
+		switch e := c.(type) {
+		case *simpleStringCommand:
+			out = append(out, e.simpleString())
+		case *bulkCommand:
+			out = append(out, e.bulkString())
+		case *arrayCommand:
 			// todo
 		}
 	}
