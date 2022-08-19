@@ -195,12 +195,12 @@ func newArrayString(c command) (*arrayCommand, error) {
 
 		switch {
 		case subCmd.isArray():
-			_, err := newArrayString(subCmd)
+			a, err := newArrayString(subCmd)
 			if err != nil {
 				return nil, err
 			}
-			// todo: store it somehow... type switch probably
-			i++
+			cmds = append(cmds, a)
+			i++ // todo
 			break
 		case subCmd.isStringCmd():
 			s, err := newSimpleString(subCmd)
