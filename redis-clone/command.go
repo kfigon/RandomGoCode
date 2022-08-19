@@ -9,6 +9,25 @@ import (
 
 const DELIMITER_LENGTH = 2
 
+type commandBase interface{
+	dummy()
+}
+
+func parseCommand(b []byte) (commandBase,error) {
+	cmd := command(b)
+	if err := cmd.basicValidation(); err != nil {
+		return nil, err
+	}
+	if cmd.isStringCmd() {
+		return newSimpleString(cmd)
+	} else if cmd.isBulk() {
+		return newBulkString(cmd)
+	} else if cmd.isArray() {
+		return newArrayString(cmd)
+	}
+	return nil, fmt.Errorf("invalid command")
+}
+
 type command []byte
 
 func (c command) basicValidation() error {
@@ -108,6 +127,8 @@ func (s *simpleStringCommand) simpleString() string {
 	return string(c[1 : len(c)-DELIMITER_LENGTH])
 }
 
+func (_ *simpleStringCommand) dummy(){}
+
 type bulkCommand struct {
 	command
 	byteLen int
@@ -135,6 +156,7 @@ func (b *bulkCommand) bulkString() string {
 	end := start + b.byteLen
 	return string(b.command)[start:end]
 }
+func (_ *bulkCommand) dummy(){}
 
 func expectedBulkLen(ln int) int {
 	byteLenStr := charLenOfNum(ln)
@@ -177,7 +199,7 @@ func newArrayString(c command) (*arrayCommand, error) {
 			if err != nil {
 				return nil, err
 			}
-			// todo: store it somehow
+			// todo: store it somehow... type switch probably
 			i++
 			break
 		case subCmd.isStringCmd():
@@ -201,6 +223,8 @@ func newArrayString(c command) (*arrayCommand, error) {
 
 	return &arrayCommand{cmds}, nil
 }
+
+func (_ *arrayCommand) dummy(){}
 
 func (a *arrayCommand) commands() []string {
 	var out []string

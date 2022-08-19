@@ -41,19 +41,22 @@ func handleConnection(conn net.Conn) {
 
 func handleCommand(data []byte) []byte {
 	fmt.Println(string(data))
-	cmd := command(data)
-
-	if err := cmd.basicValidation(); err != nil {
-		fmt.Println("Invalid command:", err)
-		return nil
+	
+	c, err := parseCommand(data)
+	if err != nil {
+		fmt.Println("invalid command:", err)
+		return []byte("-ok\r\n")
 	}
 
-	if cmd.isStringCmd() {
-		fmt.Println("got STRING")
-	} else if cmd.isBulk() {
-		fmt.Println("got BULK")
-	} else if cmd.isArray() {
-		fmt.Println("got ARRAY")
+	switch e := c.(type) {
+	case *simpleStringCommand:
+		fmt.Println("got string", e.simpleString())
+	case *bulkCommand:
+		fmt.Println("got bulk", e.bulkString())
+	case *arrayCommand:
+		fmt.Println("got array", e.commands())
+	default:
+		fmt.Println("invalid cmd")
 	}
 	return []byte("+ok\r\n")
 }
