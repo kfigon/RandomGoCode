@@ -10,19 +10,18 @@ import (
 const DELIMITER_LENGTH = 2
 
 type command []byte
-func (c command) validate() error {
+
+func (c command) basicValidation() error {
 	if len(c) < 3 {
 		return fmt.Errorf("too short")
 	} else if !c.isStringCmd() && !c.isBulk() && !c.isArray() {
 		return fmt.Errorf("invalid first character: %v", c[0])
-	} else if (c.isStringCmd() || c.isBulk()) && !stringTerminated(c.termination()) {
-		return terminationError(c)
 	}
 	return nil
 }
 
-func terminationError(c command) error {
-	return fmt.Errorf("invalid termination: %q", string(c.termination()))
+func terminationError(termination []byte) error {
+	return fmt.Errorf("invalid termination: %q", string(termination))
 }
 
 func stringTerminated(termination []byte) bool {
@@ -41,14 +40,6 @@ func (c command) isBulk() bool {
 	return c[0] == '$'
 }
 
-func (c command) termination() []byte {
-	return c[len(c)-DELIMITER_LENGTH:]
-}
-
-func (c command) simpleString() string {
-	return string(c[1:len(c)-DELIMITER_LENGTH])
-}
-
 func equal[T comparable](a []T, b []T) bool {
 	if len(a) != len(b) {
 		return false
@@ -62,7 +53,7 @@ func equal[T comparable](a []T, b []T) bool {
 	return true
 }
 
-func validateInitialLength(c command) (int, error) {
+func parseLengthToken(c command) (int, error) {
 	byteLenStr := ""
 	for i := 1; i < len(c)-1; i++ {
 		this := c[i]
@@ -71,7 +62,7 @@ func validateInitialLength(c command) (int, error) {
 			byteLenStr += string(this)
 		} else if byteLenStr == "" && this == '\r' && next == '\n' {
 			return 0, fmt.Errorf("missing length")
-		} else if byteLenStr != "" &&  this == '\r' && next == '\n' {
+		} else if byteLenStr != "" && this == '\r' && next == '\n' {
 			break
 		} else {
 			return 0, fmt.Errorf("missing delimiter")
@@ -84,6 +75,39 @@ func validateInitialLength(c command) (int, error) {
 	return byteLen, nil
 }
 
+type simpleStringCommand struct {
+	command
+}
+
+func newSimpleString(c command) (*simpleStringCommand, error) {
+	if !c.isStringCmd() {
+		return nil, fmt.Errorf("invalid first byte: %q", c[0])
+	}
+	ln := 1
+	for ln < len(c)-1 {
+		this := c[ln]
+		next := c[ln+1]
+		if this == '\r' && next == '\n' {
+			break
+		}
+		ln++
+	}
+	if !stringTerminated(c[ln:ln+2]) {
+		return nil, terminationError(c[ln:ln+2])
+	}
+	return &simpleStringCommand{c[0:ln+2]}, nil
+}
+
+func (s *simpleStringCommand) termination() []byte {
+	c := s.command
+	return c[len(c)-DELIMITER_LENGTH:]
+}
+
+func (s *simpleStringCommand) simpleString() string {
+	c := s.command
+	return string(c[1 : len(c)-DELIMITER_LENGTH])
+}
+
 type bulkCommand struct {
 	command
 	byteLen int
@@ -94,20 +118,20 @@ func newBulkString(c command) (*bulkCommand, error) {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
 
-	byteLen, err := validateInitialLength(c)
+	byteLen, err := parseLengthToken(c)
 	if err != nil {
 		return nil, err
 	} else if expectedBulkLen(byteLen) > len(c) {
 		return nil, fmt.Errorf("invalid length")
-	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2:expectedBulkLen(byteLen)]) {
-		return nil, terminationError(c)
+	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)]) {
+		return nil, terminationError(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)])
 	}
 	return &bulkCommand{c, byteLen}, nil
 }
 
 func (b *bulkCommand) bulkString() string {
 	charsOfByteLen := charLenOfNum(b.byteLen)
-	start := 1+charsOfByteLen+2
+	start := 1 + charsOfByteLen + 2
 	end := start + b.byteLen
 	return string(b.command)[start:end]
 }
@@ -118,7 +142,7 @@ func expectedBulkLen(ln int) int {
 }
 
 func charLenOfNum(ln int) int {
-	return int(math.Log10(float64(ln)))+1
+	return int(math.Log10(float64(ln))) + 1
 }
 
 func (b *bulkCommand) len() int {
@@ -133,7 +157,7 @@ func newArrayString(c command) (*arrayCommand, error) {
 	if !c.isArray() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
-	arrayLen, err := validateInitialLength(c)
+	arrayLen, err := parseLengthToken(c)
 	if err != nil {
 		return nil, err
 	}
@@ -142,17 +166,21 @@ func newArrayString(c command) (*arrayCommand, error) {
 	i := 1 + charLenOfNum(arrayLen) + DELIMITER_LENGTH
 	for i < len(c) {
 		subCmd := command(c[i:])
-		
-		if err := subCmd.validate(); err != nil {
+
+		if err := subCmd.basicValidation(); err != nil {
 			return nil, err
 		}
-		
+
 		//  todo: find a way to easily split and classify these cmd chains
 		switch {
-		case subCmd.isArray(): break
-		case subCmd.isStringCmd(): break // todo: potentialy need simple string abstraction
-		case subCmd.isBulk(): break 
-		default: return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
+		case subCmd.isArray():
+			break
+		case subCmd.isStringCmd():
+			break // todo: potentialy need simple string abstraction
+		case subCmd.isBulk():
+			break
+		default:
+			return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
 		}
 	}
 

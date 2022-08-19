@@ -43,16 +43,16 @@ func handleCommand(data []byte) []byte {
 	fmt.Println(string(data))
 	cmd := command(data)
 
-	if err := cmd.validate(); err != nil {
+	if err := cmd.basicValidation(); err != nil {
 		fmt.Println("Invalid command:", err)
 		return nil
 	}
 
 	if cmd.isStringCmd() {
-		fmt.Println("got STRING", cmd.simpleString())
+		fmt.Println("got STRING")
 	} else if cmd.isBulk() {
 		fmt.Println("got BULK")
-	}else if cmd.isArray() {
+	} else if cmd.isArray() {
 		fmt.Println("got ARRAY")
 	}
 	return []byte("+ok\r\n")
