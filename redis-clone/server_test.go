@@ -8,11 +8,16 @@ import (
 
 const testPort = 6666
 
-func TestSendSimpleString(t *testing.T) {
+func runAndSend(t *testing.T, data string) []byte {
 	go startServer(testPort)
-	resp, err := sendData(testPort, []byte("+some string\r\n"))
+	resp, err := sendData(testPort, []byte(data))
 	assert.NoError(t, err)
 
+	return resp
+}
+
+func TestSendSimpleString(t *testing.T) {
+	resp := runAndSend(t, "+some string\r\n")
 	assert.Equal(t, "+ok\r\n", string(resp))
 }
 
@@ -35,19 +40,22 @@ func TestRespCommands(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			go startServer(testPort)
-			resp, err := sendData(testPort, tC.input)
-			assert.NoError(t, err)
-		
+			resp := runAndSend(t, string(tC.input))
 			assert.Equal(t, tC.expectedOut, resp)
 		})
 	}
 }
 
 func TestInvalidCommand(t *testing.T) {
-	go startServer(testPort)
-	resp, err := sendData(testPort, []byte("invalid"))
-	assert.NoError(t, err)
-
+	resp := runAndSend(t, "invalid")
 	assert.Equal(t, "-INVALID_CMD: invalid first character: 'i'\r\n", string(resp))
+}
+
+func TestMultipleCmds(t *testing.T) {
+	go startServer(testPort)
+	sendData(testPort, []byte(buildSetCommand("foo=123")))
+	resp,err := sendData(testPort, []byte(buildGetCommand("foo")))
+	
+	assert.NoError(t, err)
+	assert.Equal(t, "+123\r\n", string(resp))
 }
