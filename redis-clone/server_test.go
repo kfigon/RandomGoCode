@@ -27,6 +27,11 @@ func TestRespCommands(t *testing.T) {
 			input: []byte("*1\r\n$4\r\nPING\r\n"),
 			expectedOut: []byte("+PONG\r\n"),
 		},
+		{
+			desc: "Echo",
+			input: []byte("*2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n"),
+			expectedOut: []byte("+hey\r\n"),
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

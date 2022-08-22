@@ -67,6 +67,8 @@ func handleRespCommands(cmds []string) []byte {
 		return []byte("-no command\r\n")
 	} else if len(cmds) == 1 && cmds[0] == "PING" {
 		return []byte("+PONG\r\n")
+	} else if len(cmds) == 2 && cmds[0] == "ECHO" {
+		return []byte("+" + cmds[1] + "\r\n")
 	}
 	return []byte("-unknown cmd\r\n")
 }
