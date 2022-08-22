@@ -55,8 +55,18 @@ func handleCommand(data []byte) []byte {
 		fmt.Println("got bulk", e.bulkString())
 	case *arrayCommand:
 		fmt.Println("got array", e.commands())
+		return handleRespCommands(e.commands())
 	default:
 		fmt.Println("invalid cmd")
 	}
 	return []byte("+ok\r\n")
+}
+
+func handleRespCommands(cmds []string) []byte {
+	if len(cmds) == 0 {
+		return []byte("-no command\r\n")
+	} else if len(cmds) == 1 && cmds[0] == "PING" {
+		return []byte("+PONG\r\n")
+	}
+	return []byte("-unknown cmd\r\n")
 }
