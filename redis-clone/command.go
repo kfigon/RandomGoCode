@@ -35,7 +35,7 @@ func (c command) basicValidation() error {
 	if len(c) < 3 {
 		return fmt.Errorf("too short")
 	} else if !c.isStringCmd() && !c.isBulk() && !c.isArray() {
-		return fmt.Errorf("invalid first character: %v", c[0])
+		return fmt.Errorf("invalid first character: %q", c[0])
 	}
 	return nil
 }

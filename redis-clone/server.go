@@ -21,7 +21,7 @@ func startServer(port int) {
 			fmt.Println("error when accepting connection", err)
 			return
 		}
-		handleConnection(conn)
+		go handleConnection(conn) // not exactly like redis. Redis has single threaded event loop 
 	}
 	fmt.Println("that's all folks")
 }
@@ -45,7 +45,7 @@ func handleCommand(data []byte) []byte {
 	c, err := parseCommand(data)
 	if err != nil {
 		fmt.Println("invalid command:", err)
-		return []byte("-ok\r\n")
+		return []byte("-INVALID_CMD: " + err.Error() + "\r\n")
 	}
 
 	switch e := c.(type) {

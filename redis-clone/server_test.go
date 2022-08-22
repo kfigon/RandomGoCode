@@ -43,3 +43,11 @@ func TestRespCommands(t *testing.T) {
 		})
 	}
 }
+
+func TestInvalidCommand(t *testing.T) {
+	go startServer(testPort)
+	resp, err := sendData(testPort, []byte("invalid"))
+	assert.NoError(t, err)
+
+	assert.Equal(t, "-INVALID_CMD: invalid first character: 'i'\r\n", string(resp))
+}
