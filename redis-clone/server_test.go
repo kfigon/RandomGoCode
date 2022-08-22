@@ -7,8 +7,9 @@ import (
 )
 
 func TestSendSimpleString(t *testing.T) {
-	go startServer(defaultPort)
-	resp, err := sendData(defaultPort, []byte("+some string\r\n"))
+	testPort := 6666
+	go startServer(testPort)
+	resp, err := sendData(testPort, []byte("+some string\r\n"))
 	assert.NoError(t, err)
 
 	assert.Equal(t, "+ok\r\n", string(resp))
