@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -240,4 +241,30 @@ func (a *arrayCommand) commands() []string {
 		}
 	}
 	return out
+}
+
+func buildArrayBulkCmd(data []string) string {
+	buf := fmt.Sprintf("*%d\r\n", len(data))
+	for _, v := range data {
+		buf += fmt.Sprintf("$%d\r\n%s\r\n", len(v), v)
+	}
+	return buf
+}
+
+func buildGetCommand(data string) string {
+	return buildArrayBulkCmd([]string{"GET", data})
+}
+
+func buildDeleteCommand(data string) string {
+	return buildArrayBulkCmd([]string{"DELETE", data})
+}
+
+func buildSetCommand(data string) string {
+	splitted := strings.Split(data, "=")
+
+	in := []string{"SET"}
+	for _, v := range splitted {
+		in = append(in, v)	
+	}
+	return buildArrayBulkCmd(in)
 }

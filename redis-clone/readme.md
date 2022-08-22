@@ -1,7 +1,7 @@
 usage:
-* open telnet, connect to 6379
+* open telnet, connect to 6380
     * putty on windows will do
-    * `netcat localhost 6379` on linux
+    * `netcat localhost 6380` on linux
 * send data
 
 optionally u can use client and send data there

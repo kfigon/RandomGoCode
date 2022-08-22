@@ -17,23 +17,30 @@ func main() {
 type cliMode int
 const (
 	server cliMode = iota
-	client
+
+	tcpClient
+	getCmd
+	setCmd
+	deleteCmd
 )
 
 func parseCliConfig() (cliCommand, error) {
-	data := flag.String("data", "", "data you want to send. It'll add \\r\\n")
+	data := flag.String("data", "", "data you want to send. It'll add termination in tcp mode\\r\\n. In SET - send data in key=value format")
 	port := flag.Int("port", defaultPort, "Port you want to use")
-	modeInt := flag.Int("mode", 0, "application mode. 0 - server; 1 - client")
+	modeInt := flag.Int("mode", 0, "application mode. 0 - server; 1 - tcpClient; 2 - GET; 3 - SET; 4 - DELETE")
 	flag.Parse()
 
 	mode := cliMode(*modeInt)
-	if mode == client && *data == "" {
+	if mode != server && *data == "" {
 		return nil, fmt.Errorf("no data provided in client mode")
 	}
 
 	switch mode {
 	case server: return &serverCliCommand{port: *port}, nil
-	case client: return &clientCliCommand{port: *port, data: *data+"\r\n"}, nil
+	case tcpClient: return &clientCliCommand{port: *port, data: *data+"\r\n"}, nil
+	case getCmd: return &clientCliCommand{port: *port, data: buildGetCommand(*data)}, nil
+	case setCmd: return &clientCliCommand{port: *port, data: buildSetCommand(*data)}, nil
+	case deleteCmd: return &clientCliCommand{port: *port, data: buildDeleteCommand(*data)}, nil
 	default: return nil, fmt.Errorf("invalid mode provided: %v", mode)
 	}
 }

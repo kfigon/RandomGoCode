@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-const defaultPort int = 6379
+const defaultPort int = 6380
 
 type datastore[T any] interface {
 	get(string)(T, bool)
@@ -83,10 +83,6 @@ func (r *redisServer) handleRespCommands(cmds []string) []byte {
 	} else if len(cmds) == 1 {
 		switch cmds[0]{
 		case "PING": return buildOkResponse("PONG")
-		case "DELETE": {
-			r.store.delete(cmds[1])
-			return ok()
-		}
 		}
 		
 	} else if len(cmds) == 2 {
@@ -98,6 +94,10 @@ func (r *redisServer) handleRespCommands(cmds []string) []byte {
 				return buildBadResponse("missing key")
 			}
 			return buildOkResponse(v)
+		}
+		case "DELETE": {
+			r.store.delete(cmds[1])
+			return ok()
 		}
 		}
 	} else if len(cmds) == 3 && cmds[0] == "SET" {
