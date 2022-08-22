@@ -226,6 +226,17 @@ func TestArrayCommand(t *testing.T) {
 
 	t.Run("many arrays", func(t *testing.T) {
 		t.Skip("todo")
+
+		data := []byte("*3\r\n" + "$2\r\nOK\r\n" + "*3\r\n"+ "+first\r\n" + "+second\r\n" + "$5\r\nthird\r\n" + "+end\r\n")
+		arr := build(t, data)
+
+		require.Len(t, arr.commands(), 4)
+
+		assert.Equal(t, "OK", arr.commands()[0])
+		assert.Equal(t, "first", arr.commands()[1])
+		assert.Equal(t, "second", arr.commands()[2])
+		assert.Equal(t, "third", arr.commands()[3])
+		assert.Equal(t, "end", arr.commands()[4])
 	})
 }
 

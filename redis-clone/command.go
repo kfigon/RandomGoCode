@@ -9,6 +9,7 @@ import (
 
 const DELIMITER_LENGTH = 2
 
+// because we lack sum types in go...
 type commandBase interface{
 	dummy()
 }
@@ -235,7 +236,7 @@ func (a *arrayCommand) commands() []string {
 		case *bulkCommand:
 			out = append(out, e.bulkString())
 		case *arrayCommand:
-			// todo
+			out = append(out, e.commands()...) // probably wrong, todo when we support nested arrays
 		}
 	}
 	return out
