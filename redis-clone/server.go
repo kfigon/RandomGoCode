@@ -80,11 +80,8 @@ func (r *redisServer) handleRespCommands(cmds []string) []byte {
 
 	if len(cmds) == 0 {
 		return buildBadResponse("no command")
-	} else if len(cmds) == 1 {
-		switch cmds[0]{
-		case "PING": return buildOkResponse("PONG")
-		}
-		
+	} else if len(cmds) == 1 && cmds[0] == "PING" {
+		return buildOkResponse("PONG")
 	} else if len(cmds) == 2 {
 		switch cmds[0] {
 		case "ECHO": return buildOkResponse(cmds[1])
