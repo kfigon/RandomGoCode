@@ -98,6 +98,12 @@ func TestParseString(t *testing.T) {
 	}
 }
 
+func TestInvalidSimpleString(t *testing.T) {
+	data := []byte("+\r\n")
+	_, err := newSimpleString(data)
+	assert.Error(t, err)
+}
+
 func TestBulkString(t *testing.T) {
 	testCases := []struct {
 		desc            string

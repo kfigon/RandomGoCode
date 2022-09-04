@@ -103,6 +103,8 @@ type SimpleStringCommand struct {
 func newSimpleString(c command) (*SimpleStringCommand, error) {
 	if !c.isStringCmd() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
+	} else if len(c) == 3 {
+		return nil, fmt.Errorf("empty command")
 	}
 	ln := 1
 	for ln < len(c)-1 {
