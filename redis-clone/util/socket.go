@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func readSocket(conn net.Conn) ([]byte, int, error) {
+func ReadSocket(conn net.Conn) ([]byte, int, error) {
 	// bufio scanner will listen up to specific token.
 	// it's better to handle full message and parse manualy
 	

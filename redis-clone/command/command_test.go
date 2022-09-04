@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"testing"
@@ -90,10 +90,10 @@ func TestParseString(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			cmd,err := newSimpleString(tC.input)
+			cmd, err := newSimpleString(tC.input)
 			assert.NoError(t, cmd.basicValidation())
 			assert.NoError(t, err)
-			assert.Equal(t, tC.exp, cmd.simpleString())
+			assert.Equal(t, tC.exp, cmd.SimpleString())
 		})
 	}
 }
@@ -133,7 +133,7 @@ func TestBulkString(t *testing.T) {
 			cmd, err := newBulkString(tC.input)
 			require.NoError(t, err)
 
-			assert.Equal(t, tC.expected, cmd.bulkString(), "invalid string parsed")
+			assert.Equal(t, tC.expected, cmd.BulkString(), "invalid string parsed")
 			assert.Equal(t, tC.expectedByteLen, cmd.byteLen, "invalid len")
 			assert.Equal(t, tC.expectedLen, cmd.len(), "invalid len")
 		})
@@ -188,7 +188,7 @@ func TestInvalidBulkStrings(t *testing.T) {
 }
 
 func TestArrayCommand(t *testing.T) {
-	build := func(t *testing.T, data []byte) *arrayCommand {
+	build := func(t *testing.T, data []byte) *ArrayCommand {
 		arr, err := newArrayString(data)
 		require.NoError(t, err)
 		return arr
@@ -198,45 +198,45 @@ func TestArrayCommand(t *testing.T) {
 		data := []byte("*2\r\n" + "+OK\r\n" + "+hello world\r\n")
 		arr := build(t, data)
 
-		require.Len(t, arr.commands(), 2)
+		require.Len(t, arr.Commands(), 2)
 
-		assert.Equal(t, "OK", arr.commands()[0])
-		assert.Equal(t, "hello world", arr.commands()[1])
+		assert.Equal(t, "OK", arr.Commands()[0])
+		assert.Equal(t, "hello world", arr.Commands()[1])
 	})
 
 	t.Run("array with bulk", func(t *testing.T) {
 		data := []byte("*2\r\n" + "+OK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
 		arr := build(t, data)
 
-		require.Len(t, arr.commands(), 2)
+		require.Len(t, arr.Commands(), 2)
 
-		assert.Equal(t, "OK", arr.commands()[0])
-		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.commands()[1])
+		assert.Equal(t, "OK", arr.Commands()[0])
+		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.Commands()[1])
 	})
 
 	t.Run("array with bulks", func(t *testing.T) {
 		data := []byte("*2\r\n" + "$2\r\nOK\r\n" + "$28\r\nTHIS CONTAINS A \r\n INSIDE IT\r\n")
 		arr := build(t, data)
 
-		require.Len(t, arr.commands(), 2)
+		require.Len(t, arr.Commands(), 2)
 
-		assert.Equal(t, "OK", arr.commands()[0])
-		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.commands()[1])
+		assert.Equal(t, "OK", arr.Commands()[0])
+		assert.Equal(t, "THIS CONTAINS A \r\n INSIDE IT", arr.Commands()[1])
 	})
 
 	t.Run("many arrays", func(t *testing.T) {
 		t.Skip("todo")
 
-		data := []byte("*3\r\n" + "$2\r\nOK\r\n" + "*3\r\n"+ "+first\r\n" + "+second\r\n" + "$5\r\nthird\r\n" + "+end\r\n")
+		data := []byte("*3\r\n" + "$2\r\nOK\r\n" + "*3\r\n" + "+first\r\n" + "+second\r\n" + "$5\r\nthird\r\n" + "+end\r\n")
 		arr := build(t, data)
 
-		require.Len(t, arr.commands(), 4)
+		require.Len(t, arr.Commands(), 4)
 
-		assert.Equal(t, "OK", arr.commands()[0])
-		assert.Equal(t, "first", arr.commands()[1])
-		assert.Equal(t, "second", arr.commands()[2])
-		assert.Equal(t, "third", arr.commands()[3])
-		assert.Equal(t, "end", arr.commands()[4])
+		assert.Equal(t, "OK", arr.Commands()[0])
+		assert.Equal(t, "first", arr.Commands()[1])
+		assert.Equal(t, "second", arr.Commands()[2])
+		assert.Equal(t, "third", arr.Commands()[3])
+		assert.Equal(t, "end", arr.Commands()[4])
 	})
 }
 

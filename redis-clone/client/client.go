@@ -1,11 +1,12 @@
-package main
+package client
 
 import (
 	"fmt"
 	"net"
+	"redis-clone/util"
 )
 
-func sendData(port int, data []byte) ([]byte, error) {
+func SendData(port int, data []byte) ([]byte, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to the server: %v", err)
@@ -17,7 +18,7 @@ func sendData(port int, data []byte) ([]byte, error) {
 		return nil, fmt.Errorf("error sending data to the server: %v", err)
 	}
 	fmt.Println("send", n, "bytes")
-	out, b, err := readSocket(conn)
+	out, b, err := util.ReadSocket(conn)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}

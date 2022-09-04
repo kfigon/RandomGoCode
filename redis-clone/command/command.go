@@ -1,4 +1,4 @@
-package main
+package command
 
 import (
 	"fmt"
@@ -11,11 +11,11 @@ import (
 const DELIMITER_LENGTH = 2
 
 // because we lack sum types in go...
-type commandBase interface{
+type commandBase interface {
 	dummy()
 }
 
-func parseCommand(b []byte) (commandBase,error) {
+func ParseCommand(b []byte) (commandBase, error) {
 	cmd := command(b)
 	if err := cmd.basicValidation(); err != nil {
 		return nil, err
@@ -96,11 +96,11 @@ func parseLengthToken(c command) (int, error) {
 	return byteLen, nil
 }
 
-type simpleStringCommand struct {
+type SimpleStringCommand struct {
 	command
 }
 
-func newSimpleString(c command) (*simpleStringCommand, error) {
+func newSimpleString(c command) (*SimpleStringCommand, error) {
 	if !c.isStringCmd() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
@@ -113,30 +113,30 @@ func newSimpleString(c command) (*simpleStringCommand, error) {
 		}
 		ln++
 	}
-	if !stringTerminated(c[ln:ln+2]) {
-		return nil, terminationError(c[ln:ln+2])
+	if !stringTerminated(c[ln : ln+2]) {
+		return nil, terminationError(c[ln : ln+2])
 	}
-	return &simpleStringCommand{c[0:ln+2]}, nil
+	return &SimpleStringCommand{c[0 : ln+2]}, nil
 }
 
-func (s *simpleStringCommand) termination() []byte {
+func (s *SimpleStringCommand) termination() []byte {
 	c := s.command
 	return c[len(c)-DELIMITER_LENGTH:]
 }
 
-func (s *simpleStringCommand) simpleString() string {
+func (s *SimpleStringCommand) SimpleString() string {
 	c := s.command
 	return string(c[1 : len(c)-DELIMITER_LENGTH])
 }
 
-func (_ *simpleStringCommand) dummy(){}
+func (_ *SimpleStringCommand) dummy() {}
 
-type bulkCommand struct {
+type BulkCommand struct {
 	command
 	byteLen int
 }
 
-func newBulkString(c command) (*bulkCommand, error) {
+func newBulkString(c command) (*BulkCommand, error) {
 	if !c.isBulk() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
@@ -149,16 +149,16 @@ func newBulkString(c command) (*bulkCommand, error) {
 	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)]) {
 		return nil, terminationError(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)])
 	}
-	return &bulkCommand{c[0:expectedBulkLen(byteLen)], byteLen}, nil
+	return &BulkCommand{c[0:expectedBulkLen(byteLen)], byteLen}, nil
 }
 
-func (b *bulkCommand) bulkString() string {
+func (b *BulkCommand) BulkString() string {
 	charsOfByteLen := charLenOfNum(b.byteLen)
 	start := 1 + charsOfByteLen + 2
 	end := start + b.byteLen
 	return string(b.command)[start:end]
 }
-func (_ *bulkCommand) dummy(){}
+func (_ *BulkCommand) dummy() {}
 
 func expectedBulkLen(ln int) int {
 	byteLenStr := charLenOfNum(ln)
@@ -169,15 +169,15 @@ func charLenOfNum(ln int) int {
 	return int(math.Log10(float64(ln))) + 1
 }
 
-func (b *bulkCommand) len() int {
+func (b *BulkCommand) len() int {
 	return expectedBulkLen(b.byteLen)
 }
 
-type arrayCommand struct {
+type ArrayCommand struct {
 	cmds []commandBase
 }
 
-func newArrayString(c command) (*arrayCommand, error) {
+func newArrayString(c command) (*ArrayCommand, error) {
 	if !c.isArray() {
 		return nil, fmt.Errorf("invalid first byte: %q", c[0])
 	}
@@ -223,21 +223,21 @@ func newArrayString(c command) (*arrayCommand, error) {
 		}
 	}
 
-	return &arrayCommand{cmds}, nil
+	return &ArrayCommand{cmds}, nil
 }
 
-func (_ *arrayCommand) dummy(){}
+func (_ *ArrayCommand) dummy() {}
 
-func (a *arrayCommand) commands() []string {
+func (a *ArrayCommand) Commands() []string {
 	var out []string
 	for _, c := range a.cmds {
 		switch e := c.(type) {
-		case *simpleStringCommand:
-			out = append(out, e.simpleString())
-		case *bulkCommand:
-			out = append(out, e.bulkString())
-		case *arrayCommand:
-			out = append(out, e.commands()...) // probably wrong, todo when we support nested arrays
+		case *SimpleStringCommand:
+			out = append(out, e.SimpleString())
+		case *BulkCommand:
+			out = append(out, e.BulkString())
+		case *ArrayCommand:
+			out = append(out, e.Commands()...) // probably wrong, todo when we support nested arrays
 		}
 	}
 	return out
@@ -251,20 +251,20 @@ func buildArrayBulkCmd(data []string) string {
 	return buf
 }
 
-func buildGetCommand(data string) string {
+func BuildGetCommand(data string) string {
 	return buildArrayBulkCmd([]string{"GET", data})
 }
 
-func buildDeleteCommand(data string) string {
+func BuildDeleteCommand(data string) string {
 	return buildArrayBulkCmd([]string{"DELETE", data})
 }
 
-func buildSetCommand(data string) string {
+func BuildSetCommand(data string) string {
 	splitted := strings.Split(data, "=")
 
 	in := []string{"SET"}
 	for _, v := range splitted {
-		in = append(in, v)	
+		in = append(in, v)
 	}
 	return buildArrayBulkCmd(in)
 }

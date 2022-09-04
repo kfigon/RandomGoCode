@@ -1,6 +1,8 @@
-package main
+package server
 
 import (
+	"redis-clone/client"
+	"redis-clone/command"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,8 +11,8 @@ import (
 const testPort = 6666
 
 func runAndSend(t *testing.T, data string) []byte {
-	go startServer(testPort)
-	resp, err := sendData(testPort, []byte(data))
+	go StartServer(testPort)
+	resp, err := client.SendData(testPort, []byte(data))
 	assert.NoError(t, err)
 
 	return resp
@@ -52,9 +54,9 @@ func TestInvalidCommand(t *testing.T) {
 }
 
 func TestMultipleCmds(t *testing.T) {
-	go startServer(testPort)
-	sendData(testPort, []byte(buildSetCommand("foo=123")))
-	resp,err := sendData(testPort, []byte(buildGetCommand("foo")))
+	go StartServer(testPort)
+	client.SendData(testPort, []byte(command.BuildSetCommand("foo=123")))
+	resp,err := client.SendData(testPort, []byte(command.BuildGetCommand("foo")))
 	
 	assert.NoError(t, err)
 	assert.Equal(t, "+123\r\n", string(resp))

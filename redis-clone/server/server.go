@@ -1,14 +1,16 @@
-package main
+package server
 
 import (
 	"fmt"
 	"net"
+	"redis-clone/command"
+	"redis-clone/util"
 )
 
-const defaultPort int = 6380
+const DefaultPort int = 6380
 
 type datastore[T any] interface {
-	get(string)(T, bool)
+	get(string) (T, bool)
 	store(string, T)
 	delete(string)
 }
@@ -17,7 +19,7 @@ type redisServer struct {
 	store datastore[string]
 }
 
-func startServer(port int) {
+func StartServer(port int) {
 	ln, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		fmt.Println("Error during creating connection", err)
@@ -33,7 +35,7 @@ func startServer(port int) {
 			fmt.Println("error when accepting connection", err)
 			return
 		}
-		go r.handleConnection(conn) // not exactly like redis. Redis has single threaded event loop 
+		go r.handleConnection(conn) // not exactly like redis. Redis has single threaded event loop
 	}
 }
 
@@ -41,7 +43,7 @@ func startServer(port int) {
 func (r *redisServer) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
-	data, b, err := readSocket(conn)
+	data, b, err := util.ReadSocket(conn)
 	if err != nil {
 		fmt.Println("error reading socket", err)
 		return
@@ -52,21 +54,22 @@ func (r *redisServer) handleConnection(conn net.Conn) {
 
 func (r *redisServer) handleCommand(data []byte) []byte {
 	fmt.Println(string(data))
-	
-	c, err := parseCommand(data)
+
+	c, err := command.ParseCommand(data)
 	if err != nil {
 		fmt.Println("invalid command:", err)
 		return []byte("-INVALID_CMD: " + err.Error() + "\r\n")
 	}
 
 	switch e := c.(type) {
-	case *simpleStringCommand:
-		fmt.Println("got string", e.simpleString())
-	case *bulkCommand:
-		fmt.Println("got bulk", e.bulkString())
-	case *arrayCommand:
-		fmt.Println("got array", e.commands())
-		return r.handleRespCommands(e.commands())
+	case *command.SimpleStringCommand:
+		fmt.Println("got string", e.SimpleString())
+	case *command.BulkCommand:
+		fmt.Println("got bulk", e.BulkString())
+	case *command.ArrayCommand:
+		cmds := e.Commands()
+		fmt.Println("got array", )
+		return r.handleRespCommands(cmds)
 	default:
 		fmt.Println("invalid cmd")
 	}
@@ -84,18 +87,21 @@ func (r *redisServer) handleRespCommands(cmds []string) []byte {
 		return buildOkResponse("PONG")
 	} else if len(cmds) == 2 {
 		switch cmds[0] {
-		case "ECHO": return buildOkResponse(cmds[1])
-		case "GET": {
-			v, ok := r.store.get(cmds[1])
-			if !ok {
-				return buildBadResponse("missing key")
+		case "ECHO":
+			return buildOkResponse(cmds[1])
+		case "GET":
+			{
+				v, ok := r.store.get(cmds[1])
+				if !ok {
+					return buildBadResponse("missing key")
+				}
+				return buildOkResponse(v)
 			}
-			return buildOkResponse(v)
-		}
-		case "DELETE": {
-			r.store.delete(cmds[1])
-			return ok()
-		}
+		case "DELETE":
+			{
+				r.store.delete(cmds[1])
+				return ok()
+			}
 		}
 	} else if len(cmds) == 3 && cmds[0] == "SET" {
 		r.store.store(cmds[1], cmds[2])
@@ -106,9 +112,9 @@ func (r *redisServer) handleRespCommands(cmds []string) []byte {
 }
 
 func buildBadResponse(resp string) []byte {
-	return []byte("-"+resp+"\r\n")
+	return []byte("-" + resp + "\r\n")
 }
 
 func buildOkResponse(resp string) []byte {
-	return []byte("+"+resp+"\r\n")
+	return []byte("+" + resp + "\r\n")
 }
