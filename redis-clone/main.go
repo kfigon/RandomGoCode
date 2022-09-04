@@ -25,17 +25,21 @@ const (
 	getCmd
 	setCmd
 	deleteCmd
+	stresTest
 )
 
 func parseCliConfig() (cliCommand, error) {
 	data := flag.String("data", "", "data you want to send. It'll add termination in tcp mode\\r\\n. In SET - send data in key=value format")
 	port := flag.Int("port", srv.DefaultPort, "Port you want to use")
-	modeInt := flag.Int("mode", 0, "application mode. 0 - server; 1 - tcpClient; 2 - GET; 3 - SET; 4 - DELETE")
+	modeInt := flag.Int("mode", 0, "application mode. 0 - server; 1 - tcpClient; 2 - GET; 3 - SET; 4 - DELETE; 5 - stres test")
+	threads := flag.Int("threads", 1, "threads in stres mode")
 	flag.Parse()
 
 	mode := cliMode(*modeInt)
 	if mode != server && *data == "" {
 		return nil, fmt.Errorf("no data provided in client mode")
+	} else if mode == stresTest && *threads <= 0 {
+		return nil, fmt.Errorf("invalid threads for stres mode")
 	}
 
 	switch mode {
@@ -44,6 +48,7 @@ func parseCliConfig() (cliCommand, error) {
 	case getCmd: return &clientCliCommand{port: *port, data: command.BuildGetCommand(*data)}, nil
 	case setCmd: return &clientCliCommand{port: *port, data: command.BuildSetCommand(*data)}, nil
 	case deleteCmd: return &clientCliCommand{port: *port, data: command.BuildDeleteCommand(*data)}, nil
+	case stresTest: return &stresTestCommand{port: *port, threads: *threads}, nil
 	default: return nil, fmt.Errorf("invalid mode provided: %v", mode)
 	}
 }
@@ -75,4 +80,15 @@ func (c *clientCliCommand) run() {
 	}
 	fmt.Println("Got response:")
 	fmt.Printf("%q\n", string(res))
+}
+
+type stresTestCommand struct {
+	port int
+	threads int
+}
+func (s *stresTestCommand) run() {
+	fmt.Println("stres mode - sending data to port", s.port, "with", s.threads, "threads")
+
+	client.RunStres(s.port, s.threads)
+	fmt.Println("done")
 }

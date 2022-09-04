@@ -268,3 +268,11 @@ func BuildSetCommand(data string) string {
 	}
 	return buildArrayBulkCmd(in)
 }
+
+func BuildPingCommand() string {
+	return buildArrayBulkCmd([]string{"PING"})
+}
+
+func BuildEchoCommand(data string) string {
+	return buildArrayBulkCmd([]string{"ECHO", data})
+}
