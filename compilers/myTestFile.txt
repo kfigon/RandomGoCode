@@ -1,2 +1,0 @@
-if (i==j) els = 654.1;
-	else els=123;
