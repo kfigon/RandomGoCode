@@ -36,10 +36,8 @@ func parseCliConfig() (cliCommand, error) {
 	flag.Parse()
 
 	mode := cliMode(*modeInt)
-	if mode != server && *data == "" {
+	if (mode == tcpClient || mode == getCmd || mode == setCmd || mode == deleteCmd) && *data == "" {
 		return nil, fmt.Errorf("no data provided in client mode")
-	} else if mode == stresTest && *threads <= 0 {
-		return nil, fmt.Errorf("invalid threads for stres mode")
 	}
 
 	switch mode {
