@@ -17,16 +17,21 @@ func RunStres(port int, threads int) {
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
 		go func() {
-			defer wg.Done()
-
 			SendData(port, []byte(randomCommand()))
+			wg.Done()
 		}()	
 	}
-
 	wg.Wait()
+
 	took := time.Since(start)
-	average := float64(threads)/float64(took.Milliseconds())
-	fmt.Println("all done, took", took, "average [ms]", average)
+	average := float64(took.Microseconds())/float64(threads)
+	rps := float64(threads)/took.Seconds()
+	
+	fmt.Println()
+	fmt.Println()
+	fmt.Println("took:", took, "threads:", threads)
+	fmt.Println("average:", average, "[us]")
+	fmt.Printf("rps: %.2f\n", rps)
 }
 
 func randomCommand() string {
