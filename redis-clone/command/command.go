@@ -188,6 +188,8 @@ func newArrayString(c command) (*ArrayCommand, error) {
 	arrayLen, err := parseLengthToken(c)
 	if err != nil {
 		return nil, err
+	} else if arrayLen <= 0 {
+		return nil, fmt.Errorf("empty array")
 	}
 	cmds := []commandBase{}
 

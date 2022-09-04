@@ -263,4 +263,10 @@ func TestInvalidArrays(t *testing.T) {
 		_, err := newArrayString(data)
 		assert.Error(t, err)
 	})
+
+	t.Run("Empty array", func(t *testing.T) {
+		data := []byte("*0\r\n")
+		_, err := newArrayString(data)
+		assert.Error(t, err)
+	})
 }
