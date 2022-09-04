@@ -176,6 +176,11 @@ func TestInvalidBulkStrings(t *testing.T) {
 			input:         []byte("$3\r\nHELLO WORLD\r\n"),
 			expectedError: "invalid termination",
 		},
+		{
+			desc:          "Empty element",
+			input:         []byte("$0\r\n"),
+			expectedError: "empty element",
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
@@ -241,5 +246,15 @@ func TestArrayCommand(t *testing.T) {
 }
 
 func TestInvalidArrays(t *testing.T) {
-	t.Skip("todo")
+	t.Run("Invalid number of elements", func(t *testing.T) {
+		data := []byte("*2\r\n" + "+OK\r\n")
+		_, err := newArrayString(data)
+		assert.Error(t, err)
+	})
+
+	t.Run("Empty element", func(t *testing.T) {
+		data := []byte("*2\r\n$6\r\nDELETE\r\n$0\r\n")
+		_, err := newArrayString(data)
+		assert.Error(t, err)
+	})
 }

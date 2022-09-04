@@ -144,6 +144,8 @@ func newBulkString(c command) (*BulkCommand, error) {
 	byteLen, err := parseLengthToken(c)
 	if err != nil {
 		return nil, err
+	} else if byteLen == 0 {
+		return nil, fmt.Errorf("empty element")
 	} else if expectedBulkLen(byteLen) > len(c) {
 		return nil, fmt.Errorf("invalid length")
 	} else if !stringTerminated(c[expectedBulkLen(byteLen)-2 : expectedBulkLen(byteLen)]) {
@@ -221,6 +223,9 @@ func newArrayString(c command) (*ArrayCommand, error) {
 		default:
 			return nil, fmt.Errorf("invalid fist byte %q", subCmd[0])
 		}
+	}
+	if len(cmds) != arrayLen {
+		return nil, fmt.Errorf("invalid number of elements detected. Declared %d, got %d", arrayLen, len(cmds))	
 	}
 
 	return &ArrayCommand{cmds}, nil

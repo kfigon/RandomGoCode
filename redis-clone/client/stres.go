@@ -11,6 +11,7 @@ import (
 
 func RunStres(port int, threads int) {
 	rand.Seed(time.Now().UnixNano())
+	start := time.Now()
 
 	var wg sync.WaitGroup
 	for i := 0; i < threads; i++ {
@@ -23,7 +24,9 @@ func RunStres(port int, threads int) {
 	}
 
 	wg.Wait()
-	fmt.Println("all done")
+	took := time.Since(start)
+	average := float64(threads)/float64(took.Milliseconds())
+	fmt.Println("all done, took", took, "average [ms]", average)
 }
 
 func randomCommand() string {

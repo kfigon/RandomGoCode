@@ -4,7 +4,7 @@ import "math/rand"
 
 func RandStringRunes(maxLen int) string {
 	letterRunes := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	ln := rand.Int31n(int32(maxLen))+1
+	ln := rand.Int31n(int32(maxLen))
 
     b := make([]rune, ln)
     for i := range b {
