@@ -5,3 +5,11 @@ usage:
 * send data
 
 optionally u can use client and send data there
+
+# Protocol
+Project uses RESP protocol on top of TCP. Supported commands:
+* PING
+* ECHO
+* GET
+* SET
+* DELETE
