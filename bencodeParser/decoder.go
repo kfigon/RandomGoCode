@@ -1,9 +1,19 @@
 package main
 
-func decode(in string) bencodeObj {
-	return nil
+
+func decode(in string) (bencodeObj,error) {
+	i := 0
+	var result bencodeObj
+
+	for i < len(in) {
+		// c := in[i]
+		i++
+	}
+
+	return result, nil
 }
 
+// lack of sumtypes
 type bencodeObj interface{
 	dummy()
 }
