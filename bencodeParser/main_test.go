@@ -54,6 +54,8 @@ func TestDecode(t *testing.T) {
 	t.Run("list", func(t *testing.T) {
 		assertResult[listObj, []any](t, "li2ei58ee", []any{2,58})
 		assertResult[listObj, []any](t, "l4:spami42ee", []any{"spam",42})
+		assertResult[listObj, []any](t, "l4:asdfi42ee", []any{"asdf",42})
+		assertResult[listObj, []any](t, "l4:asdii42ee", []any{"asdi",42})
 		
 		assertResult[listObj, []any](t, "l2:hili1ei2eed4:barz3:asd3:fooi58eei42ee", []any{
 			"hi",
@@ -91,15 +93,19 @@ func TestDecodeInvalid(t *testing.T) {
 			input: "4:foo",
 		},
 		{
-			desc: "not terminated int",
+			desc: "list not terminated",
 			input: "i5",
 		},
 		{
-			desc: "not terminated list",
+			desc: "list not terminated",
 			input: "l2",
 		},
 		{
-			desc: "not terminated dict",
+			desc: "list with invalid str len",
+			input: "l4:asdi4ee",
+		},
+		{
+			desc: "dit not terminated",
 			input: "d3:asdi4e",
 		},
 		{
