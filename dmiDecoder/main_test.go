@@ -117,8 +117,6 @@ func TestParse2(t *testing.T) {
 	t.Run("props", func(t *testing.T) {
 		props := dmi["BIOS Information"].props
 		
-		assert.Len(t, props, 6)
-
 		assert.Equal(t, props["Vendor"].name, "Vendor")
 		assert.Equal(t, props["Vendor"].value, "LENOVO")
 		assert.Equal(t, props["ROM Size"].name, "ROM Size")
@@ -129,5 +127,43 @@ func TestParse2(t *testing.T) {
 		assert.Len(t, props["Characteristics"].items, 18)
 		assert.Equal(t, props["Characteristics"].name, "Characteristics")
 		assert.Equal(t, props["Characteristics"].value, "")
+	})
+}
+
+func TestParse3(t *testing.T) {
+	dmi := parse(input3)
+
+	t.Run("basic structure", func(t *testing.T) {
+		assertSection(t, dmi, "BIOS Information", "Handle 0x0000, DMI type 0, 24 bytes", 4)
+		assertSection(t, dmi, "System Information", "Handle 0x0001, DMI type 1, 27 bytes", 3)
+		assert.Len(t, dmi, 2)
+	})
+	
+	t.Run("props bios", func(t *testing.T) {
+		props := dmi["BIOS Information"].props
+		
+		assert.Equal(t, props["Vendor"].name, "Vendor")
+		assert.Equal(t, props["Vendor"].value, "LENOVO")
+		assert.Equal(t, props["ROM Size"].name, "ROM Size")
+		assert.Equal(t, props["ROM Size"].value, "2048 kB")
+		assert.Equal(t, props["BIOS Revision"].name, "BIOS Revision")
+		assert.Equal(t, props["BIOS Revision"].value, "1.40")
+
+		assert.Len(t, props["Characteristics"].items, 2)
+		assert.Equal(t, props["Characteristics"].name, "Characteristics")
+		assert.Equal(t, props["Characteristics"].value, "")
+	})
+
+	t.Run("props system", func(t *testing.T) {
+		props := dmi["System Information"].props
+		
+		assert.Equal(t, props["Manufacturer"].name, "Manufacturer")
+		assert.Equal(t, props["Manufacturer"].value, "LENOVO")
+		assert.Equal(t, props["Product Name"].name, "Product Name")
+		assert.Equal(t, props["Product Name"].value, "20042")
+
+		assert.Len(t, props["SomeProps"].items, 1)
+		assert.Equal(t, props["SomeProps"].name, "SomeProps")
+		assert.Equal(t, props["SomeProps"].value, "")
 	})
 }
