@@ -93,8 +93,16 @@ func TestDecodeInvalid(t *testing.T) {
 			input: "4:foo",
 		},
 		{
+			desc: "invalid len str",
+			input: "2:foo",
+		},
+		{
 			desc: "list not terminated",
 			input: "i5",
+		},
+		{
+			desc: "int without number",
+			input: "ifoobare",
 		},
 		{
 			desc: "list not terminated",
