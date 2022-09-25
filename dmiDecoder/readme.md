@@ -3,6 +3,8 @@ https://linux.die.net/man/8/dmidecode
 
 credits to https://xmonader.github.io/nimdays/day01_dmidecode.html
 
+it's indendantion based parsing, no sophisticated token parsing and tree building
+
 ## example dmidecode outputs:
 
 ```
