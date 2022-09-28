@@ -18,12 +18,31 @@ func decode(in string) (bencodeObj, error) {
 			return parseInt(in, &i)
 		case unicode.IsDigit(rune(firstChar)):
 			return parseString(in, &i)
+		case firstChar == 'l':
+			return parseList(in, &i)
 		default:
 			i++
 		}
 	}
 
 	return nil, fmt.Errorf("unknown input: %q", in[0:3])
+}
+
+func parseList(in string, idx *int) (listObj, error) {
+	*idx++
+	out := listObj{}
+	for *idx < len(in) {
+		if *idx == len(in)-1 && in[*idx] == 'e' {
+			break
+		}
+
+		v, err := parseString(in, idx)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, v)
+	}
+	return out, nil
 }
 
 func parseInt(in string, idx *int) (intObj, error) {
@@ -78,8 +97,8 @@ func (_ stringObj) dummy(){}
 type intObj int
 func (_ intObj) dummy() {}
 
-type listObj []any
+type listObj []bencodeObj
 func (_ listObj) dummy() {}
 
-type dictObj map[string]any
+type dictObj map[string]bencodeObj
 func (_ dictObj) dummy() {}
