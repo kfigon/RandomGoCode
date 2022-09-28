@@ -15,11 +15,8 @@ func decode(in string) (bencodeObj, error) {
 	lastChar := in[len(in)-1]
 	switch {
 	case firstChar == 'i' && lastChar == 'e':
-		v, err := strconv.Atoi(in[1:len(in)-1])
-		if err != nil {
-			return nil, fmt.Errorf("invalid integer: %v", err)
-		}
-		return intObj(v), nil
+		i := 0
+		return parseInt(in, &i)
 	case unicode.IsDigit(rune(firstChar)):
 		i := 0
 		return parseString(in, &i)
@@ -30,6 +27,21 @@ func decode(in string) (bencodeObj, error) {
 	case firstChar == 'd' && lastChar == 'e':
 	}
 	return nil, fmt.Errorf("unknown input: %q", in[0:3])
+}
+
+func parseInt(in string, idx *int) (intObj, error) {
+	*idx++
+	numStr := ""
+	for *idx < len(in) && in[*idx] != 'e' {
+		numStr += string(in[*idx])
+		*idx++
+	}
+	v, err := strconv.Atoi(numStr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid integer: %v", err)
+	}
+	*idx++ // e
+	return intObj(v), nil
 }
 
 func parseString(in string, idx *int) (stringObj, error) {
