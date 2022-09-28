@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"unicode"
 )
 
@@ -22,22 +21,41 @@ func decode(in string) (bencodeObj, error) {
 		}
 		return intObj(v), nil
 	case unicode.IsDigit(rune(firstChar)):
-		idx := strings.Index(in, ":")
-		if idx == -1 {
-			return nil, fmt.Errorf("invalid string, no ':'")
-		}
-		v, err := strconv.Atoi(in[0:idx])
-		if err != nil {
-			return nil, fmt.Errorf("invalid string length: %v", err)
-		} else if idx+v >= len(in){
-			return nil, fmt.Errorf("too long string, expected %v, got %v", (idx+v), len(in))
-		}
-		str := in[idx+1:idx+1+v]
-		return stringObj(str), nil
+		i := 0
+		return parseString(in, &i)
 	case firstChar == 'l' && lastChar == 'e':
+		out := []any{}
+
+		return listObj(out), nil
 	case firstChar == 'd' && lastChar == 'e':
 	}
 	return nil, fmt.Errorf("unknown input: %q", in[0:3])
+}
+
+func parseString(in string, idx *int) (stringObj, error) {
+	declaredLen := ""
+	for *idx < len(in) && in[*idx] != ':' {
+		declaredLen += string(in[*idx])
+		*idx++
+	}
+	// :
+	*idx++
+
+	v, err := strconv.Atoi(declaredLen)
+	if err != nil {
+		return "", fmt.Errorf("invalid string length: %v", err)
+	} else if *idx+v > len(in){
+		return "", fmt.Errorf("too long string, expected %v, got %v", (*idx+v), len(in))
+	}
+
+	data := ""
+	strLen := 0
+	for *idx < len(in) && strLen < v {
+		data += string(in[*idx])
+		*idx++
+		strLen++
+	}
+	return stringObj(data), nil
 }
 
 // lack of sumtypes

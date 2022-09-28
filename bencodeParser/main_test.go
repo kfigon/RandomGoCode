@@ -59,6 +59,11 @@ func TestDecode(t *testing.T) {
 			expected: stringObj("a string"),
 		},
 		{
+			desc: "str3",
+			input: "18:a very long string",
+			expected: stringObj("a very long string"),
+		},
+		{
 			desc: "int",
 			input: "i59e",
 			expected: intObj(59),
@@ -136,6 +141,13 @@ func TestDecodeInvalid(t *testing.T) {
 			input: "4:foo",
 		},
 		{
+			desc: "no string",
+			input: "0:",
+		},{
+			desc: "no string but declared",
+			input: "2:",
+		},
+		{
 			desc: "invalid len str",
 			input: "4asd:foo",
 		},
@@ -171,8 +183,7 @@ func TestDecodeInvalid(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			v, err := decode(tC.input)
-			assert.Nil(t, v)
+			_, err := decode(tC.input)
 			assert.Error(t, err)
 		})
 	}
