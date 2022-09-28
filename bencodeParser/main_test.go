@@ -93,33 +93,33 @@ func TestDecode(t *testing.T) {
 			input: "l4:asdii42ee",
 			expected: listObj{stringObj("asdi"),intObj(42)},
 		},
-		// {
-		// 	desc: "complicated list",
-		// 	input: "l2:hili1ei2eed4:barz3:asd3:fooi58eei42ee",
-		// 	expected: listObj{
-		// 		stringObj("hi"),
-		// 		listObj{intObj(1),intObj(2)},
-		// 		map[string]bencodeObj{"foo": intObj(58), "barz": stringObj("asd")},
-		// 		intObj(42) },
-		// },
-		// {
-		// 	desc: "simple dict",
-		// 	input: "d3:bar4:spam3:fooi42ee",
-		// 	expected: dictObj(map[string]any{"bar": "spam", "foo": 42}),
-		// },
-		// {
-		// 	desc: "simple dict with reverse order",
-		// 	input: "d3:bar4:spam3:fooi42ee",
-		// 	expected: dictObj(map[string]any{"foo": 42, "bar": "spam"}),
-		// },
-		// {
-		// 	desc: "nested dicts",
-		// 	input: "d3:bar3:asd3:fool4:spami42eee",
-		// 	expected: dictObj(map[string]any{
-		// 		"bar": "asd", 
-		// 		"foo": []any{"spam",42},
-		// 	}),
-		// },
+		{
+			desc: "complicated list",
+			input: "l2:hili1ei2eed4:barz3:asd3:fooi58eei42ee",
+			expected: listObj{
+				stringObj("hi"),
+				listObj{intObj(1),intObj(2)},
+				dictObj(map[string]bencodeObj{"foo": intObj(58), "barz": stringObj("asd")}),
+				intObj(42) },
+		},
+		{
+			desc: "simple dict",
+			input: "d3:bar4:spam3:fooi42ee",
+			expected: dictObj(map[string]bencodeObj{"bar": stringObj("spam"), "foo": intObj(42)}),
+		},
+		{
+			desc: "simple dict with reverse order",
+			input: "d3:bar4:spam3:fooi42ee",
+			expected: dictObj(map[string]bencodeObj{"foo": intObj(42), "bar": stringObj("spam")}),
+		},
+		{
+			desc: "nested dicts",
+			input: "d3:bar3:asd3:fool4:spami42eee",
+			expected: dictObj(map[string]bencodeObj{
+				"bar": stringObj("asd"), 
+				"foo": listObj{stringObj("spam"), intObj(42)},
+			}),
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
