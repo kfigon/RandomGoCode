@@ -34,11 +34,7 @@ func parseObj(in string, i *int) (bencodeObj, error) {
 func parseDict(in string, i *int) (dictObj, error) {
 	*i++
 	out := dictObj{}
-	for *i < len(in) {
-		if *i == len(in)-1 && in[*i] == 'e' {
-			break
-		}
-
+	for *i < len(in) && in[*i] != 'e'{
 		obj, err := parseObj(in, i)
 		if err != nil {
 			return nil, err
@@ -60,11 +56,7 @@ func parseDict(in string, i *int) (dictObj, error) {
 func parseList(in string, idx *int) (listObj, error) {
 	*idx++
 	out := listObj{}
-	for *idx < len(in) {
-		if *idx == len(in)-1 && in[*idx] == 'e' {
-			break
-		}
-
+	for *idx < len(in) && in[*idx] != 'e' {
 		obj, err := parseObj(in, idx)
 		if err != nil {
 			return nil, err
