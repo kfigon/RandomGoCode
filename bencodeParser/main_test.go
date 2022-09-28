@@ -156,11 +156,6 @@ func TestDecodeInvalid(t *testing.T) {
 			desc: "invalid len str",
 			input: "4asd:foo",
 		},
-		// todo
-		// {
-		// 	desc: "too long str",
-		// 	input: "2:foo",
-		// },
 		{
 			desc: "list not terminated",
 			input: "i5",
@@ -176,10 +171,6 @@ func TestDecodeInvalid(t *testing.T) {
 		{
 			desc: "list with invalid str len",
 			input: "l4:asdi4ee",
-		},
-		{
-			desc: "dit not terminated",
-			input: "d3:asdi4e",
 		},
 		{
 			desc: "dict without value",

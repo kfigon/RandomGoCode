@@ -50,6 +50,7 @@ func parseDict(in string, i *int) (dictObj, error) {
 		}
 		out[string(strObj)] = obj
 	}
+	*i++
 	return out, nil
 }
 
@@ -63,6 +64,7 @@ func parseList(in string, idx *int) (listObj, error) {
 		}
 		out = append(out, obj)
 	}
+	*idx++
 	return out, nil
 }
 
