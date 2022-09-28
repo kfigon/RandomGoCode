@@ -11,11 +11,7 @@ func decode(in string) (bencodeObj, error) {
 		return nil, fmt.Errorf("input too short: %v", in)
 	}
 	i := 0
-	for i < len(in) {
-		return parseObj(in, &i)
-	}
-
-	return nil, fmt.Errorf("unknown input: %q", in[0:3])
+	return parseObj(in, &i)
 }
 
 func parseObj(in string, i *int) (bencodeObj, error) {
@@ -27,10 +23,38 @@ func parseObj(in string, i *int) (bencodeObj, error) {
 		return parseString(in, i)
 	case firstChar == 'l':
 		return parseList(in, i)
+	case firstChar == 'd':
+		return parseDict(in, i)
 	default:
 		*i++
 	}
 	return nil, fmt.Errorf("unknown type %v", firstChar)
+}
+
+func parseDict(in string, i *int) (dictObj, error) {
+	*i++
+	out := dictObj{}
+	for *i < len(in) {
+		if *i == len(in)-1 && in[*i] == 'e' {
+			break
+		}
+
+		obj, err := parseObj(in, i)
+		if err != nil {
+			return nil, err
+		}
+		strObj, ok := obj.(stringObj)
+		if !ok {
+			return nil, fmt.Errorf("key is not string %v", strObj)
+		}
+		
+		obj, err = parseObj(in, i)
+		if err != nil {
+			return nil, err
+		}
+		out[string(strObj)] = obj
+	}
+	return out, nil
 }
 
 func parseList(in string, idx *int) (listObj, error) {
@@ -44,9 +68,8 @@ func parseList(in string, idx *int) (listObj, error) {
 		obj, err := parseObj(in, idx)
 		if err != nil {
 			return nil, err
-		} else {
-			out = append(out, obj)
 		}
+		out = append(out, obj)
 	}
 	return out, nil
 }
