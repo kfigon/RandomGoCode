@@ -10,22 +10,19 @@ func decode(in string) (bencodeObj, error) {
 	if len(in) < 3 {
 		return nil, fmt.Errorf("input too short: %v", in)
 	}
-
-	firstChar := in[0]
-	lastChar := in[len(in)-1]
-	switch {
-	case firstChar == 'i' && lastChar == 'e':
-		i := 0
-		return parseInt(in, &i)
-	case unicode.IsDigit(rune(firstChar)):
-		i := 0
-		return parseString(in, &i)
-	case firstChar == 'l' && lastChar == 'e':
-		out := []any{}
-
-		return listObj(out), nil
-	case firstChar == 'd' && lastChar == 'e':
+	i := 0
+	for i < len(in) {
+		firstChar := in[i]
+		switch {
+		case firstChar == 'i':
+			return parseInt(in, &i)
+		case unicode.IsDigit(rune(firstChar)):
+			return parseString(in, &i)
+		default:
+			i++
+		}
 	}
+
 	return nil, fmt.Errorf("unknown input: %q", in[0:3])
 }
 
