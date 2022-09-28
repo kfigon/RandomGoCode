@@ -12,20 +12,25 @@ func decode(in string) (bencodeObj, error) {
 	}
 	i := 0
 	for i < len(in) {
-		firstChar := in[i]
-		switch {
-		case firstChar == 'i':
-			return parseInt(in, &i)
-		case unicode.IsDigit(rune(firstChar)):
-			return parseString(in, &i)
-		case firstChar == 'l':
-			return parseList(in, &i)
-		default:
-			i++
-		}
+		return parseObj(in, &i)
 	}
 
 	return nil, fmt.Errorf("unknown input: %q", in[0:3])
+}
+
+func parseObj(in string, i *int) (bencodeObj, error) {
+	firstChar := in[*i]
+	switch {
+	case firstChar == 'i':
+		return parseInt(in, i)
+	case unicode.IsDigit(rune(firstChar)):
+		return parseString(in, i)
+	case firstChar == 'l':
+		return parseList(in, i)
+	default:
+		*i++
+	}
+	return nil, fmt.Errorf("unknown type %v", firstChar)
 }
 
 func parseList(in string, idx *int) (listObj, error) {
@@ -36,11 +41,12 @@ func parseList(in string, idx *int) (listObj, error) {
 			break
 		}
 
-		v, err := parseString(in, idx)
+		obj, err := parseObj(in, idx)
 		if err != nil {
 			return nil, err
+		} else {
+			out = append(out, obj)
 		}
-		out = append(out, v)
 	}
 	return out, nil
 }
