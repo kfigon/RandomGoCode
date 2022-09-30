@@ -30,6 +30,7 @@ func validateConfig(c config) error {
 
 func main() {
 	path := flag.String("path", "", "path to configuration file in json format")
+	demoMode := flag.Bool("demo", false, "demo mode - if true then example backends will be generated")
 	flag.Parse()
 
 	file, err := os.Open(*path)
@@ -51,7 +52,10 @@ func main() {
 
 	f := newForwarder(port(c.MainPort))
 	for _, v := range c.Backends {
-		go serv(port(v))
+		if *demoMode {
+			go serv(port(v))
+		}
+
 		f.add(port(v))
 	}
 
@@ -63,6 +67,10 @@ func serv(p port) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, fmt.Sprintf("Served by port %d\n", p))
+	})
+
+	mux.HandleFunc("/asd", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, fmt.Sprintf("asdf from %d\n", p))
 	})
 	http.ListenAndServe(p.toAddr(), mux)
 }
@@ -118,6 +126,7 @@ func (f *forwarder) forwardSingleConnection(request net.Conn, destinationPort po
 	dst, err := net.Dial("tcp", destinationPort.toAddr())
 	if err != nil {
 		fmt.Println("error connecting to backend", destinationPort)
+		request.Close()
 		return
 	}
 

@@ -7,13 +7,13 @@ No fancy load balancing logic (just round robin), no liveness
 
 ## Usage
 
-`$ app -path=config.json`
+`$ app -path=config.json -demo`
 
-* path - path to configuration file in json format. Accepted format:
-
+* **path** - path to configuration file in json format. Accepted format:
 ```
 {
     "main_port": 8000,
     "backends": [4000, 4001, 4002, 4003]
 }
 ```
+* **demo** - demo mode flag - if provided then example backends will be generated
