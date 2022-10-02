@@ -3,6 +3,7 @@ package main
 import (
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // lack of sum types...
@@ -76,4 +77,35 @@ func (s spreadsheet) read(row string, col int) (cell, bool) {
 
 func (s spreadsheet) columns() int {
 	return len(s)
+}
+
+type coordinate struct{
+	row string
+	col int
+}
+
+func parseId(in string) (coordinate, bool) {
+	if len(in) < 2 {
+		return coordinate{}, false
+	}
+
+	splittingPoint := 0
+	for i,c := range in {
+		if unicode.IsDigit(c) {
+			splittingPoint = i
+			break
+		}
+	}
+
+	str := in[:splittingPoint]
+	if len(str) == 0 {
+		return coordinate{}, false
+	}
+	
+	numStr := in[splittingPoint:]
+	num, err := strconv.Atoi(numStr)
+	if err != nil {
+		return coordinate{}, false
+	}
+	return coordinate{row: str, col: num}, true
 }

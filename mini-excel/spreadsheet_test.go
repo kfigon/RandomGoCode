@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParseSpreadsheet(t *testing.T) {
@@ -49,5 +50,48 @@ func TestParseSpreadsheet(t *testing.T) {
 		assertPresent("C",2, numberCell(3))
 		assertPresent("D",2, expressionCell{"=A2+C2"})
 		absent("E",2)
+	})
+}
+
+func TestParseId(t *testing.T) {
+	testCases := []struct {
+		in	string
+		row string
+		col int
+	}{
+		{ "A2", "A",2 },
+		{ "B32", "B",32 },
+		{ "AA32", "AA",32 },
+		{ "ABCDEFG123456", "ABCDEFG",123456 },
+	}
+	for _, tC := range testCases {
+		t.Run(tC.in, func(t *testing.T) {
+			id, ok := parseId(tC.in)
+			require.True(t, ok)
+			assert.Equal(t, tC.col, id.col)
+			assert.Equal(t, tC.row, id.row)
+		})
+	}
+}
+
+func TestParseIdInvalid(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		_, ok := parseId("")
+		assert.False(t, ok)
+	})
+
+	t.Run("no column", func(t *testing.T) {
+		_, ok := parseId("B")
+		assert.False(t, ok)
+	})
+
+	t.Run("no row", func(t *testing.T) {
+		_, ok := parseId("123")
+		assert.False(t, ok)
+	})
+
+	t.Run("col with characters", func(t *testing.T) {
+		_, ok := parseId("B12A3")
+		assert.False(t, ok)
 	})
 }
