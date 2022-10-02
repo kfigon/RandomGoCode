@@ -11,12 +11,6 @@ type cell interface{
 	String() string
 }
 
-type emptyCell struct{}
-func(_ emptyCell) dummy(){}
-func(_ emptyCell) String() string {
-	return ""
-}
-
 type stringCell string
 func(_ stringCell) dummy(){}
 func(s stringCell) String() string {
@@ -61,9 +55,7 @@ func newSpreadsheet(input string) spreadsheet {
 				x[i] = numberCell(intV)
 			} else if strings.HasPrefix(col, "=") {
 				x[i] = expressionCell{col}
-			} else if col == "" {
-				x[i] = emptyCell{}
-			} else {
+			} else if col != "" {
 				x[i] = stringCell(col)
 			}
 			out[headers[c]] = x
@@ -84,11 +76,4 @@ func (s spreadsheet) read(row string, col int) (cell, bool) {
 
 func (s spreadsheet) columns() int {
 	return len(s)
-}
-
-func (s spreadsheet) rows() int {
-	for _, v := range s {
-		return len(v)
-	}
-	return 0
 }
