@@ -1,11 +1,10 @@
-package main
+package bagqueuestack
 
-import (
-	"testing"
-)
+import "testing"
 
-// bag - collection where order not important, cant remove the item
+// bag - collection where order not important, cant remove the item.
+// this is just renamed stack without pop()
 
-func TestBag(t *testing.T) {
-	t.Fatal("todo")
+func TestBag(t *testing.T){
+	
 }
