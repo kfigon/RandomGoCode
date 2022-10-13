@@ -101,6 +101,32 @@ func TestRemoveWithIndex(t *testing.T) {
 	})
 }
 
+func TestReverseLinkedList(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		s := &singleLinkedList{}
+		s.reverse()
+		assert.Empty(t, s.getElements())
+	})	
+
+	t.Run("single element", func(t *testing.T) {
+		s := makeListWithElements([]int{5})
+		s.reverse()
+		assert.Equal(t, []int{5},s.getElements())
+	})
+
+	t.Run("2 elements", func(t *testing.T) {
+		s := makeListWithElements([]int{5,6})
+		s.reverse()
+		assert.Equal(t, []int{6,5},s.getElements())
+	})
+
+	t.Run("many elements", func(t *testing.T) {
+		s := makeListWithElements([]int{1,2,3,4,5})
+		s.reverse()
+		assert.Equal(t, []int{5,4,3,2,1},s.getElements())
+	})
+}
+
 type listNode struct {
 	val int
 	next *listNode
@@ -163,4 +189,8 @@ func (s *singleLinkedList) removeIdx(idx int) {
 	} else {
 		preEl.next = toDelete.next
 	}
+}
+
+func (s *singleLinkedList) reverse() {
+	
 }
