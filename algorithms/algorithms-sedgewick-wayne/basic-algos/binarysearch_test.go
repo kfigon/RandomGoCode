@@ -6,87 +6,55 @@ import (
 )
 
 func TestBinarySearch(t *testing.T) {
-	t.Run("empty", func(t *testing.T) {
-		assert.Equal(t, -1, binarySearch([]int{}, 0))
-		assert.Equal(t, -1, binarySearch([]int{}, 12))
-		assert.Equal(t, -1, binarySearch([]int{}, 159))
-	})
 
-	t.Run("not found", func(t *testing.T) {
-		assert.Equal(t, -1, binarySearch([]int{1,2,3,4,5}, 0))
-		assert.Equal(t, -1, binarySearch([]int{1,2,3,4}, 12))
-		assert.Equal(t, -1, binarySearch([]int{1,2,3,5}, 4))
-		assert.Equal(t, -1, binarySearch([]int{1,2,3,5,7}, 4))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5}, 2))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5,7}, 2))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5}, -1))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5,7}, -1))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5}, 6))
-		assert.Equal(t, -1, binarySearch([]int{1,3,4,5,7}, 6))
-	})
+	tdt := []struct {
+		desc string
+		fun func([]int, int) int
+	}{
+		{"iterative ", binarySearch},
+		{"recursive ", binarySearchRec},
+	}
+	for _, tc := range tdt {
+		t.Run(tc.desc+"empty", func(t *testing.T) {
+			assert.Equal(t, -1, tc.fun([]int{}, 0))
+			assert.Equal(t, -1, tc.fun([]int{}, 12))
+			assert.Equal(t, -1, tc.fun([]int{}, 159))
+		})
 
-	t.Run("found", func(t *testing.T) {
-		assert.Equal(t, 0, binarySearch([]int{1,2,3,4,5}, 1))
-		assert.Equal(t, 1, binarySearch([]int{1,2,3,4}, 2))
-		assert.Equal(t, 2, binarySearch([]int{1,2,3,5}, 3))
-		assert.Equal(t, 4, binarySearch([]int{1,2,3,5,7}, 7))
-		assert.Equal(t, 2, binarySearch([]int{1,3,4,5}, 4))
-		assert.Equal(t, 2, binarySearch([]int{1,3,4,5,7},4))
-		
-		assert.Equal(t, 0, binarySearch([]int{1,3,4,5,7}, 1))
-		assert.Equal(t, 1, binarySearch([]int{1,3,4,5,7}, 3))
-		assert.Equal(t, 2, binarySearch([]int{1,3,4,5,7}, 4))
-		assert.Equal(t, 3, binarySearch([]int{1,3,4,5,7}, 5))
-		assert.Equal(t, 4, binarySearch([]int{1,3,4,5,7}, 7))
+		t.Run(tc.desc+"not found", func(t *testing.T) {
+			assert.Equal(t, -1, tc.fun([]int{1,2,3,4,5}, 0))
+			assert.Equal(t, -1, tc.fun([]int{1,2,3,4}, 12))
+			assert.Equal(t, -1, tc.fun([]int{1,2,3,5}, 4))
+			assert.Equal(t, -1, tc.fun([]int{1,2,3,5,7}, 4))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5}, 2))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5,7}, 2))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5}, -1))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5,7}, -1))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5}, 6))
+			assert.Equal(t, -1, tc.fun([]int{1,3,4,5,7}, 6))
+		})
 
-		assert.Equal(t, 0, binarySearch([]int{1,2,3,4,5}, 1))
-		assert.Equal(t, 1, binarySearch([]int{1,2,3,4,5}, 2))
-		assert.Equal(t, 2, binarySearch([]int{1,2,3,4,5}, 3))
-		assert.Equal(t, 3, binarySearch([]int{1,2,3,4,5}, 4))
-		assert.Equal(t, 4, binarySearch([]int{1,2,3,4,5}, 5))
-	})
-}
+		t.Run(tc.desc+"found", func(t *testing.T) {
+			assert.Equal(t, 0, tc.fun([]int{1,2,3,4,5}, 1))
+			assert.Equal(t, 1, tc.fun([]int{1,2,3,4}, 2))
+			assert.Equal(t, 2, tc.fun([]int{1,2,3,5}, 3))
+			assert.Equal(t, 4, tc.fun([]int{1,2,3,5,7}, 7))
+			assert.Equal(t, 2, tc.fun([]int{1,3,4,5}, 4))
+			assert.Equal(t, 2, tc.fun([]int{1,3,4,5,7},4))
+			
+			assert.Equal(t, 0, tc.fun([]int{1,3,4,5,7}, 1))
+			assert.Equal(t, 1, tc.fun([]int{1,3,4,5,7}, 3))
+			assert.Equal(t, 2, tc.fun([]int{1,3,4,5,7}, 4))
+			assert.Equal(t, 3, tc.fun([]int{1,3,4,5,7}, 5))
+			assert.Equal(t, 4, tc.fun([]int{1,3,4,5,7}, 7))
 
-func TestBinarySearchRecursive(t *testing.T) {
-	t.Run("empty", func(t *testing.T) {
-		assert.Equal(t, -1, binarySearchRec([]int{}, 0))
-		assert.Equal(t, -1, binarySearchRec([]int{}, 12))
-		assert.Equal(t, -1, binarySearchRec([]int{}, 159))
-	})
-
-	t.Run("not found", func(t *testing.T) {
-		assert.Equal(t, -1, binarySearchRec([]int{1,2,3,4,5}, 0))
-		assert.Equal(t, -1, binarySearchRec([]int{1,2,3,4}, 12))
-		assert.Equal(t, -1, binarySearchRec([]int{1,2,3,5}, 4))
-		assert.Equal(t, -1, binarySearchRec([]int{1,2,3,5,7}, 4))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5}, 2))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5,7}, 2))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5}, -1))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5,7}, -1))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5}, 6))
-		assert.Equal(t, -1, binarySearchRec([]int{1,3,4,5,7}, 6))
-	})
-
-	t.Run("found", func(t *testing.T) {
-		assert.Equal(t, 0, binarySearchRec([]int{1,2,3,4,5}, 1))
-		assert.Equal(t, 1, binarySearchRec([]int{1,2,3,4}, 2))
-		assert.Equal(t, 2, binarySearchRec([]int{1,2,3,5}, 3))
-		assert.Equal(t, 4, binarySearchRec([]int{1,2,3,5,7}, 7))
-		assert.Equal(t, 2, binarySearchRec([]int{1,3,4,5}, 4))
-		assert.Equal(t, 2, binarySearchRec([]int{1,3,4,5,7},4))
-
-		assert.Equal(t, 0, binarySearchRec([]int{1,3,4,5,7}, 1))
-		assert.Equal(t, 1, binarySearchRec([]int{1,3,4,5,7}, 3))
-		assert.Equal(t, 2, binarySearchRec([]int{1,3,4,5,7}, 4))
-		assert.Equal(t, 3, binarySearchRec([]int{1,3,4,5,7}, 5))
-		assert.Equal(t, 4, binarySearchRec([]int{1,3,4,5,7}, 7))
-
-		assert.Equal(t, 0, binarySearchRec([]int{1,2,3,4,5}, 1))
-		assert.Equal(t, 1, binarySearchRec([]int{1,2,3,4,5}, 2))
-		assert.Equal(t, 2, binarySearchRec([]int{1,2,3,4,5}, 3))
-		assert.Equal(t, 3, binarySearchRec([]int{1,2,3,4,5}, 4))
-		assert.Equal(t, 4, binarySearchRec([]int{1,2,3,4,5}, 5))
-	})
+			assert.Equal(t, 0, tc.fun([]int{1,2,3,4,5}, 1))
+			assert.Equal(t, 1, tc.fun([]int{1,2,3,4,5}, 2))
+			assert.Equal(t, 2, tc.fun([]int{1,2,3,4,5}, 3))
+			assert.Equal(t, 3, tc.fun([]int{1,2,3,4,5}, 4))
+			assert.Equal(t, 4, tc.fun([]int{1,2,3,4,5}, 5))
+		})
+	}
 }
 
 func binarySearch(tab []int, val int) int {
