@@ -41,7 +41,7 @@ func TestQueue(t *testing.T) {
 		q.enqueue(5)
 		q.enqueue(6)
 		q.enqueue(7)
-		assert.Equal(t, []int{7,6,5}, q.elements())
+		assert.Equal(t, []int{5,6,7}, q.elements())
 	})
 
 	t.Run("dequeue single", func(t *testing.T) {
@@ -62,13 +62,13 @@ func TestQueue(t *testing.T) {
 		q.enqueue(7)
 		
 		dequeuePresent(t,q,5)
-		assert.Equal(t, []int{7,6}, q.elements())
+		assert.Equal(t, []int{6,7}, q.elements())
 
 		q.enqueue(88)
-		assert.Equal(t, []int{88,7,6}, q.elements())
+		assert.Equal(t, []int{6,7,88}, q.elements())
 
 		dequeuePresent(t,q,6)
-		assert.Equal(t, []int{88,7}, q.elements())
+		assert.Equal(t, []int{7,88}, q.elements())
 		dequeuePresent(t,q,7)
 		assert.Equal(t, []int{88}, q.elements())
 		dequeuePresent(t,q,88)
@@ -76,13 +76,46 @@ func TestQueue(t *testing.T) {
 	})
 }
 
-type queue struct{}
+type queue struct{
+	first *listNode
+	last *listNode
+}
 
-func (q *queue) enqueue(val int){}
+func (q *queue) enqueue(val int){
+	node := newListNode(val)
+	if q.first == nil {
+		q.first = node
+		q.last = node
+	} else if q.first == q.last {
+		q.first.next = node
+		q.last = node
+	} else {
+		q.last.next = node
+		q.last = node
+	}
+}
+
 func (q *queue) dequeue()(int,bool){
-	return -1,false
+	if q.first == nil || q.last == nil{
+		return -1, false
+	}
+	if q.first == q.last {
+		toRet := q.first.val
+		q.first = nil
+		q.last = nil
+		return toRet,true
+	}
+	toRet := q.first.val
+	q.first = q.first.next
+	return toRet, true
 }
 
 func (q *queue) elements() []int{
-	return nil
+	out := []int{}
+	ptr := q.first
+	for ptr != nil {
+		out = append(out, ptr.val)
+		ptr = ptr.next
+	}
+	return out
 }
