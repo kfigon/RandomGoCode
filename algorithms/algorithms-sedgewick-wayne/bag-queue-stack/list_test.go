@@ -48,7 +48,7 @@ func TestRemoveWithIndex(t *testing.T) {
 		s.removeIdx(5)
 		s.removeIdx(6)
 
-		assert.Empty(t, s.getElements())
+		assert.Equal(t, []int{1,2,3,4},s.getElements())
 	})
 
 	t.Run("first", func(t *testing.T) {
@@ -93,8 +93,7 @@ func TestRemoveWithIndex(t *testing.T) {
 	})
 
 	t.Run("pre last with short list", func(t *testing.T) {
-		s := &singleLinkedList{}
-		s.add(2)
+		s := makeListWithElements([]int{1,2})
 
 		s.removeIdx(0)
 
@@ -144,13 +143,24 @@ func (s *singleLinkedList) getElements() []int {
 }
 
 func (s *singleLinkedList) removeIdx(idx int) {
-	// if idx < 0 {
-	// 	return
-	// }
+	if idx < 0 || s.root == nil {
+		return
+	} else if idx == 0 {
+		s.root = s.root.next
+		return
+	}
 
-	// currentIdx := 0
-	// preEl := s.root
-	// for currentIdx != idx && preEl.next != nil {
+	currentIdx := 0
+	preEl := s.root
+	for currentIdx != (idx-1) && preEl.next != nil {
+		preEl = preEl.next
+		currentIdx++
+	}
 
-	// }
+	toDelete := preEl.next
+	if toDelete == nil {
+		preEl.next = nil
+	} else {
+		preEl.next = toDelete.next
+	}
 }
