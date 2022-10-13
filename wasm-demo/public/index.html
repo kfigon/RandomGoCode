@@ -1,0 +1,19 @@
+<html>
+<title>Hello WASM</title>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+
+        <script src="wasm_exec.js"></script>
+        <script>
+            const go = new Go();
+            WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+                go.run(result.instance);
+            });
+        </script>
+    </head>
+    <h2>hello</h2>
+    <body>
+        <div id="main"/>
+    </body>
+</html>
