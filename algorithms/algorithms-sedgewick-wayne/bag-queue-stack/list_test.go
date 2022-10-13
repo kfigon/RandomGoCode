@@ -192,5 +192,18 @@ func (s *singleLinkedList) removeIdx(idx int) {
 }
 
 func (s *singleLinkedList) reverse() {
-	
+	if s.root == nil || s.root.next == nil {
+		return
+	}
+
+	prev := s.root
+	cur := s.root.next
+	for cur != nil {
+		tmp := cur
+
+		cur.next = prev
+		prev = cur
+		cur = tmp.next
+	}
+	s.root = prev
 }
