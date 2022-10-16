@@ -9,6 +9,8 @@ import (
 )
 
 // usage of stacks - Dijkstra's two-stack algorithm for expression eval
+// this does not know about operator predescence
+// shunting yard algorithm is used for that
 
 func TestEvaluator(t *testing.T) {
 	input := "(1+((2+3)*(4*5)))"
