@@ -17,10 +17,12 @@ func TestStack(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		s := &stack[int]{}
 		assert.Equal(t, 0, s.len())
+		assert.True(t, s.empty())
 
 		for i := 0; i < 5; i++ {
 			_, ok := s.pop()
 			assert.False(t, ok)
+			assert.True(t, s.empty())
 		}
 	})
 
@@ -28,12 +30,14 @@ func TestStack(t *testing.T) {
 		s := &stack[int]{}
 		s.push(5)
 		assert.Equal(t, 1, s.len())
+		assert.False(t, s.empty())
 
 		popAssert(t, s, 5)
-
+		assert.True(t, s.empty())
 		for i := 0; i < 5; i++ {
 			_, ok := s.pop()
 			assert.False(t, ok)
+			assert.True(t, s.empty())
 		}
 	})
 
@@ -43,6 +47,7 @@ func TestStack(t *testing.T) {
 		s.push(6)
 		s.push(7)
 		assert.Equal(t, 3, s.len())
+		assert.False(t, s.empty())
 
 		popAssert(t,s,7)
 		popAssert(t,s,6)
@@ -50,10 +55,12 @@ func TestStack(t *testing.T) {
 
 		popAssert(t,s,5)
 		assert.Equal(t, 0, s.len())
+		assert.True(t, s.empty())
 
 		for i := 0; i < 5; i++ {
 			_, ok := s.pop()
 			assert.False(t, ok)
+			assert.True(t, s.empty())
 		}
 	})
 
@@ -67,10 +74,12 @@ func TestStack(t *testing.T) {
 		
 		popAssert(t, s, 123)
 		popAssert(t, s, 5)
-
+		assert.True(t, s.empty())
+		
 		for i := 0; i < 5; i++ {
 			_, ok := s.pop()
 			assert.False(t, ok)
+			assert.True(t, s.empty())
 		}
 	})
 }
@@ -87,6 +96,10 @@ func (s *stack[T]) len() int{
 		ln++
 	}
 	return ln
+}
+
+func (s *stack[T]) empty() bool{
+	return s.top == nil
 }
 
 func (s *stack[T]) pop() (T, bool) {
