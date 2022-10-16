@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func makeListWithElements(vals []int) *singleLinkedList {
-	s := &singleLinkedList{}
+func makeListWithElements(vals []int) *singleLinkedList[int] {
+	s := &singleLinkedList[int]{}
 	for _, v := range vals {
 		s.add(v)
 	}
@@ -16,12 +16,12 @@ func makeListWithElements(vals []int) *singleLinkedList {
 
 func TestSinglyLinkedList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		s := &singleLinkedList{}
+		s := &singleLinkedList[int]{}
 		assert.Empty(t, s.getElements())
 	})
 
 	t.Run("single", func(t *testing.T) {
-		s := &singleLinkedList{}
+		s := &singleLinkedList[int]{}
 		s.add(2)
 		assert.Equal(t, []int{2}, s.getElements())
 	})
@@ -34,7 +34,7 @@ func TestSinglyLinkedList(t *testing.T) {
 
 func TestRemoveWithIndex(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		s := &singleLinkedList{}
+		s := &singleLinkedList[int]{}
 		for i := -10; i < 10; i++ {
 			s.removeIdx(i)
 		}
@@ -102,8 +102,9 @@ func TestRemoveWithIndex(t *testing.T) {
 }
 
 func TestReverseLinkedList(t *testing.T) {
+	t.Fatal("todo")
 	t.Run("empty", func(t *testing.T) {
-		s := &singleLinkedList{}
+		s := &singleLinkedList[int]{}
 		s.reverse()
 		assert.Empty(t, s.getElements())
 	})	
@@ -127,22 +128,22 @@ func TestReverseLinkedList(t *testing.T) {
 	})
 }
 
-type listNode struct {
-	val int
-	next *listNode
+type listNode[T any] struct {
+	val T
+	next *listNode[T]
 }
 
-func newListNode(val int) *listNode {
-	return &listNode{
+func newListNode[T any](val T) *listNode[T] {
+	return &listNode[T]{
 		val: val,
 	}
 }
 
-type singleLinkedList struct {
-	root *listNode
+type singleLinkedList[T any] struct {
+	root *listNode[T]
 }
 
-func (s *singleLinkedList) add(val int) {
+func (s *singleLinkedList[T]) add(val T) {
 	newNode := newListNode(val)
 	if s.root == nil {
 		s.root = newNode
@@ -156,8 +157,8 @@ func (s *singleLinkedList) add(val int) {
 	last.next = newNode
 }
 
-func (s *singleLinkedList) getElements() []int {
-	out := []int{}
+func (s *singleLinkedList[T]) getElements() []T {
+	out := []T{}
 
 	ptr := s.root
 	for ptr != nil {
@@ -168,7 +169,7 @@ func (s *singleLinkedList) getElements() []int {
 	return out
 }
 
-func (s *singleLinkedList) removeIdx(idx int) {
+func (s *singleLinkedList[T]) removeIdx(idx int) {
 	if idx < 0 || s.root == nil {
 		return
 	} else if idx == 0 {
@@ -191,7 +192,7 @@ func (s *singleLinkedList) removeIdx(idx int) {
 	}
 }
 
-func (s *singleLinkedList) reverse() {
+func (s *singleLinkedList[T]) reverse() {
 	if s.root == nil || s.root.next == nil {
 		return
 	}

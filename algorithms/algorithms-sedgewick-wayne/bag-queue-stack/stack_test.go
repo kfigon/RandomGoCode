@@ -8,14 +8,14 @@ import (
 
 func TestStack(t *testing.T) {
 
-	popAssert := func(t *testing.T, s *stack, exp int) {
+	popAssert := func(t *testing.T, s *stack[int], exp int) {
 		v, ok := s.pop()
 		assert.True(t, ok)
 		assert.Equal(t, exp, v)
 	}
 
 	t.Run("empty", func(t *testing.T) {
-		s := &stack{}
+		s := &stack[int]{}
 		assert.Equal(t, 0, s.len())
 
 		for i := 0; i < 5; i++ {
@@ -25,7 +25,7 @@ func TestStack(t *testing.T) {
 	})
 
 	t.Run("push", func(t *testing.T) {
-		s := &stack{}
+		s := &stack[int]{}
 		s.push(5)
 		assert.Equal(t, 1, s.len())
 
@@ -38,7 +38,7 @@ func TestStack(t *testing.T) {
 	})
 
 	t.Run("push multiple", func(t *testing.T) {
-		s := &stack{}
+		s := &stack[int]{}
 		s.push(5)
 		s.push(6)
 		s.push(7)
@@ -58,7 +58,7 @@ func TestStack(t *testing.T) {
 	})
 
 	t.Run("push pop push", func(t *testing.T) {
-		s := &stack{}
+		s := &stack[int]{}
 		s.push(5)
 		s.push(6)
 
@@ -75,11 +75,11 @@ func TestStack(t *testing.T) {
 	})
 }
 
-type stack struct {
-	top *listNode
+type stack[T any] struct {
+	top *listNode[T]
 }
 
-func (s *stack) len() int{
+func (s *stack[T]) len() int{
 	ln := 0
 	ptr := s.top
 	for ptr != nil {
@@ -89,16 +89,17 @@ func (s *stack) len() int{
 	return ln
 }
 
-func (s *stack) pop() (int, bool) {
+func (s *stack[T]) pop() (T, bool) {
 	if s.top == nil {
-		return -1, false
+		var out T
+		return out, false
 	}
 	toRet := s.top.val
 	s.top = s.top.next
 	return toRet, true
 }
 
-func (s *stack) push(val int) {
+func (s *stack[T]) push(val T) {
 	newNode := newListNode(val)
 	if s.top == nil {
 		s.top = newNode

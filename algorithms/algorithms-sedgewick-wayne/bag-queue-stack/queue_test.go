@@ -8,36 +8,36 @@ import (
 
 func TestQueue(t *testing.T) {
 
-	dequeuePresent := func(t *testing.T, q *queue, exp int) {
+	dequeuePresent := func(t *testing.T, q *queue[int], exp int) {
 		v, ok := q.dequeue()
 		assert.True(t, ok)
 		assert.Equal(t, exp, v)
 	}
 
-	dequeueAbsent := func(t *testing.T, q *queue) {
+	dequeueAbsent := func(t *testing.T, q *queue[int]) {
 		_, ok := q.dequeue()
 		assert.False(t, ok)
 	}
 
 	t.Run("empty", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		assert.Equal(t, []int{}, q.elements())
 	})
 
 	t.Run("dequeue empty", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		dequeueAbsent(t,q)
 		assert.Equal(t, []int{}, q.elements())
 	})
 
 	t.Run("enqueue", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		q.enqueue(5)
 		assert.Equal(t, []int{5}, q.elements())
 	})
 
 	t.Run("enqueue more", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		q.enqueue(5)
 		q.enqueue(6)
 		q.enqueue(7)
@@ -45,7 +45,7 @@ func TestQueue(t *testing.T) {
 	})
 
 	t.Run("dequeue single", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		q.enqueue(5)
 
 		dequeuePresent(t,q,5)
@@ -56,7 +56,7 @@ func TestQueue(t *testing.T) {
 	})
 
 	t.Run("dequeue more", func(t *testing.T) {
-		q := &queue{}
+		q := &queue[int]{}
 		q.enqueue(5)
 		q.enqueue(6)
 		q.enqueue(7)
@@ -76,12 +76,12 @@ func TestQueue(t *testing.T) {
 	})
 }
 
-type queue struct{
-	first *listNode
-	last *listNode
+type queue[T any] struct{
+	first *listNode[T]
+	last *listNode[T]
 }
 
-func (q *queue) enqueue(val int){
+func (q *queue[T]) enqueue(val T){
 	node := newListNode(val)
 	if q.first == nil {
 		q.first = node
@@ -95,9 +95,10 @@ func (q *queue) enqueue(val int){
 	}
 }
 
-func (q *queue) dequeue()(int,bool){
+func (q *queue[T]) dequeue()(T,bool){
 	if q.first == nil || q.last == nil{
-		return -1, false
+		var out T
+		return out, false
 	}
 	if q.first == q.last {
 		toRet := q.first.val
@@ -110,8 +111,8 @@ func (q *queue) dequeue()(int,bool){
 	return toRet, true
 }
 
-func (q *queue) elements() []int{
-	out := []int{}
+func (q *queue[T]) elements() []T{
+	out := []T{}
 	ptr := q.first
 	for ptr != nil {
 		out = append(out, ptr.val)
