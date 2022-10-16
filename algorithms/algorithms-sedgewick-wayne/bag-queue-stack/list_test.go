@@ -102,7 +102,6 @@ func TestRemoveWithIndex(t *testing.T) {
 }
 
 func TestReverseLinkedList(t *testing.T) {
-	t.Fatal("1.3.30")
 	t.Run("empty", func(t *testing.T) {
 		s := &singleLinkedList[int]{}
 		s.reverse()
@@ -197,14 +196,15 @@ func (s *singleLinkedList[T]) reverse() {
 		return
 	}
 
-	prev := s.root
-	cur := s.root.next
+	var prev *listNode[T] = nil
+	cur := s.root
 	for cur != nil {
-		tmp := cur
+		next := cur.next
 
 		cur.next = prev
 		prev = cur
-		cur = tmp.next
+		cur = next
 	}
+
 	s.root = prev
 }
