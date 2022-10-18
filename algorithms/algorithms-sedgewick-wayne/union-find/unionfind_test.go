@@ -59,6 +59,10 @@ func TestQuickFind(t *testing.T) {
 	}
 }
 
+func TestQuickUnion(t *testing.T) {
+	t.Fatal("todo")
+}
+
 type pair[T any, V any] struct{
 	a T
 	b V
