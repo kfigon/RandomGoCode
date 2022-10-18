@@ -65,5 +65,9 @@ func (qf *quickFind) connected(p,q int) bool{
 }
 
 func (qf *quickFind) count() int{
-	return -1
+	m := map[int]struct{}{}
+	for _, v := range qf.tab {
+		m[v] = struct{}{}
+	}
+	return len(m)
 }
