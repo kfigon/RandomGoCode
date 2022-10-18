@@ -10,10 +10,17 @@ import (
 // check if 2 elements of a set are connected
 
 // 3 algorithms: quick find, quick union and weighted quick union
+
+func populateQuickFind(num int, data []pair[int,int]) *quickFind {
+	qf := newQuickFind(num)
+	for _, v := range data {
+		qf.union(v.a, v.b)
+	}
+	return qf
+}
+
 func TestQuickFind(t *testing.T) {
-	data := []struct{
-		a,b int
-	}{
+	data := []pair[int,int]{
 		{4, 3},
 		{3, 8},
 		{6, 5},
@@ -26,13 +33,15 @@ func TestQuickFind(t *testing.T) {
 		{1, 0},
 		{6, 7},
 	}
-	qf := newQuickFind(10)
-
-	for _, v := range data {
-		qf.union(v.a, v.b)
-	}
+	qf := populateQuickFind(10, data)
 
 	assert.Equal(t, 2, qf.count())
+	assert.Equal(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, qf.connectedComponents())
+}
+
+type pair[T any, V any] struct{
+	a T
+	b V
 }
 
 type unionFind interface{
@@ -53,21 +62,40 @@ func newQuickFind(num int) *quickFind {
 }
 
 func (qf *quickFind) union(p,q int) {
-
+	if qf.connected(p,q) {
+		return
+	}
+	toFind := qf.find(p)
+	toSet := qf.find(q)
+	for i := 0; i < len(qf.tab); i++ {
+		if qf.find(i) == toFind {
+			qf.tab[i] = toSet
+		}
+	}
 }
 
 func (qf *quickFind) find(p int) int{
-	return -1
+	return qf.tab[p]
 }
 
 func (qf *quickFind) connected(p,q int) bool{
-	return false
+	return qf.find(p) == qf.find(q)
 }
 
 func (qf *quickFind) count() int{
-	m := map[int]struct{}{}
-	for _, v := range qf.tab {
-		m[v] = struct{}{}
+	return len(qf.connectedComponents())
+}
+
+func (qf *quickFind) connectedComponents() [][]int{
+	m := map[int][]int{}
+	for i, v := range qf.tab {
+		ids := m[v]
+		ids = append(ids, i)
+		m[v] = ids
 	}
-	return len(m)
+	out := [][]int{}
+	for _, group := range m {
+		out = append(out, group)
+	}
+	return out
 }
