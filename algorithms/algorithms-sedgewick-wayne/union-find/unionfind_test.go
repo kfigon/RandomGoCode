@@ -69,6 +69,9 @@ type unionFind interface{
 	find(int)
 }
 
+
+// find is very quick O(1), but union is slow O(n)
+// it's not good for big data sets - at least if you are going to modify it a lot
 type quickFind struct{
 	tab []int
 }
