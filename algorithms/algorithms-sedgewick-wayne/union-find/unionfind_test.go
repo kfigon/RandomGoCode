@@ -1,6 +1,7 @@
 package unionfind
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,6 +38,25 @@ func TestQuickFind(t *testing.T) {
 
 	assert.Equal(t, 2, qf.count())
 	assert.Equal(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, qf.connectedComponents())
+	
+	connectedPairs := []pair[int,int] {
+		{0,1},{1,0},{0,2},{2,0},{0,7}, {5,2}, {6,1},
+		{3,8}, {8,4}, {9,3}, {3,9}, {4,9},{0,0},
+	}
+	for _, p := range connectedPairs {
+		t.Run(fmt.Sprintf("connected %v-%v", p.a, p.b), func(t *testing.T) {
+			assert.True(t, qf.connected(p.a, p.b))
+		})
+	}
+	
+	notconnectedPairs := []pair[int,int] {
+		{1,3},{6,9},{8,7},
+	}
+	for _, p := range notconnectedPairs {
+		t.Run(fmt.Sprintf("notconnected %v-%v", p.a, p.b), func(t *testing.T) {
+			assert.False(t, qf.connected(p.a, p.b))
+		})
+	}
 }
 
 type pair[T any, V any] struct{
