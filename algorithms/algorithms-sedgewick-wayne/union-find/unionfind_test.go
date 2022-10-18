@@ -20,7 +20,16 @@ func populateQuickFind(num int, data []pair[int,int]) *quickFind {
 	return qf
 }
 
-func TestQuickFind(t *testing.T) {
+func populateQuickUnion(num int, data []pair[int,int]) *quickUnion {
+	qu := newQuickUnion(num)
+	for _, v := range data {
+		qu.union(v.a, v.b)
+	}
+	return qu
+}
+
+
+func TestUnionFind(t *testing.T) {
 	data := []pair[int,int]{
 		{4, 3},
 		{3, 8},
@@ -34,33 +43,40 @@ func TestQuickFind(t *testing.T) {
 		{1, 0},
 		{6, 7},
 	}
-	qf := populateQuickFind(10, data)
 
-	assert.Equal(t, 2, qf.count())
-	assert.Equal(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, qf.connectedComponents())
-	
-	connectedPairs := []pair[int,int] {
-		{0,1},{1,0},{0,2},{2,0},{0,7}, {5,2}, {6,1},
-		{3,8}, {8,4}, {9,3}, {3,9}, {4,9},{0,0},
+	tdt := []struct{
+		desc string
+		algo unionFind
+	}{
+		{"quick find", populateQuickFind(10, data)},
+		{"quick union", populateQuickUnion(10, data)},
 	}
-	for _, p := range connectedPairs {
-		t.Run(fmt.Sprintf("connected %v-%v", p.a, p.b), func(t *testing.T) {
-			assert.True(t, qf.connected(p.a, p.b))
-		})
-	}
-	
-	notconnectedPairs := []pair[int,int] {
-		{1,3},{6,9},{8,7},
-	}
-	for _, p := range notconnectedPairs {
-		t.Run(fmt.Sprintf("notconnected %v-%v", p.a, p.b), func(t *testing.T) {
-			assert.False(t, qf.connected(p.a, p.b))
-		})
-	}
-}
+	for _, tc := range tdt {
+		t.Run(tc.desc, func(t *testing.T) {
 
-func TestQuickUnion(t *testing.T) {
-	t.Fatal("todo")
+			assert.Equal(t, 2, tc.algo.count())
+			assert.Equal(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, tc.algo.connectedComponents())
+			
+			connectedPairs := []pair[int,int] {
+				{0,1},{1,0},{0,2},{2,0},{0,7}, {5,2}, {6,1},
+				{3,8}, {8,4}, {9,3}, {3,9}, {4,9},{0,0},
+			}
+			for _, p := range connectedPairs {
+				t.Run(fmt.Sprintf("connected %v-%v", p.a, p.b), func(t *testing.T) {
+					assert.True(t, tc.algo.connected(p.a, p.b))
+				})
+			}
+			
+			notconnectedPairs := []pair[int,int] {
+				{1,3},{6,9},{8,7},
+			}
+			for _, p := range notconnectedPairs {
+				t.Run(fmt.Sprintf("not connected %v-%v", p.a, p.b), func(t *testing.T) {
+					assert.False(t, tc.algo.connected(p.a, p.b))
+				})
+			}
+		})	
+	}
 }
 
 type pair[T any, V any] struct{
@@ -70,7 +86,10 @@ type pair[T any, V any] struct{
 
 type unionFind interface{
 	union(int,int)
-	find(int)
+	find(int) int
+	count() int
+	connected(int, int) bool
+	connectedComponents() [][]int
 }
 
 
@@ -125,4 +144,37 @@ func (qf *quickFind) connectedComponents() [][]int{
 		out = append(out, group)
 	}
 	return out
+}
+
+
+
+type quickUnion struct{
+	tab []int
+}
+
+func newQuickUnion(num int) *quickUnion {
+	tab := []int{}
+	for i := 0; i < num; i++ {
+		tab = append(tab, i)
+	}
+	return &quickUnion{tab}
+}
+
+func (qu *quickUnion) union(p,q int) {
+}
+
+func (qu *quickUnion) find(p int) int{
+	return -1
+}
+
+func (qu *quickUnion) connected(p,q int) bool{
+	return false
+}
+
+func (qu *quickUnion) count() int{
+	return len(qu.connectedComponents())
+}
+
+func (qu *quickUnion) connectedComponents() [][]int{
+	return nil
 }
