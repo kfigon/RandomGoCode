@@ -82,6 +82,7 @@ func bubbleSort(tab []int) []int {
 	return tab
 }
 
+// find the minimum of unsorted subarray, add to sorted part
 func selectionSort(tab []int) []int{
 	for i := 0; i < len(tab); i++ {
 		minIdx := i
