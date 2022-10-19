@@ -55,7 +55,7 @@ func TestUnionFind(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 
 			assert.Equal(t, 2, tc.algo.count())
-			assert.Equal(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, tc.algo.connectedComponents())
+			assert.ElementsMatch(t, [][]int{{0, 1, 2, 5, 6, 7}, {3, 4, 8, 9}}, tc.algo.connectedComponents())
 			
 			connectedPairs := []pair[int,int] {
 				{0,1},{1,0},{0,2},{2,0},{0,7}, {5,2}, {6,1},
@@ -147,7 +147,8 @@ func (qf *quickFind) connectedComponents() [][]int{
 }
 
 
-
+// creating trees with ended with root - which is self referecing index
+// components are connected when they have the same root
 type quickUnion struct{
 	tab []int
 }
@@ -161,14 +162,25 @@ func newQuickUnion(num int) *quickUnion {
 }
 
 func (qu *quickUnion) union(p,q int) {
+	pRoot := qu.find(p)
+
+	qu.tab[q]=pRoot
 }
 
-func (qu *quickUnion) find(p int) int{
-	return -1
+func (qu *quickUnion) find(p int) int {
+	parent := p
+	for !qu.root(parent) {
+		parent = qu.tab[parent]
+	}
+	return parent
 }
 
 func (qu *quickUnion) connected(p,q int) bool{
-	return false
+	return qu.find(p) == qu.find(q)
+}
+
+func (qu *quickUnion) root(p int) bool {
+	return qu.tab[p] == p
 }
 
 func (qu *quickUnion) count() int{
@@ -176,5 +188,17 @@ func (qu *quickUnion) count() int{
 }
 
 func (qu *quickUnion) connectedComponents() [][]int{
-	return nil
+	m := map[int][]int{}
+	for i := range qu.tab {
+		root := qu.find(i)
+
+		ids := m[root]
+		ids = append(ids, i)
+		m[root] = ids
+	}
+	out := [][]int{}
+	for _, group := range m {
+		out = append(out, group)
+	}
+	return out
 }
