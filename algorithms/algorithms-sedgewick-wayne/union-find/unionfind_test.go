@@ -11,6 +11,7 @@ import (
 // check if 2 elements of a set are connected
 
 // 3 algorithms: quick find, quick union and weighted quick union
+// weighted quick union is used to avoid tall trees
 
 func populateQuickFind(num int, data []pair[int,int]) *quickFind {
 	qf := newQuickFind(num)
@@ -52,6 +53,7 @@ func TestUnionFind(t *testing.T) {
 		{"quick union", populateQuickUnion(10, data)},
 	}
 	for _, tc := range tdt {
+		tc := tc
 		t.Run(tc.desc, func(t *testing.T) {
 
 			assert.Equal(t, 2, tc.algo.count())
