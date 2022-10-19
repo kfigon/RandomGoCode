@@ -10,7 +10,12 @@ import (
 
 func TestSorting(t *testing.T) {
 	testCases := [][]int{
+		{},
+		{1},
+		{3,4},
+		{4,3},
 		{6,5,4,3,2,1},
+		{6,3,5,4,3,2,1,3},
 		{7,6,5,4,3,2,1},
 		{5,3,7,3,1,45,56,8,9,45,2,4,5,7,4,3,2,1,54,76},
 		{5,3,7,3,1,45,56,8,9,45,2,-1,4,5,7,4,3,2,1,54,76},
@@ -78,6 +83,17 @@ func bubbleSort(tab []int) []int {
 }
 
 func selectionSort(tab []int) []int{
+	for i := 0; i < len(tab); i++ {
+		minIdx := i
+		for j := i+1; j < len(tab); j++ {
+			if tab[j] < tab[minIdx]	{
+				minIdx = j
+			}
+		}
+		tmp := tab[i]
+		tab[i] = tab[minIdx]
+		tab[minIdx] = tmp
+	}
 	return tab
 }
 
