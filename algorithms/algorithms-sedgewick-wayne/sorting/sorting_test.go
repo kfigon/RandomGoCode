@@ -21,7 +21,11 @@ func TestSorting(t *testing.T) {
 		desc string
 		fn algoFn
 	}{
-		{"bubble", bubbleSort},
+		{"bubbleSort", bubbleSort},
+		{"selectionSort", selectionSort},
+		{"insertionSort", insertionSort},
+		{"quickSort", quickSort},
+		{"mergeSort", mergeSort},
 	}
 
 	for _, algo := range algos {
@@ -34,10 +38,20 @@ func TestSorting(t *testing.T) {
 					sort.Ints(sorted)
 
 					assert.Equal(t, sorted, got)
+					assert.True(t, isSorted(got))
 				})
 			}
 		})
 	}
+}
+
+func isSorted(tab []int) bool {
+	for i := 0; i < len(tab)-1; i++ {
+		if tab[i] > tab[i+1] {
+			return false
+		}
+	}
+	return true
 }
 
 func copyArr(tab []int) []int {
@@ -51,5 +65,30 @@ func copyArr(tab []int) []int {
 type algoFn func([]int) []int
 
 func bubbleSort(tab []int) []int {
+	for i := 0; i < len(tab)-1; i++ {
+		for j := 0; j < len(tab)-1-i; j++ {
+			if tab[j] > tab[j+1] {
+				tmp := tab[j]
+				tab[j] = tab[j+1]
+				tab[j+1] = tmp
+			}
+		}
+	}
+	return tab
+}
+
+func selectionSort(tab []int) []int{
+	return tab
+}
+
+func insertionSort(tab []int) []int{
+	return tab
+}
+
+func quickSort(tab []int) []int{
+	return tab
+}
+
+func mergeSort(tab []int) []int{
 	return tab
 }
