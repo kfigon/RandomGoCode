@@ -121,6 +121,7 @@ func shellSort(tab []int) []int {
 	return tab
 }
 
+// O(nlogn)
 func mergeSort(tab []int) []int{
 	merge := func(a []int, b []int) []int {
 		out := make([]int, len(a)+len(b))
@@ -144,7 +145,6 @@ func mergeSort(tab []int) []int{
 			aI++
 			i++
 		}
-
 		for bI < len(b) {
 			out[i] = b[bI]
 			bI++
@@ -153,6 +153,8 @@ func mergeSort(tab []int) []int{
 		return out
 	}
 
+	// non splitting recursive solution:
+	// middle = lo + (hi - lo)/2
 	if len(tab) < 2 {
 		return tab
 	}
