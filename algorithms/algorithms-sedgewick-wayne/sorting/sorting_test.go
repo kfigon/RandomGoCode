@@ -29,8 +29,8 @@ func TestSorting(t *testing.T) {
 		{"bubbleSort", bubbleSort},
 		{"selectionSort", selectionSort},
 		{"insertionSort", insertionSort},
-		{"quickSort", quickSort},
 		{"mergeSort", mergeSort},
+		{"quickSort", quickSort},
 	}
 
 	for _, algo := range algos {
@@ -165,6 +165,29 @@ func mergeSort(tab []int) []int{
 	return merge(left, right)
 }
 
+// O(nlogn)
 func quickSort(tab []int) []int{
-	return tab
+	if len(tab) < 2 {
+		return tab
+	}
+	pivot := 0
+	left := []int{}
+	right := []int{}
+	for i, v := range tab {
+		if i == pivot {
+			continue
+		}
+		if v < tab[pivot] {
+			left = append(left, v)
+		} else {
+			right = append(right, v)
+		}
+	}
+	sortedLeft := quickSort(left)
+	sortedRight := quickSort(right)
+	out := []int{}
+	out = append(out, sortedLeft...)
+	out = append(out, tab[pivot])
+	out = append(out, sortedRight...)
+	return out
 }
