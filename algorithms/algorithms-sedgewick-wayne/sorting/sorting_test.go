@@ -29,6 +29,7 @@ func TestSorting(t *testing.T) {
 		{"bubbleSort", bubbleSort},
 		{"selectionSort", selectionSort},
 		{"insertionSort", insertionSort},
+		{"shellSort", shellSort},
 		{"quickSort", quickSort},
 		{"mergeSort", mergeSort},
 	}
@@ -69,13 +70,17 @@ func copyArr(tab []int) []int {
 
 type algoFn func([]int) []int
 
+func swap(i, j *int) {
+	tmp := *j
+	*j = *i
+	*i = tmp
+}
+
 func bubbleSort(tab []int) []int {
 	for i := 0; i < len(tab)-1; i++ {
 		for j := 0; j < len(tab)-1-i; j++ {
 			if tab[j] > tab[j+1] {
-				tmp := tab[j]
-				tab[j] = tab[j+1]
-				tab[j+1] = tmp
+				swap(&tab[j], &tab[j+1])
 			}
 		}
 	}
@@ -83,6 +88,7 @@ func bubbleSort(tab []int) []int {
 }
 
 // find the minimum of unsorted subarray, add to sorted part
+// select the min item
 func selectionSort(tab []int) []int{
 	for i := 0; i < len(tab); i++ {
 		minIdx := i
@@ -91,14 +97,26 @@ func selectionSort(tab []int) []int{
 				minIdx = j
 			}
 		}
-		tmp := tab[i]
-		tab[i] = tab[minIdx]
-		tab[minIdx] = tmp
+		swap(&tab[i], &tab[minIdx])
 	}
 	return tab
 }
 
-func insertionSort(tab []int) []int{
+// deck of cards
+func insertionSort(tab []int) []int {
+	for i := 1; i < len(tab); i++ {
+		prev := i-1
+		cur := i
+		for prev >= 0 && tab[prev] > tab[cur] {
+			swap(&tab[prev], &tab[cur])
+			cur--
+			prev--
+		}
+	}
+	return tab
+}
+
+func shellSort(tab []int) []int {
 	return tab
 }
 
