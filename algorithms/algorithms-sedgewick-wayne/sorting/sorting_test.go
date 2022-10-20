@@ -29,7 +29,6 @@ func TestSorting(t *testing.T) {
 		{"bubbleSort", bubbleSort},
 		{"selectionSort", selectionSort},
 		{"insertionSort", insertionSort},
-		{"shellSort", shellSort},
 		{"quickSort", quickSort},
 		{"mergeSort", mergeSort},
 	}
@@ -116,14 +115,54 @@ func insertionSort(tab []int) []int {
 	return tab
 }
 
+// todo: presort array to minimize number of swaps (by comparing elements with larger intervals)
+// then finish with insertion sort
 func shellSort(tab []int) []int {
 	return tab
 }
 
-func quickSort(tab []int) []int{
-	return tab
+func mergeSort(tab []int) []int{
+	merge := func(a []int, b []int) []int {
+		out := make([]int, len(a)+len(b))
+		aI := 0
+		bI := 0
+		i := 0
+		for aI < len(a) && bI < len(b) {
+			if a[aI] < b[bI] {
+				out[i] = a[aI]	
+				aI++
+				i++
+			} else {
+				out[i] = b[bI]	
+				bI++
+				i++
+			}
+		}
+
+		for aI < len(a) {
+			out[i] = a[aI]
+			aI++
+			i++
+		}
+
+		for bI < len(b) {
+			out[i] = b[bI]
+			bI++
+			i++
+		}
+		return out
+	}
+
+	if len(tab) < 2 {
+		return tab
+	}
+	middle := len(tab)/2
+	left := mergeSort(tab[:middle])
+	right := mergeSort(tab[middle:])
+
+	return merge(left, right)
 }
 
-func mergeSort(tab []int) []int{
+func quickSort(tab []int) []int{
 	return tab
 }
