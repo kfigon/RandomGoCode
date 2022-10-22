@@ -21,21 +21,30 @@ type heap[T any] interface {
 
 type heapEl[T any] pair[int, T]
 type arrayHeap[T any] struct {
-	tab []heapEl[T]
+	tab []*heapEl[T]
 }
 
 func newArrayHeap[T any]() *arrayHeap[T] {
-	return &arrayHeap[T]{tab: []heapEl[T]{}}
+	return &arrayHeap[T]{tab: []*heapEl[T]{}}
 }
 
 func (a *arrayHeap[T]) insert(v heapEl[T]) {
 
 }
 
-func (a *arrayHeap[T]) max() (heapEl[T], bool) {
-	return heapEl[T]{}, false
+func (a *arrayHeap[T]) max() (*heapEl[T], bool) {
+	return nil, false
 }
 
-func (a *arrayHeap[T]) delMax() (heapEl[T], bool) {
-	return heapEl[T]{}, false
+func (a *arrayHeap[T]) delMax() (*heapEl[T], bool) {
+	return nil, false
+}
+
+func (a *arrayHeap[T]) children(idx int) (int,int) {
+	x := idx*2
+	return x, x+1
+}
+
+func (a *arrayHeap[T]) parent(idx int) int {
+	return idx/2
 }
