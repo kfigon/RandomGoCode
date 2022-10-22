@@ -56,7 +56,8 @@ func newArrayHeap[T any]() *arrayHeap[T] {
 }
 
 func (a *arrayHeap[T]) insert(v heapEl[T]) {
-
+	a.tab = append(a.tab, &v)
+	// todo: heapify
 }
 
 func (a *arrayHeap[T]) max() (*heapEl[T], bool) {
