@@ -1,6 +1,10 @@
 package priorityqueue
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 // heap (binary heap) - structure where each key is guaranteed to be larger
 // to the 2 children. Array or binary tree(+ link to parrent)
@@ -9,10 +13,29 @@ import "testing"
 // maxBinaryHeap - parent is always larger than children nodes
 // minBinaryHeap - parent is always smaller than childen nodes
 
-// heap is always balanced (binary tree is not, can be tall). Here we fill it sequentially 
+// heap is always balanced (binary tree is not, can be tall). Here we fill it sequentially
 
 func TestHeap(t *testing.T) {
-	t.Fatal("todo")	
+	t.Run("empty", func(t *testing.T) {
+		hip := newArrayHeap[string]()
+		_, ok := hip.max()
+		assert.False(t, ok)
+	})
+
+	t.Run("single", func(t *testing.T) {
+		hip := newArrayHeap[string]()
+
+		hip.insert(heapEl[string]{5, "foo"})
+
+		v, ok := hip.max()
+		assert.True(t, ok)
+		assert.Equal(t, heapEl[string]{5, "foo"}, *v)
+
+		_, ok = hip.max()
+		assert.False(t, ok)
+	})
+
+	t.Fatal("todo more")
 }
 
 type heap[T any] interface {
@@ -27,7 +50,9 @@ type arrayHeap[T any] struct {
 }
 
 func newArrayHeap[T any]() *arrayHeap[T] {
-	return &arrayHeap[T]{tab: []*heapEl[T]{nil}} // first element nil to help with index math
+	return &arrayHeap[T]{
+		tab: []*heapEl[T]{nil},  // first element nil to help with index math
+	}
 }
 
 func (a *arrayHeap[T]) insert(v heapEl[T]) {
