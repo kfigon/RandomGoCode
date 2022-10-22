@@ -4,10 +4,12 @@ import "testing"
 
 // heap (binary heap) - structure where each key is guaranteed to be larger
 // to the 2 children. Array or binary tree(+ link to parrent)
-// # BinaryHeap is kind of binarySearchTree (2 nodes)
-// # maxBinaryHeap - parent is always larger than children nodes
-// # minBinaryHeap - parent is always smaller than childen nodes
-// heap is always balanced (binary tree is not, can be tall)
+
+// BinaryHeap is kind of binarySearchTree (2 nodes)
+// maxBinaryHeap - parent is always larger than children nodes
+// minBinaryHeap - parent is always smaller than childen nodes
+
+// heap is always balanced (binary tree is not, can be tall). Here we fill it sequentially 
 
 func TestHeap(t *testing.T) {
 	t.Fatal("todo")	
@@ -25,7 +27,7 @@ type arrayHeap[T any] struct {
 }
 
 func newArrayHeap[T any]() *arrayHeap[T] {
-	return &arrayHeap[T]{tab: []*heapEl[T]{}}
+	return &arrayHeap[T]{tab: []*heapEl[T]{nil}} // first element nil to help with index math
 }
 
 func (a *arrayHeap[T]) insert(v heapEl[T]) {
@@ -47,4 +49,16 @@ func (a *arrayHeap[T]) children(idx int) (int,int) {
 
 func (a *arrayHeap[T]) parent(idx int) int {
 	return idx/2
+}
+
+func (a *arrayHeap[T]) hasParrent(idx int) bool {
+	return idx > 1
+}
+
+func (a *arrayHeap[T]) hasLeftChild(idx int) bool {
+	return (idx*2) < len(a.tab)
+}
+
+func (a *arrayHeap[T]) hasRightChild(idx int) bool {
+	return (idx*2 +1) < len(a.tab)
 }
