@@ -163,22 +163,24 @@ func (a *arrayHeap) delMax() (int, bool) {
 
 	// get the last element and push it down the heap
 	a.tab[1] = a.tab[a.size]
+	a.size--
 	idx := 1
 	for {
 		leftIdx, lOk := a.leftChildIdx(idx)
 		rightIdx, rOk := a.rightChildIdx(idx)
 
-		if lOk && a.tab[idx] < a.tab[leftIdx] {
-			swap(&a.tab[leftIdx], &a.tab[idx])
-			idx = leftIdx
-		} else if rOk && a.tab[idx] < a.tab[rightIdx] {
-			swap(&a.tab[rightIdx], &a.tab[idx])
-			idx = rightIdx
+		if lOk && rOk {
+			if a.tab[leftIdx] < a.tab[rightIdx] && a.tab[idx] < a.tab[leftIdx] {
+				swap(&a.tab[idx], &a.tab[leftIdx])
+				idx = leftIdx
+			} else {
+			}
+		} else if lOk && !rOk {
+		} else if !lOk && rOk {
 		} else {
 			break
 		}
 	}
-	a.size--
 	return toRet, true
 }
 
