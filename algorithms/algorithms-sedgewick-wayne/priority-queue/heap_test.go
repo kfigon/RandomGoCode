@@ -17,19 +17,19 @@ import (
 
 func TestHeap(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		hip := newArrayHeap[string]()
+		hip := newArrayHeap()
 		_, ok := hip.max()
 		assert.False(t, ok)
 	})
 
 	t.Run("single", func(t *testing.T) {
-		hip := newArrayHeap[string]()
+		hip := newArrayHeap()
 
-		hip.insert(heapEl[string]{5, "foo"})
+		hip.insert(5)
 
 		v, ok := hip.max()
 		assert.True(t, ok)
-		assert.Equal(t, heapEl[string]{5, "foo"}, *v)
+		assert.Equal(t, 5, v)
 
 		_, ok = hip.max()
 		assert.False(t, ok)
@@ -38,53 +38,74 @@ func TestHeap(t *testing.T) {
 	t.Fatal("todo more")
 }
 
-type heap[T any] interface {
-	insert(pair[int, T])
-	max() (pair[int, T], bool)
-	delMax() (pair[int, T], bool)
+// todo - make it generic
+type heap interface {
+	insert(int)
+	max() (int, bool)
+	delMax() (int, bool)
 }
 
-type heapEl[T any] pair[int, T]
-type arrayHeap[T any] struct {
-	tab []*heapEl[T]
+type arrayHeap struct {
+	tab []int
+	size int
 }
 
-func newArrayHeap[T any]() *arrayHeap[T] {
-	return &arrayHeap[T]{
-		tab: []*heapEl[T]{nil},  // first element nil to help with index math
+func newArrayHeap() *arrayHeap {
+	tab := []int{-900}// first element nil to help with index math
+
+	for i := 0; i < 16; i++ {
+		tab = append(tab, -1) // todo: think about resizing and dynamic size
+	}
+
+	return &arrayHeap{
+		tab: tab,
+		size: 0,
 	}
 }
 
-func (a *arrayHeap[T]) insert(v heapEl[T]) {
-	a.tab = append(a.tab, &v)
-	// todo: heapify
+func (a *arrayHeap) insert(v int) {
+	a.size++
+	a.tab[a.size] = v
+
+	// swim up
+	idx := a.size
+	for {
+		parent, ok := a.parentIdx(idx)
+		if !ok {
+			break
+		}
+		if a.tab[idx] > a.tab[parent] {
+			swap(&a.tab[idx], &a.tab[parent])
+		}
+		idx = parent
+	}
 }
 
-func (a *arrayHeap[T]) max() (*heapEl[T], bool) {
-	return nil, false
+func swap(a,b *int) {
+	tmp := *a
+	*a = *b
+	*b = tmp
 }
 
-func (a *arrayHeap[T]) delMax() (*heapEl[T], bool) {
-	return nil, false
+func (a *arrayHeap) max() (int, bool) {
+	if a.size < 1 {
+		return 0, false
+	}
+	return a.tab[1], true
 }
 
-func (a *arrayHeap[T]) children(idx int) (int,int) {
-	x := idx*2
-	return x, x+1
+func (a *arrayHeap) delMax() (int, bool) {
+	return 0, false
 }
 
-func (a *arrayHeap[T]) parent(idx int) int {
-	return idx/2
+func (a *arrayHeap) leftChildIdx(idx int) (int,bool) {
+	return idx*2, (idx*2) < a.size
 }
 
-func (a *arrayHeap[T]) hasParrent(idx int) bool {
-	return idx > 1
+func (a *arrayHeap) rightChildIdx(idx int) (int,bool) {
+	return (idx*2 +1), (idx*2 +1) < a.size
 }
 
-func (a *arrayHeap[T]) hasLeftChild(idx int) bool {
-	return (idx*2) < len(a.tab)
-}
-
-func (a *arrayHeap[T]) hasRightChild(idx int) bool {
-	return (idx*2 +1) < len(a.tab)
+func (a *arrayHeap) parentIdx(idx int) (int, bool) {
+	return idx/2, idx > 1
 }
