@@ -16,9 +16,20 @@ import (
 // heap is always balanced (binary tree is not, can be tall). Here we fill it sequentially
 
 func TestHeap(t *testing.T) {
+
+	popAssert := func(t *testing.T, hip *arrayHeap, expected int) {
+		v, ok := hip.delMax()
+		assert.True(t, ok)
+		assert.Equal(t, expected, v)
+	}
+
 	t.Run("empty", func(t *testing.T) {
 		hip := newArrayHeap()
-		_, ok := hip.max()
+		_, ok := hip.delMax()
+		assert.False(t, ok)
+		assert.Equal(t, 0, hip.size)
+
+		_, ok = hip.max()
 		assert.False(t, ok)
 	})
 
@@ -26,16 +37,66 @@ func TestHeap(t *testing.T) {
 		hip := newArrayHeap()
 
 		hip.insert(5)
+		assert.Equal(t, 1, hip.size)
 
-		v, ok := hip.max()
-		assert.True(t, ok)
-		assert.Equal(t, 5, v)
+		popAssert(t, hip, 5)
+		assert.Equal(t, 0, hip.size)
 
-		_, ok = hip.max()
+		_, ok := hip.delMax()
+		assert.False(t, ok)
+		assert.Equal(t, 0, hip.size)
+	})
+
+	t.Run("multiple", func(t *testing.T) {
+		hip := newArrayHeap()
+
+		for i, v := range []int{4,3,6,8,32,2,1} {
+			hip.insert(v)
+			assert.Equal(t, i+1, hip.size)
+		}
+		assert.Equal(t, 7, hip.size)
+		// assert.Equal(t, []int{-900, 32,8,4,3,6,2,1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, hip.tab) // not so great assert, but
+
+		
+		expectedSorted := []int{32,8,6,4,3,2,1}
+		got := []int{}
+		for {
+			v, ok := hip.delMax()
+			if !ok {
+				break
+			}
+			got = append(got, v)
+			assert.Equal(t, len(expectedSorted) - len(got), hip.size)
+		}
+		assert.Equal(t, expectedSorted, got)
+		assert.Equal(t, 0, hip.size)
+
+		_, ok := hip.max()
 		assert.False(t, ok)
 	})
 
-	t.Fatal("todo more")
+	t.Run("inserts between pops", func(t *testing.T) {
+		hip := newArrayHeap()
+		hip.insert(5)
+		hip.insert(8)
+		hip.insert(1)
+		hip.insert(13)
+
+		popAssert(t, hip, 12)
+		popAssert(t, hip, 8)
+
+		hip.insert(2)
+		hip.insert(13)
+
+		popAssert(t, hip, 12)
+		popAssert(t, hip, 5)
+		popAssert(t, hip, 2)
+		popAssert(t, hip, 1)
+
+		assert.Equal(t, 0, hip.size)
+		_, ok := hip.delMax()
+		assert.False(t, ok)
+	})
 }
 
 // todo - make it generic
@@ -95,15 +156,38 @@ func (a *arrayHeap) max() (int, bool) {
 }
 
 func (a *arrayHeap) delMax() (int, bool) {
-	return 0, false
+	if a.size < 1 {
+		return 0, false
+	}
+	toRet := a.tab[1]
+
+	// get the last element and push it down the heap
+	a.tab[1] = a.tab[a.size]
+	idx := 1
+	for {
+		leftIdx, lOk := a.leftChildIdx(idx)
+		rightIdx, rOk := a.rightChildIdx(idx)
+
+		if lOk && a.tab[idx] < a.tab[leftIdx] {
+			swap(&a.tab[leftIdx], &a.tab[idx])
+			idx = leftIdx
+		} else if rOk && a.tab[idx] < a.tab[rightIdx] {
+			swap(&a.tab[rightIdx], &a.tab[idx])
+			idx = rightIdx
+		} else {
+			break
+		}
+	}
+	a.size--
+	return toRet, true
 }
 
 func (a *arrayHeap) leftChildIdx(idx int) (int,bool) {
-	return idx*2, (idx*2) < a.size
+	return idx*2, (idx*2) <= a.size
 }
 
 func (a *arrayHeap) rightChildIdx(idx int) (int,bool) {
-	return (idx*2 +1), (idx*2 +1) < a.size
+	return (idx*2 +1), (idx*2 +1) <= a.size
 }
 
 func (a *arrayHeap) parentIdx(idx int) (int, bool) {
