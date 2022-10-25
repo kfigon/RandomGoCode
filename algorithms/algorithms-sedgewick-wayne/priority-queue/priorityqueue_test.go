@@ -14,21 +14,8 @@ import "testing"
 // unordered arr	  1			N
 // heap			  	 logN      logN
 
+// it's often useful to store a key and a value in the pq
+// key is used to sort
 func TestPriorityQueue(t *testing.T) {
-	t.Fatal("todo")
+	// just use heap to interleave inserts and deletions
 }
-
-
-type pair[T any, V any] struct {
-	a T
-	b V
-}
-
-type priorityQueue[T any] interface {
-	insert(pair[int, T])
-	max() pair[int, T]
-	delMax() pair[int, T]
-	size() int
-	empty() bool
-}
-
