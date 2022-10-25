@@ -82,11 +82,11 @@ func TestHeap(t *testing.T) {
 		hip.insert(1)
 		hip.insert(13)
 
-		popAssert(t, hip, 12)
+		popAssert(t, hip, 13)
 		popAssert(t, hip, 8)
 
 		hip.insert(2)
-		hip.insert(13)
+		hip.insert(12)
 
 		popAssert(t, hip, 12)
 		popAssert(t, hip, 5)
@@ -169,17 +169,28 @@ func (a *arrayHeap) delMax() (int, bool) {
 		leftIdx, lOk := a.leftChildIdx(idx)
 		rightIdx, rOk := a.rightChildIdx(idx)
 
+		maxIdx := -1
 		if lOk && rOk {
-			if a.tab[leftIdx] < a.tab[rightIdx] && a.tab[idx] < a.tab[leftIdx] {
-				swap(&a.tab[idx], &a.tab[leftIdx])
-				idx = leftIdx
+			if a.tab[leftIdx] > a.tab[rightIdx] {
+				maxIdx = leftIdx
 			} else {
+				maxIdx = rightIdx
 			}
 		} else if lOk && !rOk {
+			maxIdx = leftIdx
 		} else if !lOk && rOk {
+			maxIdx = rightIdx
 		} else {
 			break
 		}
+
+		if maxIdx != -1 && a.tab[maxIdx] > a.tab[idx] {
+			swap(&a.tab[maxIdx], &a.tab[idx])
+			idx = maxIdx
+		} else {
+			break
+		}
+
 	}
 	return toRet, true
 }
