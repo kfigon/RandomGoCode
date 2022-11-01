@@ -97,6 +97,33 @@ func TestHeap(t *testing.T) {
 	})
 }
 
+func TestTopMinElements(t *testing.T) {
+	h := newArrayHeap()
+	const M = 3
+	// infinite stream of data
+	for _, v := range []int{4,3,6,8,32,2,1, 5,2,1,5,7,7,4,3,4,65,7,45,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,
+		5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,
+		5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,5,53,234,234,43,53,12,12,42,65,
+		5,53,234,234,43,53,12,12,42,65} {
+		h.insert(v)
+		if len(h.tab) > M {
+			h.delMax()
+		}
+	}
+
+	exp := []int{2,1,1}
+	got := []int{}
+	for {
+		v, ok := h.delMax()
+		if !ok {
+			break
+		}
+		got = append(got, v)
+	}
+
+	assert.Equal(t, exp, got)
+}
+
 // todo - make it generic
 type heap interface {
 	insert(int)
