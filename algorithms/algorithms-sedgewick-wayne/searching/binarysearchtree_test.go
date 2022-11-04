@@ -99,7 +99,44 @@ func TestCompare(t *testing.T) {
 }
 
 func TestBstDelete(t *testing.T) {
-	t.Fatal("todo")
+	t.Run("empty", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.delete(123)
+		b.delete(1)
+		b.delete(3)
+
+		assert.Equal(t, []intWrapper{}, b.traverse())
+	})
+
+	t.Run("not empty", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []int{5,3,7,4,1,8} {
+			b.add(intWrapper(v))
+		}
+		b.delete(123)
+		b.delete(1)
+		b.delete(7)
+		b.delete(5)
+
+		assert.Equal(t, []intWrapper{3,4,8}, b.traverse())
+	})
+
+	t.Run("interleaved", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []int{5,3,7,4,1,8} {
+			b.add(intWrapper(v))
+		}
+		
+		b.delete(1)
+		b.delete(7)
+		b.delete(5)
+
+		for _, v := range []int{2,10,-14,1} {
+			b.add(intWrapper(v))
+		}
+
+		assert.Equal(t, []intWrapper{-14,1,2,3,4,8,10}, b.traverse())
+	})
 }
 
 func TestBstRange(t *testing.T) {
@@ -275,4 +312,8 @@ func (b *bst[T]) inRange(min, max T) []T {
 	}
 	fn(b.root)
 	return out
+}
+
+func (b *bst[T]) delete(v T) {
+
 }
