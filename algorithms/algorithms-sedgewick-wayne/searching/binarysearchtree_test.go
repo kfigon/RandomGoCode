@@ -81,6 +81,10 @@ func TestBinarySearchTree(t *testing.T) {
 	})
 }
 
+func TestBstDelete(t *testing.T) {
+	t.Fatal("todo")
+}
+
 func TestBstRange(t *testing.T) {
 	testCases := []struct {
 		min int
@@ -202,14 +206,10 @@ func (b *bst[T]) max() (T, bool) {
 		return out, false
 	}
 	ptr := b.root
-	max := ptr.val
-	for ptr != nil {
-		if ptr.val.cmp(max) > 0 {
-			max = ptr.val
-		}
+	for ptr.right != nil {
 		ptr = ptr.right
 	}
-	return max, true
+	return ptr.val, true
 }
 
 func (b *bst[T]) min() (T, bool) {
@@ -222,14 +222,10 @@ func (b *bst[T]) min() (T, bool) {
 		return out, false
 	}
 	ptr := b.root
-	min := ptr.val
-	for ptr != nil {
-		if ptr.val.cmp(min) < 0 {
-			min = ptr.val
-		}
+	for ptr.left != nil {
 		ptr = ptr.left
 	}
-	return min, true
+	return ptr.val, true
 }
 
 func (b *bst[T]) inRange(min, max T) []T {
@@ -243,11 +239,10 @@ func (b *bst[T]) inRange(min, max T) []T {
 		if n == nil {
 			return
 		}
-		fn(n.left)
-		if min.cmp(n.val) >= 0 && max.cmp(n.val) <= 0 {
-			out = append(out, n.val)
-		}
-		fn(n.right)
+		// cmpMin := min.cmp(n.val)
+		// cmpMax := max.cmp(n.val)
+		// if cm
+		return
 	}
 	fn(b.root)
 	return out
