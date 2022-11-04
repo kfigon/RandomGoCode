@@ -81,6 +81,23 @@ func TestBinarySearchTree(t *testing.T) {
 	})
 }
 
+func TestCompare(t *testing.T) {
+	testCases := []struct {
+		a int
+		b int
+		exp int		
+	}{
+		{2,5,-1},
+		{5,2,1},
+		{5,5,0},
+	}
+	for _, tC := range testCases {
+		t.Run(fmt.Sprintf("%v %v", tC.a, tC.b), func(t *testing.T) {
+			assert.Equal(t, tC.exp, intWrapper(tC.a).cmp(intWrapper(tC.b)))
+		})
+	}
+}
+
 func TestBstDelete(t *testing.T) {
 	t.Fatal("todo")
 }
@@ -105,7 +122,7 @@ func TestBstRange(t *testing.T) {
 		t.Run(fmt.Sprintf("%v-%v", tC.min, tC.max), func(t *testing.T) {
 			b := &bst[intWrapper]{}
 			// 1,2,3,4,5,6,7,8,9,10
-			for _, v := range []intWrapper{4,10,9,2,6,3,8,1,7} {
+			for _, v := range []intWrapper{4,10,9,2,5,6,3,8,1,7} {
 				b.add(v)
 			}
 			assert.Equal(t, tC.exp, b.inRange(intWrapper(tC.min),intWrapper(tC.max)))
@@ -115,10 +132,15 @@ func TestBstRange(t *testing.T) {
 
 type intWrapper int
 func (i intWrapper) cmp(other intWrapper) int {
-	if int(i) > int(other) {
-		return 1
-	} else if int(i) < int(other) {
+	// def(a,b): 
+	//   return a-b
+	
+	// a.cmp(b) < 0		a < b
+	// a.cmp(b) > 0 	a > b
+	if int(i) < int(other) {
 		return -1
+	} else if int(i) > int(other) {
+		return 1
 	}
 	return 0
 }
@@ -230,7 +252,7 @@ func (b *bst[T]) min() (T, bool) {
 
 func (b *bst[T]) inRange(min, max T) []T {
 	out := []T{}
-	if min.cmp(max) < 0 {
+	if min.cmp(max) > 0 {
 		return out
 	}
 
@@ -241,13 +263,13 @@ func (b *bst[T]) inRange(min, max T) []T {
 		}
 		cmpMin := n.val.cmp(min)
 		cmpMax := n.val.cmp(max)
-		if cmpMin >= 0 { // v >= min 
+		if cmpMin > 0 { // v > min
 			fn(n.left)
 		}
 		if cmpMin >= 0 && cmpMax <= 0 { // min <= v && v <= max
 			out = append(out, n.val)	
 		}
-		if cmpMax <= 0 { // v <= max
+		if cmpMax < 0 { // v < max
 			fn(n.right)
 		}
 	}
