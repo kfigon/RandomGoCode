@@ -105,7 +105,7 @@ func TestBstRange(t *testing.T) {
 		t.Run(fmt.Sprintf("%v-%v", tC.min, tC.max), func(t *testing.T) {
 			b := &bst[intWrapper]{}
 			// 1,2,3,4,5,6,7,8,9,10
-			for _, v := range []intWrapper{10,4,9,2,6,3,8,1,7} {
+			for _, v := range []intWrapper{4,10,9,2,6,3,8,1,7} {
 				b.add(v)
 			}
 			assert.Equal(t, tC.exp, b.inRange(intWrapper(tC.min),intWrapper(tC.max)))
@@ -239,10 +239,17 @@ func (b *bst[T]) inRange(min, max T) []T {
 		if n == nil {
 			return
 		}
-		// cmpMin := min.cmp(n.val)
-		// cmpMax := max.cmp(n.val)
-		// if cm
-		return
+		cmpMin := n.val.cmp(min)
+		cmpMax := n.val.cmp(max)
+		if cmpMin >= 0 { // v >= min 
+			fn(n.left)
+		}
+		if cmpMin >= 0 && cmpMax <= 0 { // min <= v && v <= max
+			out = append(out, n.val)	
+		}
+		if cmpMax <= 0 { // v <= max
+			fn(n.right)
+		}
 	}
 	fn(b.root)
 	return out
