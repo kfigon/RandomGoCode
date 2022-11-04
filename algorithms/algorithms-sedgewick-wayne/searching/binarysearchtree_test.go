@@ -121,12 +121,23 @@ func TestBstDelete(t *testing.T) {
 		assert.Equal(t, []intWrapper{3,4,8}, b.traverse())
 	})
 
+	t.Run("tall tree", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []int{1,2,3,10,11,12, 5,6,7} {
+			b.add(intWrapper(v))
+		}
+		b.delete(10)
+		b.delete(11)
+
+		assert.Equal(t, []intWrapper{1,2,3,5,6,7,12}, b.traverse())
+	})
+
 	t.Run("interleaved", func(t *testing.T) {
 		b := &bst[intWrapper]{}
 		for _, v := range []int{5,3,7,4,1,8} {
 			b.add(intWrapper(v))
 		}
-		
+
 		b.delete(1)
 		b.delete(7)
 		b.delete(5)
