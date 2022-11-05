@@ -325,6 +325,10 @@ func (b *bst[T]) inRange(min, max T) []T {
 	return out
 }
 
+// 3 cases:
+// delete a leaf
+// node with 1 child
+// node with 2 children
 func (b *bst[T]) delete(v T) {
 
 }
