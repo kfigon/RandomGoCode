@@ -108,6 +108,42 @@ func TestBstDelete(t *testing.T) {
 		assert.Equal(t, []intWrapper{}, b.traverse())
 	})
 
+	t.Run("single el", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(123)
+		b.delete(123)
+
+		assert.Equal(t, []intWrapper{}, b.traverse())
+	})
+
+	t.Run("root when 1 left child", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(5)
+		b.add(1)
+		b.delete(5)
+
+		assert.Equal(t, []intWrapper{1}, b.traverse())
+	})
+
+	t.Run("root when 1 right child", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(5)
+		b.add(10)
+		b.delete(5)
+
+		assert.Equal(t, []intWrapper{10}, b.traverse())
+	})
+
+	t.Run("root when 2 children", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(5)
+		b.add(10)
+		b.add(1)
+		b.delete(5)
+
+		assert.Equal(t, []intWrapper{1,10}, b.traverse())
+	})
+
 	t.Run("not empty", func(t *testing.T) {
 		b := &bst[intWrapper]{}
 		for _, v := range []int{5,3,7,4,1,8} {
@@ -119,6 +155,16 @@ func TestBstDelete(t *testing.T) {
 		b.delete(5)
 
 		assert.Equal(t, []intWrapper{3,4,8}, b.traverse())
+	})
+
+	t.Run("root when many", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []int{5,3,7,4,1,8} {
+			b.add(intWrapper(v))
+		}
+		b.delete(5)
+
+		assert.Equal(t, []intWrapper{1,3,4,7,8}, b.traverse())
 	})
 
 	t.Run("tall tree", func(t *testing.T) {
@@ -330,5 +376,7 @@ func (b *bst[T]) inRange(min, max T) []T {
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
+	// parent := b.root
+	// var nodeToDelete *node = nil
 
 }
