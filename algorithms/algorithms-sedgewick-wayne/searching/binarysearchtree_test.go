@@ -376,7 +376,47 @@ func (b *bst[T]) inRange(min, max T) []T {
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
-	// parent := b.root
-	// var nodeToDelete *node = nil
+	var parent *node[T] = nil
+	ptr := b.root
 
+	for ptr != nil && v.cmp(ptr.val) != 0 {
+		if v.cmp(ptr.val) < 0 {
+			parent = ptr
+			ptr = ptr.left
+		} else if v.cmp(ptr.val) > 0 {
+			parent = ptr
+			ptr = ptr.right
+		}
+	}
+
+	if ptr == nil {
+		return
+	} else if parent == nil { // 1 element, root itself matched
+		b.root = nil
+		return
+	}
+
+	if ptr.left != nil && ptr.right != nil { // 2 children
+
+	} else if ptr.left == nil && ptr.right == nil { // 0 child
+		if v.cmp(parent.val) < 0 {
+			parent.left = nil
+		} else {
+			parent.right = nil
+		}
+	} else { // 1 child
+		var nextNode *node[T]
+		if ptr.left != nil {
+			nextNode = ptr.left
+		} else {
+			nextNode = ptr.right
+		}
+
+		if v.cmp(parent.val) < 0 {
+			parent.left = nextNode
+		} else {
+			parent.right = nextNode
+		}
+		ptr = nil
+	}
 }
