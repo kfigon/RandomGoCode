@@ -94,6 +94,13 @@ func TestBinarySearchTree(t *testing.T) {
 
 		_, ok = b.get(125)
 		assert.False(t, ok)
+
+		got, ok = b.getRec(5)
+		assert.True(t, ok)
+		assert.Equal(t, got, intWrapper(5))
+
+		_, ok = b.getRec(125)
+		assert.False(t, ok)
 	})
 }
 
