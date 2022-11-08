@@ -306,3 +306,7 @@ func TestHeight(t *testing.T) {
 		assert.Equal(t, 4, b.height())
 	})
 }
+
+func TestBfs(t *testing.T) {
+	t.Fatal("todo")
+}

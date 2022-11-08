@@ -98,6 +98,18 @@ func (b *bst[T]) traverseDfs(fn func(T)) {
 	travFn(b.root)
 }
 
+func (b *bst[T]) traverseBfs(fn func(T)) {
+	
+}
+
+func (b *bst[T]) collectBfs() []T {
+	out := []T{}
+	b.traverseBfs(func(v T) {
+		out = append(out, v)
+	})
+	return out
+}
+
 func (b *bst[T]) collect() []T {
 	out := []T{}
 	b.traverseDfs(func(v T) {
