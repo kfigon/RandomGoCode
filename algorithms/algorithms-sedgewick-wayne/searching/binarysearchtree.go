@@ -214,17 +214,62 @@ func (b *bst[T]) delMin() {
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
-	var findMin func(*node[T]) *node[T]
-	findMin = func(n *node[T]) *node[T] {
-		if n.left == nil {
-			return n
+	curr := b.root
+    var prev *node[T]
+ 
+	// recursive solution is tricky, this one also :O
+
+    for curr != nil && curr.val.cmp(v) != 0 {
+        prev = curr
+        if curr.val.cmp(v) < 0 {
+            curr = curr.right
+		} else {
+			curr = curr.left
 		}
-		return findMin(n.left)
+	}
+ 
+    if curr == nil {
+        return
+	}
+ 
+	// at most 1 child
+	if curr.left == nil || curr.right == nil { 
+        var newCurr *node[T]
+ 
+        if curr.left == nil {
+            newCurr = curr.right
+		} else {
+            newCurr = curr.left
+		}
+
+        if prev == nil {
+			b.root = newCurr
+            return
+		}
+
+        if curr == prev.left {
+            prev.left = newCurr
+		} else {
+            prev.right = newCurr
+		}
+        curr = nil
+		return
+	} 
+
+	// 2 children
+	var ptr *node[T]
+	temp := curr.right
+
+	for temp.left != nil {
+		ptr = temp
+		temp = temp.left
 	}
 
-	var fn func(*node[T]) *node[T]
-	fn = func(n *node[T]) *node[T] {
-		return n
+	if ptr != nil {
+		ptr.left = temp.right
+	} else {
+		curr.right = temp.right
 	}
-	b.root = fn(b.root)
+	curr.val = temp.val
+	temp = nil
 }
