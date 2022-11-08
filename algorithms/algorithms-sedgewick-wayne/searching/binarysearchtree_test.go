@@ -67,6 +67,24 @@ func TestBinarySearchTree(t *testing.T) {
 		assert.Equal(t, -123, int(min))
 	})
 
+	t.Run("del min", func(t *testing.T) {
+		b := newBst()
+		for _, v := range []intWrapper{7,5,3,2,5,7,1,2} {
+			b.add(v)
+		}
+		b.delMin()
+		assert.Equal(t, []intWrapper{2,3,5,7}, b.traverse())
+	})
+
+	t.Run("del min 2", func(t *testing.T) {
+		b := newBst()
+		for _, v := range []intWrapper{88,-123,32,12,-5} {
+			b.add(v)
+		}
+		b.delMin()
+		assert.Equal(t, []intWrapper{-5,12,32,88}, b.traverse())
+	})
+
 	t.Run("get", func(t *testing.T) {
 		b := newBst()
 		for _, v := range []intWrapper{7,5,3,2,5,7,1,2} {
@@ -371,52 +389,14 @@ func (b *bst[T]) inRange(min, max T) []T {
 	return out
 }
 
+func (b *bst[T]) delMin() {
+	
+}
+
 // 3 cases:
 // delete a leaf
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
-	var parent *node[T] = nil
-	ptr := b.root
-
-	for ptr != nil && v.cmp(ptr.val) != 0 {
-		if v.cmp(ptr.val) < 0 {
-			parent = ptr
-			ptr = ptr.left
-		} else if v.cmp(ptr.val) > 0 {
-			parent = ptr
-			ptr = ptr.right
-		}
-	}
-
-	if ptr == nil {
-		return
-	} else if parent == nil { // 1 element, root itself matched
-		b.root = nil
-		return
-	}
-
-	if ptr.left != nil && ptr.right != nil { // 2 children
-
-	} else if ptr.left == nil && ptr.right == nil { // 0 child
-		if v.cmp(parent.val) < 0 {
-			parent.left = nil
-		} else {
-			parent.right = nil
-		}
-	} else { // 1 child
-		var nextNode *node[T]
-		if ptr.left != nil {
-			nextNode = ptr.left
-		} else {
-			nextNode = ptr.right
-		}
-
-		if v.cmp(parent.val) < 0 {
-			parent.left = nextNode
-		} else {
-			parent.right = nextNode
-		}
-		ptr = nil
-	}
+	
 }
