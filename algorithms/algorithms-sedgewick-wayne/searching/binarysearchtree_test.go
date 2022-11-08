@@ -16,7 +16,7 @@ func TestBinarySearchTree(t *testing.T) {
 
 	t.Run("empty", func(t *testing.T) {
 		b := newBst()
-		assert.Equal(t, []intWrapper{}, b.traverse())
+		assert.Equal(t, []intWrapper{}, b.collect())
 		
 		_, ok := b.max()
 		assert.False(t, ok)
@@ -30,7 +30,7 @@ func TestBinarySearchTree(t *testing.T) {
 		for _, v := range []intWrapper{7,5,3,2,5,7,1,2} {
 			b.add(v)
 		}
-		assert.Equal(t, []intWrapper{1,2,3,5,7}, b.traverse())
+		assert.Equal(t, []intWrapper{1,2,3,5,7}, b.collect())
 		
 		max, ok := b.max()
 		assert.True(t, ok)
@@ -73,7 +73,7 @@ func TestBinarySearchTree(t *testing.T) {
 			b.add(v)
 		}
 		b.delMin()
-		assert.Equal(t, []intWrapper{2,3,5,7}, b.traverse())
+		assert.Equal(t, []intWrapper{2,3,5,7}, b.collect())
 	})
 
 	t.Run("del min 2", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestBinarySearchTree(t *testing.T) {
 			b.add(v)
 		}
 		b.delMin()
-		assert.Equal(t, []intWrapper{-5,12,32,88}, b.traverse())
+		assert.Equal(t, []intWrapper{-5,12,32,88}, b.collect())
 	})
 
 	t.Run("get", func(t *testing.T) {
@@ -123,7 +123,7 @@ func TestBstDelete(t *testing.T) {
 		b.delete(1)
 		b.delete(3)
 
-		assert.Equal(t, []intWrapper{}, b.traverse())
+		assert.Equal(t, []intWrapper{}, b.collect())
 	})
 
 	t.Run("single el", func(t *testing.T) {
@@ -131,7 +131,7 @@ func TestBstDelete(t *testing.T) {
 		b.add(123)
 		b.delete(123)
 
-		assert.Equal(t, []intWrapper{}, b.traverse())
+		assert.Equal(t, []intWrapper{}, b.collect())
 	})
 
 	t.Run("root when 1 left child", func(t *testing.T) {
@@ -140,7 +140,7 @@ func TestBstDelete(t *testing.T) {
 		b.add(1)
 		b.delete(5)
 
-		assert.Equal(t, []intWrapper{1}, b.traverse())
+		assert.Equal(t, []intWrapper{1}, b.collect())
 	})
 
 	t.Run("root when 1 right child", func(t *testing.T) {
@@ -149,7 +149,7 @@ func TestBstDelete(t *testing.T) {
 		b.add(10)
 		b.delete(5)
 
-		assert.Equal(t, []intWrapper{10}, b.traverse())
+		assert.Equal(t, []intWrapper{10}, b.collect())
 	})
 
 	t.Run("root when 2 children", func(t *testing.T) {
@@ -159,7 +159,7 @@ func TestBstDelete(t *testing.T) {
 		b.add(1)
 		b.delete(5)
 
-		assert.Equal(t, []intWrapper{1,10}, b.traverse())
+		assert.Equal(t, []intWrapper{1,10}, b.collect())
 	})
 
 	t.Run("not empty", func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestBstDelete(t *testing.T) {
 		b.delete(7)
 		b.delete(5)
 
-		assert.Equal(t, []intWrapper{3,4,8}, b.traverse())
+		assert.Equal(t, []intWrapper{3,4,8}, b.collect())
 	})
 
 	t.Run("root when many", func(t *testing.T) {
@@ -182,7 +182,7 @@ func TestBstDelete(t *testing.T) {
 		}
 		b.delete(5)
 
-		assert.Equal(t, []intWrapper{1,3,4,7,8}, b.traverse())
+		assert.Equal(t, []intWrapper{1,3,4,7,8}, b.collect())
 	})
 
 	t.Run("tall tree", func(t *testing.T) {
@@ -193,7 +193,7 @@ func TestBstDelete(t *testing.T) {
 		b.delete(10)
 		b.delete(11)
 
-		assert.Equal(t, []intWrapper{1,2,3,5,6,7,12}, b.traverse())
+		assert.Equal(t, []intWrapper{1,2,3,5,6,7,12}, b.collect())
 	})
 
 	t.Run("interleaved", func(t *testing.T) {
@@ -210,7 +210,7 @@ func TestBstDelete(t *testing.T) {
 			b.add(intWrapper(v))
 		}
 
-		assert.Equal(t, []intWrapper{-14,1,2,3,4,8,10}, b.traverse())
+		assert.Equal(t, []intWrapper{-14,1,2,3,4,8,10}, b.collect())
 	})
 }
 
@@ -304,18 +304,24 @@ func (b *bst[T]) add(v T) {
 	}
 }
 
-func (b *bst[T]) traverse() []T {
-	out := []T{}
-	var fn func(*node[T])
-	fn = func(n *node[T]) {
+func (b *bst[T]) traverseDfs(fn func(T)) {
+	var travFn func(*node[T])
+	travFn = func(n *node[T]) {
 		if n == nil {
 			return
 		}
-		fn(n.left)
-		out = append(out, n.val)
-		fn(n.right)
+		travFn(n.left)
+		fn(n.val)
+		travFn(n.right)
 	}
-	fn(b.root)
+	travFn(b.root)
+}
+
+func (b *bst[T]) collect() []T {
+	out := []T{}
+	b.traverseDfs(func(v T) {
+		out = append(out, v)
+	})
 	return out
 }
 
