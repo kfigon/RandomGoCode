@@ -246,3 +246,42 @@ func TestBstRange(t *testing.T) {
 		})
 	}
 }
+
+func TestHeight(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		assert.Equal(t, 0, b.height())
+	})
+
+	t.Run("right tall tree", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{1,2,3,4,5,6,7,8} {
+			b.add(v)
+		}
+		assert.Equal(t, 8, b.height())
+	})
+
+	t.Run("left tall tree", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{8,7,6,5,4,3,2,1} {
+			b.add(v)
+		}
+		assert.Equal(t, 8, b.height())
+	})
+
+	t.Run("tall tree but with leaf", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{2,3,4,5,6,7,8,1} {
+			b.add(v)
+		}
+		assert.Equal(t, 7, b.height())
+	})
+
+	t.Run("mixed", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{4,10,9,2,5,6,3,8,1,7} {
+			b.add(v)
+		}
+		assert.Equal(t, 5, b.height())
+	})
+}

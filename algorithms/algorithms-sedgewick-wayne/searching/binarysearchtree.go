@@ -272,3 +272,7 @@ func (b *bst[T]) delete(v T) {
 	toBeDeleted.val = succesor.val
 	succesor = nil
 }
+
+func (b *bst[T]) height() int {
+	return -1
+}
