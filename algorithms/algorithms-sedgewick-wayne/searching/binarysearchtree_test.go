@@ -253,6 +253,19 @@ func TestHeight(t *testing.T) {
 		assert.Equal(t, 0, b.height())
 	})
 
+	t.Run("single", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(3)
+		assert.Equal(t, 1, b.height())
+	})
+
+	t.Run("2 elements", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(1)
+		b.add(3)
+		assert.Equal(t, 2, b.height())
+	})
+
 	t.Run("right tall tree", func(t *testing.T) {
 		b := &bst[intWrapper]{}
 		for _, v := range []intWrapper{1,2,3,4,5,6,7,8} {
