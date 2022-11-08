@@ -214,62 +214,61 @@ func (b *bst[T]) delMin() {
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
-	curr := b.root
-    var prev *node[T]
+	toBeDeleted := b.root
+    var parent *node[T]
  
 	// recursive solution is tricky, this one also :O
 
-    for curr != nil && curr.val.cmp(v) != 0 {
-        prev = curr
-        if curr.val.cmp(v) < 0 {
-            curr = curr.right
+    for toBeDeleted != nil && toBeDeleted.val.cmp(v) != 0 {
+        parent = toBeDeleted
+        if toBeDeleted.val.cmp(v) < 0 {
+            toBeDeleted = toBeDeleted.right
 		} else {
-			curr = curr.left
+			toBeDeleted = toBeDeleted.left
 		}
 	}
  
-    if curr == nil {
+    if toBeDeleted == nil {
         return
 	}
  
 	// at most 1 child
-	if curr.left == nil || curr.right == nil { 
+	if toBeDeleted.left == nil || toBeDeleted.right == nil { 
         var newCurr *node[T]
- 
-        if curr.left == nil {
-            newCurr = curr.right
+        if toBeDeleted.left == nil {
+            newCurr = toBeDeleted.right
 		} else {
-            newCurr = curr.left
+            newCurr = toBeDeleted.left
 		}
 
-        if prev == nil {
+        if parent == nil {
 			b.root = newCurr
             return
 		}
 
-        if curr == prev.left {
-            prev.left = newCurr
+        if toBeDeleted == parent.left {
+            parent.left = newCurr
 		} else {
-            prev.right = newCurr
+            parent.right = newCurr
 		}
-        curr = nil
+        toBeDeleted = nil
 		return
-	} 
+	}
 
 	// 2 children
 	var ptr *node[T]
-	temp := curr.right
+	succesor := toBeDeleted.right
 
-	for temp.left != nil {
-		ptr = temp
-		temp = temp.left
+	for succesor.left != nil {
+		ptr = succesor
+		succesor = succesor.left
 	}
 
 	if ptr != nil {
-		ptr.left = temp.right
+		ptr.left = succesor.right
 	} else {
-		curr.right = temp.right
+		toBeDeleted.right = succesor.right
 	}
-	curr.val = temp.val
-	temp = nil
+	toBeDeleted.val = succesor.val
+	succesor = nil
 }
