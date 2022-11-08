@@ -273,6 +273,7 @@ func (b *bst[T]) delete(v T) {
 	succesor = nil
 }
 
+// O(n)
 func (b *bst[T]) height() int {
 	max := func(a,b int) int {
 		if a > b {
