@@ -201,7 +201,7 @@ func (b *bst[T]) delMin() {
 		if n.left == nil {
 			return n.right
 		}
-		// go left until thees no more
+		// go left until theres no more
 		// then set parent.left to right of the deleted node
 		n.left = fn(n.left) 
 		return n
@@ -214,5 +214,17 @@ func (b *bst[T]) delMin() {
 // node with 1 child
 // node with 2 children
 func (b *bst[T]) delete(v T) {
-	
+	var findMin func(*node[T]) *node[T]
+	findMin = func(n *node[T]) *node[T] {
+		if n.left == nil {
+			return n
+		}
+		return findMin(n.left)
+	}
+
+	var fn func(*node[T]) *node[T]
+	fn = func(n *node[T]) *node[T] {
+		return n
+	}
+	b.root = fn(b.root)
 }
