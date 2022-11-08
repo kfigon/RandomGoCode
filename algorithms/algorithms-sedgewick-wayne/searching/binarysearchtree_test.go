@@ -308,5 +308,62 @@ func TestHeight(t *testing.T) {
 }
 
 func TestBfs(t *testing.T) {
-	t.Fatal("todo")
+	t.Run("empty", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		assert.Equal(t, []intWrapper{}, b.collectBfs())
+	})
+
+	t.Run("single", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(3)
+		assert.Equal(t, []intWrapper{3}, b.collectBfs())
+	})
+
+	t.Run("3 elements", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		b.add(3)
+		b.add(1)
+		b.add(4)
+		assert.Equal(t, []intWrapper{3,1,4}, b.collectBfs())
+	})
+
+	t.Run("right tall tree", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{1,2,3,4,5,6,7,8} {
+			b.add(v)
+		}
+		assert.Equal(t, []intWrapper{1,2,3,4,5,6,7,8}, b.collectBfs())
+	})
+
+	t.Run("left tall tree", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{8,7,6,5,4,3,2,1} {
+			b.add(v)
+		}
+		assert.Equal(t, []intWrapper{8,7,6,5,4,3,2,1}, b.collectBfs())
+	})
+
+	t.Run("tall tree but with leaf", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{2,3,4,5,6,7,8,1} {
+			b.add(v)
+		}
+		assert.Equal(t, []intWrapper{2,1,3,4,5,6,7,8}, b.collectBfs())
+	})
+
+	t.Run("mixed", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{4,10,9,2,5,6,3,8,1,7} {
+			b.add(v)
+		}
+		assert.Equal(t, []intWrapper{4,2,10,1,3,9,6,8,7}, b.collectBfs())
+	})
+	
+	t.Run("mixed2", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{8,3,10,1,6,14,4,7,13} {
+			b.add(v)
+		}
+		assert.Equal(t, []intWrapper{8,3,10,1,6,13,14,4,7}, b.collectBfs())
+	})
 }

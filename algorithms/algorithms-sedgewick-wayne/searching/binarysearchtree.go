@@ -99,7 +99,15 @@ func (b *bst[T]) traverseDfs(fn func(T)) {
 }
 
 func (b *bst[T]) traverseBfs(fn func(T)) {
-	
+	queue := []*node[T]{}
+	enqueue := func (n *node[T])  {
+		queue = append(queue, n)
+	}
+	dequeue := func() *node[T] {
+		result := queue[0]
+		queue = queue[1:]
+		return result
+	}
 }
 
 func (b *bst[T]) collectBfs() []T {
