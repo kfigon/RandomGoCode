@@ -65,6 +65,26 @@ func (b *bst[T]) add(v T) {
 	}
 }
 
+func (b *bst[T]) addRec(v T) {
+	var fn func(*node[T]) *node[T]
+	fn = func(n *node[T]) *node[T] {
+		if n == nil {
+			return newNode(v)
+		}
+
+		if v.cmp(n.val) < 0 {
+			n.left = fn(n.left)
+		} else if v.cmp(n.val) > 0 {
+			n.right = fn(n.right)
+		} else {
+			n.val = v
+		}
+		return n
+	}
+
+	b.root = fn(b.root)
+}
+
 func (b *bst[T]) traverseDfs(fn func(T)) {
 	var travFn func(*node[T])
 	travFn = func(n *node[T]) {
@@ -99,6 +119,25 @@ func (b *bst[T]) get(val T) (T, bool) {
 	}
 	var out T
 	return out, false
+}
+
+func (b *bst[T]) getRec(val T) (T, bool) {
+	var fn func(*node[T]) (T, bool)
+	fn = func(n *node[T]) (T, bool) {
+		if n == nil {
+			var out T
+			return out, false
+		}
+		
+		if val.cmp(n.val) < 0 {
+			return fn(n.left)
+		} else if val.cmp(n.val) > 0 {
+			return fn(n.right)
+		}
+		return n.val, true
+	}
+
+	return fn(b.root)
 }
 
 func (b *bst[T]) max() (T, bool) {
