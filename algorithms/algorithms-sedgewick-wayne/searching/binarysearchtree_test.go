@@ -356,14 +356,14 @@ func TestBfs(t *testing.T) {
 		for _, v := range []intWrapper{4,10,9,2,5,6,3,8,1,7} {
 			b.add(v)
 		}
-		assert.Equal(t, []intWrapper{4,2,10,1,3,9,6,8,7}, b.collectBfs())
+		assert.Equal(t, []intWrapper{4, 2,10, 1,3,9, 5,6,8,7}, b.collectBfs())
 	})
 	
 	t.Run("mixed2", func(t *testing.T) {
 		b := &bst[intWrapper]{}
-		for _, v := range []intWrapper{8,3,10,1,6,14,4,7,13} {
+		for _, v := range []intWrapper{8,3,10,1,6,9,14,4,7,13} {
 			b.add(v)
 		}
-		assert.Equal(t, []intWrapper{8,3,10,1,6,13,14,4,7}, b.collectBfs())
+		assert.Equal(t, []intWrapper{8,3,10,1,6,9,14,4,7,13}, b.collectBfs())
 	})
 }
