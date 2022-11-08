@@ -274,5 +274,19 @@ func (b *bst[T]) delete(v T) {
 }
 
 func (b *bst[T]) height() int {
-	return -1
+	max := func(a,b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	var fn func(*node[T]) int
+	fn = func(n *node[T]) int {
+		if n == nil {
+			return 0
+		}
+		return 1 + max(fn(n.left), fn(n.right))
+	}
+	return fn(b.root)
 }

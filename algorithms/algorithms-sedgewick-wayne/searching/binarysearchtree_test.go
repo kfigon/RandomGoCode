@@ -295,6 +295,14 @@ func TestHeight(t *testing.T) {
 		for _, v := range []intWrapper{4,10,9,2,5,6,3,8,1,7} {
 			b.add(v)
 		}
-		assert.Equal(t, 5, b.height())
+		assert.Equal(t, 7, b.height())
+	})
+	
+	t.Run("mixed2", func(t *testing.T) {
+		b := &bst[intWrapper]{}
+		for _, v := range []intWrapper{8,3,10,1,6,14,4,7,13} {
+			b.add(v)
+		}
+		assert.Equal(t, 4, b.height())
 	})
 }
