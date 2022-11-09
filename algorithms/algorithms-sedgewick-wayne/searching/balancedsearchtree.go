@@ -37,4 +37,10 @@ func new3Node[T comparable[T]](vLow, vHigh T) btreeNode[T] {
 	}
 }
 
-type btree struct{}
+type btree[T comparable[T]] struct{
+	root btreeNode[T]
+}
+
+func newBtree[T comparable[T]]() *btree[T] {
+	return &btree[T]{}
+}
