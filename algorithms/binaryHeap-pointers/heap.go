@@ -1,4 +1,4 @@
-package binaryHeap
+package binaryHeappointers
 
 // another category of trees
 // max binary heap - parent nodes are always larger than children

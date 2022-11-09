@@ -1,4 +1,4 @@
-package binaryHeap
+package binaryHeappointers
 
 import (
 	"fmt"
