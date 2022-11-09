@@ -1,15 +1,8 @@
 package searching
 
-type nodeKind int
-const (
-	twoNode nodeKind = iota
-	threeNode
-)
 
-type btreeNode[T comparable[T]] struct{
-	kind nodeKind
-	twoNode *twoBTreeNode[T]
-	threeNode *threeBTreeNode[T]
+type btreeNode[T comparable[T]] interface{
+	dummy()
 }
 
 type twoBTreeNode[T comparable[T]] struct{
@@ -19,6 +12,8 @@ type twoBTreeNode[T comparable[T]] struct{
 	right *btreeNode[T]
 }
 
+func (_ *twoBTreeNode[T]) dummy(){}
+
 type threeBTreeNode[T comparable[T]] struct{
 	vLow T
 	vHigh T
@@ -27,23 +22,18 @@ type threeBTreeNode[T comparable[T]] struct{
 	middle *btreeNode[T]
 	right *btreeNode[T]
 }
+func (_ *threeBTreeNode[T]) dummy(){}
 
-func new2Node[T comparable[T]](v T) *btreeNode[T] {
-	return &btreeNode[T]{
-		kind: twoNode,
-		twoNode: &twoBTreeNode[T]{
-			v: v,
-		},
+func new2Node[T comparable[T]](v T) btreeNode[T] {
+	return &twoBTreeNode[T]{
+		v: v,
 	}
 }
 
-func new3Node[T comparable[T]](vLow, vHigh T) *btreeNode[T] {
-	return &btreeNode[T]{
-		kind: threeNode,
-		threeNode: &threeBTreeNode[T]{
-			vLow: vLow,
-			vHigh: vHigh,
-		},
+func new3Node[T comparable[T]](vLow, vHigh T) btreeNode[T] {
+	return &threeBTreeNode[T]{
+		vLow: vLow,
+		vHigh: vHigh,
 	}
 }
 
