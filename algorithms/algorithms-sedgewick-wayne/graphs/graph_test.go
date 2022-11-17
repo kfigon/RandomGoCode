@@ -35,11 +35,21 @@ func TestGraph(t *testing.T) {
 	})
 
 	t.Run("any path to node", func(t *testing.T) {
-		// g := initGraph([]pair[node, node]{
-		// 	{"a","b"}, {"c","a"}, 
-		// 	{"z","x"},
-		// })
-		t.Fatal("todo")
+		// 		a ----b
+		//    /		   \
+		//   /          \
+		//  c --- d ---- e
+		//   \    |    /
+		//    \   |   /
+		//       f   /
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"c","a"}, 
+			{"c","d"}, {"c","f"},
+			{"d","e"}, {"d","f"}, 
+			{"f","e"},{"b","e"},
+		})
+		// non deterministic due to maps. It's also bad because it can loop
+		assert.Greater(t,  len(g.path("a","f")), 1)
 	})
 }
 
@@ -66,6 +76,12 @@ func TestDfs(t *testing.T) {
 	assert.ElementsMatch(t, []node{"0","1","2","6","5","3","4"}, g.collectDfs("0"))
 	assert.ElementsMatch(t, []node{"7","8"}, g.collectDfs("7"))
 	assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectDfs("9"))
+}
+
+
+func TestMissingAlgos(t *testing.T) {
+	t.Fatal("iter dfs") // same as bfs, but with stack
+	t.Fatal("iter bfs") // with queue
 }
 
 type pair[T any, V any] struct {
@@ -123,6 +139,43 @@ func (g undirectedGraph) connected(a,b node) bool {
 		return false
 	}
 	return foo(a)
+}
+
+func (g undirectedGraph) path(a,b node) []node {
+	pathToStart := map[node]node{}
+
+	visited := set{}
+	var foo func(node) bool
+	foo = func(n node) bool {
+		if n == b {
+			return true
+		}
+		visited[n] = void{}
+		for k := range g[n] {
+			if _, ok := visited[k]; ok {
+				continue
+			}
+
+			pathToStart[k] = n
+			if foo(k) {
+				return true
+			}
+		}
+		return false
+	}
+	out := []node{}
+	if !foo(a) {
+		return out
+	}
+	out = append(out, b)
+	for next, ok := pathToStart[b]; next != a; next, ok = pathToStart[next] {
+		if !ok {
+			break
+		}
+		out = append(out, next)
+	}
+	out = append(out, a)
+	return out
 }
 
 // visit all nodes in connected graph (there's a path to every node from any node)
