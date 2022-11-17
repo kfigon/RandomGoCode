@@ -14,11 +14,10 @@ func TestGraph(t *testing.T) {
 	})
 
 	t.Run("more nodes", func(t *testing.T) {
-		g := newGraph()
-		g.connect("a","b")
-		g.connect("c","a")
-
-		g.connect("z","x")
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"c","a"}, 
+			{"z","x"},
+		})
 
 		assert.True(t, g.connected("a","b"))
 		assert.True(t, g.connected("b","a"))
@@ -33,6 +32,14 @@ func TestGraph(t *testing.T) {
 		assert.False(t, g.connected("x","b"))
 
 		assert.ElementsMatch(t, []node{"b","c"}, g.adjecent("a"))
+	})
+
+	t.Run("any path to node", func(t *testing.T) {
+		// g := initGraph([]pair[node, node]{
+		// 	{"a","b"}, {"c","a"}, 
+		// 	{"z","x"},
+		// })
+		t.Fatal("todo")
 	})
 }
 
