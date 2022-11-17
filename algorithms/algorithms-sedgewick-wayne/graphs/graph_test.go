@@ -98,7 +98,24 @@ func (g undirectedGraph) adjecent(n node) []node {
 }
 
 func (g undirectedGraph) connected(a,b node) bool {
-	return false
+	visited := set{}
+	var foo func(node) bool
+	foo = func(n node) bool {
+		if n == b {
+			return true
+		}
+		if _, ok := visited[n]; ok {
+			return false
+		}
+		visited[n] = void{}
+		for k := range g[n] {
+			if foo(k) {
+				return true
+			}
+		}
+		return false
+	}
+	return foo(a)
 }
 
 // visit all nodes in connected graph (there's a path to every node from any node)
