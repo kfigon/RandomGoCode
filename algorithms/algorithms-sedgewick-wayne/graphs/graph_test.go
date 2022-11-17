@@ -61,8 +61,8 @@ func initGraph(connections []pair[node,node]) undirectedGraph {
 	return g
 }
 
-func TestDfs(t *testing.T) {
-	g := initGraph([]pair[node,node]{
+func searchGraph() undirectedGraph {
+	return initGraph([]pair[node,node]{
 		{"0","1"}, {"0", "2"}, {"0", "5"},
 		{"0","6"}, {"3","5"}, {"5", "4"},
 		{"3", "4"}, {"4","6"},
@@ -70,18 +70,32 @@ func TestDfs(t *testing.T) {
 		{"7","8"},
 
 		{"9", "10"}, {"9","11"},{"9","12"},{"11","12"},
-
 	})
+}
+
+func TestDfs(t *testing.T) {
+	 g := searchGraph()
 
 	assert.ElementsMatch(t, []node{"0","1","2","6","5","3","4"}, g.collectDfs("0"))
 	assert.ElementsMatch(t, []node{"7","8"}, g.collectDfs("7"))
 	assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectDfs("9"))
 }
 
+func TestIterDfs(t *testing.T) {
+	g := searchGraph()
 
-func TestMissingAlgos(t *testing.T) {
-	t.Fatal("iter dfs") // same as bfs, but with stack
-	t.Fatal("iter bfs") // with queue
+   assert.ElementsMatch(t, []node{"0","1","2","6","5","3","4"}, g.collectIterDfs("0"))
+   assert.ElementsMatch(t, []node{"7","8"}, g.collectIterDfs("7"))
+   assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectIterDfs("9"))
+}
+
+
+func TestBfs(t *testing.T) {
+	g := searchGraph()
+
+	assert.ElementsMatch(t, []node{"0", "6", "4", "3", "5", "2", "1"}, g.collectBfs("0"))
+	assert.ElementsMatch(t, []node{"7","8"}, g.collectBfs("7"))
+	assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectBfs("9"))
 }
 
 type pair[T any, V any] struct {
@@ -198,6 +212,78 @@ func (g undirectedGraph) dfs(a node, fn func(node)) {
 func (g undirectedGraph) collectDfs(a node) []node {
 	out := []node{}
 	g.dfs(a, func(n node) {
+		out = append(out, n)
+	})
+	return out
+}
+
+func (g undirectedGraph) collectBfs(a node) []node {
+	out := []node{}
+	g.bfs(a, func(n node) {
+		out = append(out, n)
+	})
+	return out
+}
+
+func (g undirectedGraph) bfs(a node, fn func(node)) {
+	visited := set{}
+	queue := []node{}
+	enqueue := func(n node)	{
+		queue = append(queue, n)
+	}
+
+	dequeue := func() node {
+		toRet := queue[len(queue)-1]
+		queue = queue[:len(queue)-1]
+		return toRet
+	}
+
+	enqueue(a)
+	for len(queue) > 0 {
+		current := dequeue()
+		if _, ok := visited[current]; ok {
+			continue
+		}
+		visited[current] = void{}
+		fn(current)
+		for k := range g[current] {
+			enqueue(k)
+		}
+	}
+}
+
+// same as bfs, just with stack instead of queue
+func (g undirectedGraph) iterDfs(a node, fn func(node)) {
+	visited := set{}
+	stack := []node{}
+	push := func(n node) {
+		stack = append(stack, n)
+	}
+
+	pop := func() node {
+		toRet := stack[0]
+		stack = stack[1:]
+		return toRet
+	}
+
+	push(a)
+	for len(stack) > 0 {
+		current := pop()
+		if _, ok := visited[current]; ok {
+			continue
+		}
+		visited[current] = void{}
+		fn(current)
+		for k := range g[current] {
+			push(k)
+		}
+	}
+
+}
+
+func (g undirectedGraph) collectIterDfs(a node) []node {
+	out := []node{}
+	g.iterDfs(a, func(n node) {
 		out = append(out, n)
 	})
 	return out
