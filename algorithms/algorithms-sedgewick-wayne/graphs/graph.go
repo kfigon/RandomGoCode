@@ -5,6 +5,16 @@ package graphs
 type node string
 type void struct{}
 type set map[node]void
+
+func (s set) present(n node) bool {
+	_, ok := s[n]
+	return ok
+}
+
+func (s set) add(n node) {
+	s[n] = void{}
+}
+
 type undirectedGraph map[node]set
 
 func newGraph() undirectedGraph {
@@ -39,10 +49,10 @@ func (g undirectedGraph) connected(a,b node) bool {
 		if n == b {
 			return true
 		}
-		if _, ok := visited[n]; ok {
+		if visited.present(n) {
 			return false
 		}
-		visited[n] = void{}
+		visited.add(n)
 		for k := range g[n] {
 			if foo(k) {
 				return true
@@ -62,9 +72,9 @@ func (g undirectedGraph) path(a,b node) []node {
 		if n == b {
 			return true
 		}
-		visited[n] = void{}
+		visited.add(n)
 		for k := range g[n] {
-			if _, ok := visited[k]; ok {
+			if visited.present(k){
 				continue
 			}
 
@@ -96,11 +106,11 @@ func (g undirectedGraph) dfs(a node, fn func(node)) {
 	visited := set{}
 	var foo func(node)
 	foo = func(n node) {
-		if _, ok := visited[n]; ok {
+		if visited.present(n){
 			return
 		}
 		fn(n)
-		visited[n] = void{}
+		visited.add(n)
 		for k := range g[n] {
 			foo(k)
 		}
@@ -141,10 +151,10 @@ func (g undirectedGraph) bfs(a node, fn func(node)) {
 	enqueue(a)
 	for len(queue) > 0 {
 		current := dequeue()
-		if _, ok := visited[current]; ok {
+		if visited.present(current){
 			continue
 		}
-		visited[current] = void{}
+		visited.add(current)
 		fn(current)
 		for k := range g[current] {
 			enqueue(k)
@@ -169,10 +179,10 @@ func (g undirectedGraph) iterDfs(a node, fn func(node)) {
 	push(a)
 	for len(stack) > 0 {
 		current := pop()
-		if _, ok := visited[current]; ok {
+		if visited.present(current){
 			continue
 		}
-		visited[current] = void{}
+		visited.add(current)
 		fn(current)
 		for k := range g[current] {
 			push(k)
@@ -194,10 +204,10 @@ func (g undirectedGraph) connectedComponents() int {
 
 	var foo func(node) bool
 	foo = func(n node) bool {
-		if _, ok := visited[n]; ok {
+		if visited.present(n){
 			return false
 		}
-		visited[n] = void{}
+		visited.add(n)
 		any := false
 		for k := range g[n] {
 			any = true
