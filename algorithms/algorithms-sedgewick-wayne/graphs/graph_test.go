@@ -11,6 +11,7 @@ func TestGraph(t *testing.T) {
 		g := newGraph()
 		assert.False(t, g.connected("a","b"))
 		assert.Equal(t, []node{}, g.adjecent("A"))
+		assert.Equal(t, 0, g.connectedComponents())
 	})
 
 	t.Run("more nodes", func(t *testing.T) {
@@ -32,6 +33,7 @@ func TestGraph(t *testing.T) {
 		assert.False(t, g.connected("x","b"))
 
 		assert.ElementsMatch(t, []node{"b","c"}, g.adjecent("a"))
+		assert.Equal(t, 2, g.connectedComponents())
 	})
 
 	t.Run("any path to node", func(t *testing.T) {
@@ -298,5 +300,27 @@ func (g undirectedGraph) collectIterDfs(a node) []node {
 }
 
 func (g undirectedGraph) connectedComponents() int {
-	return -1
+	visited := set{}
+
+	var foo func(node) bool
+	foo = func(n node) bool {
+		if _, ok := visited[n]; ok {
+			return false
+		}
+		visited[n] = void{}
+		any := false
+		for k := range g[n] {
+			any = true
+			foo(k)
+		}
+		return any
+	}
+
+	connected := 0
+	for node := range g {
+		if foo(node) {
+			connected++
+		}
+	}
+	return connected
 }
