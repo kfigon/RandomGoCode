@@ -193,6 +193,7 @@ func (g undirectedGraph) path(a,b node) []node {
 }
 
 // visit all nodes in connected graph (there's a path to every node from any node)
+// go max left/right then change direction
 func (g undirectedGraph) dfs(a node, fn func(node)) {
 	visited := set{}
 	var foo func(node)
@@ -225,6 +226,7 @@ func (g undirectedGraph) collectBfs(a node) []node {
 	return out
 }
 
+// first check neighbours. Better for near searches
 func (g undirectedGraph) bfs(a node, fn func(node)) {
 	visited := set{}
 	queue := []node{}
