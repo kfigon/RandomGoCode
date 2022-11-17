@@ -89,7 +89,6 @@ func TestIterDfs(t *testing.T) {
    assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectIterDfs("9"))
 }
 
-
 func TestBfs(t *testing.T) {
 	g := searchGraph()
 
@@ -97,6 +96,13 @@ func TestBfs(t *testing.T) {
 	assert.ElementsMatch(t, []node{"7","8"}, g.collectBfs("7"))
 	assert.ElementsMatch(t, []node{"9","10","11","12"}, g.collectBfs("9"))
 }
+
+func TestConnectedComponents(t *testing.T) {
+	g := searchGraph()
+
+	assert.Equal(t, 3, g.connectedComponents())
+}
+
 
 type pair[T any, V any] struct {
 	a T
@@ -289,4 +295,8 @@ func (g undirectedGraph) collectIterDfs(a node) []node {
 		out = append(out, n)
 	})
 	return out
+}
+
+func (g undirectedGraph) connectedComponents() int {
+	return -1
 }
