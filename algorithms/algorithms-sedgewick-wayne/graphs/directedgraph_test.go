@@ -37,6 +37,13 @@ func TestConnectivity(t *testing.T) {
 	}
 }
 
+// aka make build system - order with required steps
+// job schedule, course schedule with prerequisites, spreadsheet formulas, symbolic links, inheritance hierarchy etc.
+func TestTopologicalSort(t *testing.T) {
+	// g := exampleDiGraph2()
+	t.Fatal("todo")
+}
+
 func initDirected(pairs []pair[node,node]) directedGraph {
 	g := newDirectedGraph()
 	for _, v := range pairs {
@@ -59,5 +66,19 @@ func exampleDiGraph() directedGraph {
 		{"10","12"},
 		{"11","4"},{"11","12"},
 		{"12","9"},
+	})
+}
+
+func exampleDiGraph2() directedGraph {
+	return initDirected([]pair[node,node]{
+		{"0","1"}, {"0","5"},{"0","6"},
+		{"2","0"},{"2","3"},
+		{"3","5"},
+		{"5","4"},
+		{"6","4"},{"6","9"},
+		{"7","6"},
+		{"8","7"},
+		{"9","10"}, {"9","11"},{"9","12"},
+		{"11","12"},
 	})
 }
