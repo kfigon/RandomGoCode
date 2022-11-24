@@ -50,3 +50,7 @@ func(g directedGraph) connected(start, end node) bool {
 	}
 	return foo(start)
 }
+
+func (g undirectedGraph) topologicalSort() ([]node, error) {
+	return nil,nil
+}
