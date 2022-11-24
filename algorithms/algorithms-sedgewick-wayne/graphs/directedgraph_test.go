@@ -20,13 +20,13 @@ func TestConnectivity(t *testing.T) {
 		{"8","0", true},
 		{"6","5", true},
 		{"10","3", true},
+		{"12","0", true},
+		{"5","1", true},
 		
 		{"0","8", false},
 		{"1","0", false},
-		{"5","1", false},
 		{"1","5", false},
 		{"6","7", false},
-		{"12","0", false},
 	}
 
 	g := exampleDiGraph()
