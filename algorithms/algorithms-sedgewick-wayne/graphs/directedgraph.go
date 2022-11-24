@@ -1,6 +1,23 @@
 package graphs
 
+import "strings"
+
 type directedGraph map[node]set
+
+func (g directedGraph) String() string {
+	out := ""
+	for k,nodes := range g {
+		out += string(k) + " -> ["
+		var ns = []string{}
+		for n := range nodes {
+			ns = append(ns, string(n))
+		}
+		out += strings.Join(ns, " ")
+		out += "]"
+		out += " "
+	}
+	return out
+}
 
 func newDirectedGraph() directedGraph{
 	return directedGraph{}
