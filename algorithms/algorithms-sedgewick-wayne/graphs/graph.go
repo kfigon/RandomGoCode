@@ -224,3 +224,36 @@ func (g undirectedGraph) connectedComponents() int {
 	}
 	return connected
 }
+
+func (g undirectedGraph) hasCycle() bool {
+	visited := set{}
+	var foo func(node, node) bool
+	foo = func(current, parent node) bool {
+		if visited.present(current) {
+			return false
+		}
+
+		visited.add(current)
+		for child := range g[current] {
+			if visited.present(child) {
+				if child != parent {
+					return true
+				}
+				continue
+			} 
+
+			if foo(child, current) {
+				return true
+			}
+
+		}
+		return false
+	}
+
+	for k := range g {
+		if foo(k, k) {
+			return true
+		}
+	}
+	return false
+}

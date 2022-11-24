@@ -55,6 +55,39 @@ func TestGraph(t *testing.T) {
 	})
 }
 
+func TestCyclic(t *testing.T) {
+	t.Run("non cyclic", func(t *testing.T) {
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"b","c"}, 
+			{"c","d"},
+		})
+		assert.False(t, g.hasCycle())
+	})
+
+	t.Run("cyclic0", func(t *testing.T) {
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"b","c"}, 
+			{"c","d"}, {"d","a"}, 
+		})
+		assert.True(t, g.hasCycle())
+	})
+
+	t.Run("cyclic1", func(t *testing.T) {
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"c","a"}, 
+			{"c","d"}, {"c","f"},
+			{"d","e"}, {"d","f"}, 
+			{"f","e"},{"b","e"},
+		})
+		assert.True(t, g.hasCycle())
+	})
+
+	t.Run("cyclic2", func(t *testing.T) {
+		g := searchGraph()
+		assert.True(t, g.hasCycle())
+	})
+}
+
 func initGraph(connections []pair[node,node]) undirectedGraph {
 	g := newGraph()
 	for _, v := range connections {
@@ -103,11 +136,6 @@ func TestConnectedComponents(t *testing.T) {
 	g := searchGraph()
 
 	assert.Equal(t, 3, g.connectedComponents())
-}
-
-func TestMissingAlgos(t *testing.T) {
-	t.Fatal("is acyclic")
-	t.Fatal("two colorability")
 }
 
 type pair[T any, V any] struct {
