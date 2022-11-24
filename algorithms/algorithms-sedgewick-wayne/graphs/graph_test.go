@@ -86,6 +86,23 @@ func TestCyclic(t *testing.T) {
 		g := searchGraph()
 		assert.True(t, g.hasCycle())
 	})
+
+	t.Run("cyclic3", func(t *testing.T) {
+		//     (a)
+		//      |
+		//      |
+		//     (b)
+		//     / \ 
+		//   (d)  |
+		//    |   |
+		//     \ /
+		//     (c)
+		g := initGraph([]pair[node, node]{
+			{"a","b"}, {"b","c"}, 
+			{"b","d"}, {"d","c"},
+		})
+		assert.True(t, g.hasCycle())
+	})
 }
 
 func initGraph(connections []pair[node,node]) undirectedGraph {
