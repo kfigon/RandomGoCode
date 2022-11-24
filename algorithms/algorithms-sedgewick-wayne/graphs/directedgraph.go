@@ -5,18 +5,19 @@ import "strings"
 type directedGraph map[node]set
 
 func (g directedGraph) String() string {
-	out := ""
+	out := []string{}
 	for k,nodes := range g {
-		out += string(k) + " -> ["
+		str := ""
+		str += string(k) + " -> ["
 		var ns = []string{}
 		for n := range nodes {
 			ns = append(ns, string(n))
 		}
-		out += strings.Join(ns, " ")
-		out += "]"
-		out += " "
+		str += strings.Join(ns, " ")
+		str += "]"
+		out = append(out, str)
 	}
-	return out
+	return strings.Join(out, " ")
 }
 
 func newDirectedGraph() directedGraph{
