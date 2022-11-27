@@ -65,6 +65,15 @@ func TestCycle(t *testing.T) {
 		assert.NotEqual(t, 0, len(cycle))
 		t.Log(cycle)
 	})
+
+	t.Run("simple cyclic", func(t *testing.T) {
+		g := initDirected([]pair[node,node] {
+			{"a","b"},{"b","c"},{"c","d"},{"d","e"},
+			{"e","b"},
+		})
+		// reversed order
+		assert.Equal(t, []node{"e","d","c","b","e"}, g.cycle())
+	})
 }
 
 func initDirected(pairs []pair[node,node]) directedGraph {
