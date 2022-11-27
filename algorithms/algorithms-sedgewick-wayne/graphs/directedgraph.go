@@ -51,6 +51,44 @@ func(g directedGraph) connected(start, end node) bool {
 	return foo(start)
 }
 
-func (g undirectedGraph) topologicalSort() ([]node, error) {
+func (g directedGraph) topologicalSort() ([]node, error) {
 	return nil,nil
+}
+
+func (g directedGraph) cycle() []node {
+	visited := set{}
+	onStack := set{}
+	pathTo := map[node]node{}
+	cycleNodes := []node{}
+
+	var dfs func(node)
+	dfs = func(n node){
+		if visited.present(n) {
+			return
+		}
+
+		onStack.add(n)
+		visited.add(n)
+		for child := range g[n] {
+			if len(cycleNodes) != 0 {
+				return
+			} else if !visited.present(child) {
+				pathTo[child] = n
+				dfs(child)
+			} else if onStack.present(child) {
+				for next, ok := pathTo[n]; ok; next, ok = pathTo[next] {
+					cycleNodes = append(cycleNodes, next)
+				}
+				cycleNodes = append(cycleNodes, child)
+				cycleNodes = append(cycleNodes, n)
+				return
+			}
+		}
+		delete(onStack, n)
+	}
+
+	for n := range g {
+		dfs(n)
+	}
+	return cycleNodes
 }

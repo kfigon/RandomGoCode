@@ -44,6 +44,29 @@ func TestTopologicalSort(t *testing.T) {
 	t.Fatal("todo")
 }
 
+func TestCycle(t *testing.T) {
+	t.Run("simple graph", func(t *testing.T) {
+		g := initDirected([]pair[node,node]{
+			{"a","b"},{"b","c"},{"c","d"},
+			{"d","e"},
+		})
+		assert.Len(t, g.cycle(), 0)
+	})
+
+	t.Run("cyclic", func(t *testing.T) {
+		g := exampleDiGraph()
+		cycle := g.cycle()
+		assert.NotEqual(t, 0, len(cycle))
+		t.Log(cycle)
+	})
+
+	t.Run("non cyclic", func(t *testing.T) {
+		g := exampleDiGraph2()
+		cycle := g.cycle()
+		assert.Len(t, cycle, 0)
+	})
+}
+
 func initDirected(pairs []pair[node,node]) directedGraph {
 	g := newDirectedGraph()
 	for _, v := range pairs {
