@@ -52,18 +52,18 @@ func TestCycle(t *testing.T) {
 		})
 		assert.Len(t, g.cycle(), 0)
 	})
+	
+	t.Run("non cyclic", func(t *testing.T) {
+		g := exampleDiGraph2()
+		cycle := g.cycle()
+		assert.Len(t, cycle, 0)
+	})
 
 	t.Run("cyclic", func(t *testing.T) {
 		g := exampleDiGraph()
 		cycle := g.cycle()
 		assert.NotEqual(t, 0, len(cycle))
 		t.Log(cycle)
-	})
-
-	t.Run("non cyclic", func(t *testing.T) {
-		g := exampleDiGraph2()
-		cycle := g.cycle()
-		assert.Len(t, cycle, 0)
 	})
 }
 

@@ -76,7 +76,7 @@ func (g directedGraph) cycle() []node {
 				pathTo[child] = n
 				dfs(child)
 			} else if onStack.present(child) {
-				for next, ok := pathTo[n]; ok; next, ok = pathTo[next] {
+				for next := n; next != child; next = pathTo[next] {
 					cycleNodes = append(cycleNodes, next)
 				}
 				cycleNodes = append(cycleNodes, child)
