@@ -1,4 +1,4 @@
-package main
+package stringalgos
 
 type node struct {
 	children map[rune]*node
