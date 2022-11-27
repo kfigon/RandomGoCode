@@ -117,12 +117,5 @@ func (g directedGraph) topology() []node {
 	for k := range g {
 		dfs(k)
 	}
-
-	// reverse
-	for i := 0; i < len(out)/2; i++ {
-		tmp := out[i]
-		out[i] = out[len(out)-1-i]
-		out[len(out)-1-i] = tmp
-	}
 	return out
 }

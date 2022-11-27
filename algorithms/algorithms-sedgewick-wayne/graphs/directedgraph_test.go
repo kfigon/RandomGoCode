@@ -45,7 +45,7 @@ func TestTopologicalSort(t *testing.T) {
 			{"a","b"},{"b","c"},{"c","d"},
 			{"d","e"},
 		})
-		assert.Equal(t, []node{"a","b","c","d","e"}, g.topology())
+		assert.Equal(t, []node{"e","d","c","b","a"}, g.topology())
 	})
 
 	t.Run("non cyclic2", func(t *testing.T) {
@@ -53,7 +53,7 @@ func TestTopologicalSort(t *testing.T) {
 			{"5","0"},{"0","1"},{"0","2"},
 			{"1","3"}, {"3","2"},
 		})
-		assert.Equal(t, []node{"5","0","1","3","2"}, g.topology())
+		assert.Equal(t, []node{"2","3","1","0","5"}, g.topology())
 	})
 	
 	t.Run("non cyclic3", func(t *testing.T) {
@@ -63,6 +63,18 @@ func TestTopologicalSort(t *testing.T) {
 		// non deterministic order
 		// assert.Equal(t, []node{"8", "7", "2", "3", "0", "6", "9",
 		// "10", "11", "12", "1", "5", "4"}, g.topology())
+	})
+
+	t.Run("non cyclic4", func(t *testing.T) {
+		g := initDirected([]pair[node, node]{
+			{"deploy", "setup docker"},
+			{"deploy", "build binary"},
+			{"build binary", "run tests"},
+		})
+		// non deterministic order
+		assert.Greater(t, len(g.topology()), 0)
+		// assert.Equal(t, []node{"setup docker", "run tests","build binary", "deploy"}, g.topology())
+		// assert.Equal(t, []node{"run tests", "build binary", "setup docker", "deploy"}, g.topology())
 	})
 
 	t.Run("cyclic2", func(t *testing.T) {
