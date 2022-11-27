@@ -92,3 +92,37 @@ func (g directedGraph) cycle() []node {
 	}
 	return cycleNodes
 }
+
+// only when there're no cycles
+func (g directedGraph) topology() []node {
+	if len(g.cycle()) != 0 {
+		return []node{}
+	}
+
+	out := []node{}
+	visited := set{}
+	var dfs func(node)
+	dfs = func(n node) {
+		if visited.present(n) {
+			return
+		}
+
+		visited.add(n)
+		for child := range g[n] {
+			dfs(child)
+		}
+		out = append(out, n) // postorder
+	}
+
+	for k := range g {
+		dfs(k)
+	}
+
+	// reverse
+	for i := 0; i < len(out)/2; i++ {
+		tmp := out[i]
+		out[i] = out[len(out)-1-i]
+		out[len(out)-1-i] = tmp
+	}
+	return out
+}

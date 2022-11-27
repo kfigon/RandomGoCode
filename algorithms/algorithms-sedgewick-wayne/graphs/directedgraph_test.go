@@ -40,12 +40,44 @@ func TestConnectivity(t *testing.T) {
 // aka make build system - order with required steps
 // job schedule, course schedule with prerequisites, spreadsheet formulas, symbolic links, inheritance hierarchy etc.
 func TestTopologicalSort(t *testing.T) {
-	// g := exampleDiGraph2()
-	t.Fatal("todo")
+	t.Run("non cyclic1", func(t *testing.T) {
+		g := initDirected([]pair[node,node]{
+			{"a","b"},{"b","c"},{"c","d"},
+			{"d","e"},
+		})
+		assert.Equal(t, []node{"a","b","c","d","e"}, g.topology())
+	})
+
+	t.Run("non cyclic2", func(t *testing.T) {
+		g := initDirected([]pair[node,node]{
+			{"5","0"},{"0","1"},{"0","2"},
+			{"1","3"}, {"3","2"},
+		})
+		assert.Equal(t, []node{"2","3","1","0","5"}, g.topology())
+	})
+	
+	t.Run("non cyclic3", func(t *testing.T) {
+		g := exampleDiGraph2()
+		assert.Equal(t, []node{"8", "7", "2", "3", "0", "6", "9",
+		"10", "11", "12", "1", "5", "4"}, g.topology())
+	})
+
+	t.Run("cyclic2", func(t *testing.T) {
+		g := exampleDiGraph()
+		assert.Equal(t, []node{}, g.topology())
+	})
+
+	t.Run("cyclic1", func(t *testing.T) {
+		g := initDirected([]pair[node,node] {
+			{"a","b"},{"b","c"},{"c","d"},{"d","e"},
+			{"e","b"},
+		})
+		assert.Equal(t, []node{}, g.topology())
+	})
 }
 
 func TestCycle(t *testing.T) {
-	t.Run("simple graph", func(t *testing.T) {
+	t.Run("simple non cyclic", func(t *testing.T) {
 		g := initDirected([]pair[node,node]{
 			{"a","b"},{"b","c"},{"c","d"},
 			{"d","e"},
