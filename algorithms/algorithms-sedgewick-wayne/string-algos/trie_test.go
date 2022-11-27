@@ -32,6 +32,12 @@ func TestTrie(t *testing.T) {
 	}
 }
 
+// Ternary search tries for big sets of data
+// also good for spellcheckers
+func TestTernarySearchTries(t *testing.T) {
+	t.Skip("todo")
+}
+
 func TestOrderOfAddingDoesNotMatter(t *testing.T) {
 	t.Run("First", func(t *testing.T) {
 		tr := create([]string{"hello", "hell"})
