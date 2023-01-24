@@ -63,8 +63,7 @@ func TestLex(t *testing.T) {
 " fo
 o	"	`,
 			expected: []token{
-				{stringLiteral, `" fo
-o	"`},
+				{stringLiteral, "\" fo\no\t\""},
 			},
 		},
 		{

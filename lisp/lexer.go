@@ -6,7 +6,6 @@ import (
 )
 
 type tokenType int
-
 const (
 	opening tokenType = iota
 	closing
@@ -39,8 +38,14 @@ func lex(input string) ([]token, error) {
 		return rune(input[idx+1]), true
 	}
 
-	for idx < len(input) {
-		current := rune(input[idx])
+	currentChar := func() (rune, bool) {
+		if idx >= len(input) {
+			return 0, false
+		}
+		return rune(input[idx]), true
+	}
+
+	for current, ok := currentChar(); ok; current,ok = currentChar() {
 		if unicode.IsSpace(current) {
 			if current == '\n' {
 				lineNumer++
