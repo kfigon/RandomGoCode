@@ -24,10 +24,20 @@ type token struct {
 	lexeme  string
 }
 
+func isKeyword(word string) bool {
+	return word == "define" || word == "if"
+}
+
 func lex(input string) ([]token, error) {
 	out := []token{}
 	idx := 0
 	lineNumer := 1
+	peek := func() (rune, bool) {
+		if idx+1 >= len(input) {
+			return 0, false
+		}
+		return rune(input[idx+1]), true
+	}
 
 	for idx < len(input) {
 		current := rune(input[idx])
@@ -42,7 +52,7 @@ func lex(input string) ([]token, error) {
 		} else if current == '+' || current == '-' || current == '*' || current == '/' || current == '=' {
 			out = append(out, token{operator, string(current)})
 		} else if current == '!' || current == '<' || current == '>' {
-			if idx +1 < len(input) && input[idx+1] == '=' {
+			if next, ok := peek(); ok && next == '=' {
 				idx++
 				out = append(out, token{operator, string(current)+"="})
 			} else {
@@ -50,7 +60,7 @@ func lex(input string) ([]token, error) {
 			}
 		} else if current == '"' {
 			word := readUntil(input, &idx, func(r rune) bool {return r != '"'})
-			if idx +1 < len(input) && input[idx+1] == '"' {
+			if next, ok := peek(); ok && next == '"' {
 				idx++
 				out = append(out, token{stringLiteral, word+"\""})
 			} else {
@@ -72,10 +82,6 @@ func lex(input string) ([]token, error) {
 		idx++
 	}
 	return out, nil
-}
-
-func isKeyword(word string) bool {
-	return word == "define" || word == "if"
 }
 
 func readUntil(input string, idx *int, fn func(rune)bool) string {
