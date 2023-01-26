@@ -21,6 +21,7 @@ const (
 type token struct {
 	tokType tokenType
 	lexeme  string
+	line int
 }
 
 func (t token) String() string {
@@ -60,8 +61,8 @@ func lex(input string) ([]token, error) {
 		return rune(input[idx]), true
 	}
 
-	addTok := func(t token) {
-		out = append(out, t)
+	addTok := func(tokTyp tokenType, lexeme string) {
+		out = append(out, token{tokType: tokTyp, lexeme: lexeme, line: lineNumer})
 	}
 
 	for current, ok := currentChar(); ok; current,ok = currentChar() {
@@ -70,24 +71,24 @@ func lex(input string) ([]token, error) {
 				lineNumer++
 			}
 		} else if current == ')' || current == '}' {
-			addTok(token{closing, string(current)})
+			addTok(closing, string(current))
 		} else if current == ';' {
-			addTok(token{semicolon, string(current)})
+			addTok(semicolon, string(current))
 		} else if current == '(' || current == '{' {
-			addTok(token{closing, string(current)})
+			addTok(closing, string(current))
 		} else if current == '+' || current == '-' || current == '*' || current == '/' {
-			addTok(token{operator, string(current)})
+			addTok(operator, string(current))
 		} else if current == '!' || current == '<' || current == '>' || current == '=' {
 			if next, ok := peek(); ok && next == '=' {
 				idx++
-				addTok(token{operator, string(current)+"="})
+				addTok(operator, string(current)+"=")
 			} else {
-				addTok(token{operator, string(current)})
+				addTok(operator, string(current))
 			}
 		} else if current == '|' || current == '&' {
 			if next, ok := peek(); ok && next == current {
 				idx++
-				addTok(token{operator, string(current) + string(next)})
+				addTok(operator, string(current) + string(next))
 			} else {
 				return nil, fmt.Errorf("invalid boolean operator on line %d", lineNumer)
 			}
@@ -95,21 +96,21 @@ func lex(input string) ([]token, error) {
 			word := readUntil(input, &idx, func(r rune) bool {return r != '"'})
 			if next, ok := peek(); ok && next == '"' {
 				idx++
-				addTok(token{stringLiteral, word+"\""})
+				addTok(stringLiteral, word+"\"")
 			} else {
 				return nil, fmt.Errorf("Invalid token at line %d: %s", lineNumer, word)
 			}
 		} else if unicode.IsDigit(current) {
 			num := readUntil(input, &idx, unicode.IsDigit)
-			addTok(token{number, num})
+			addTok(number, num)
 		} else {
 			word := readUntil(input, &idx, unicode.IsLetter)
 			if isKeyword(word) {
-				addTok(token{keyword, word})
+				addTok(keyword, word)
 			} else if word == "true" || word == "false" {
-				addTok(token{boolean, word})
+				addTok(boolean, word)
 			} else {
-				addTok(token{identifier, word})
+				addTok(identifier, word)
 			}
 		}
 		idx++
