@@ -40,7 +40,7 @@ func (t token) String() string {
 }
 
 func isKeyword(word string) bool {
-	return word == "let" || word == "for" || word == "if" || word == "return" || word == "else" || word == "if"
+	return word == "let" || word == "for" || word == "return" || word == "else" || word == "if"
 }
 
 func lex(input string) ([]token, error) {
