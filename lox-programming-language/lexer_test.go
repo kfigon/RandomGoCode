@@ -23,9 +23,10 @@ func TestLex(t *testing.T) {
 		},
 		{
 			desc: "number",
-			input: ` 1234`,
+			input: ` 1234;`,
 			expected: []token{
 				{number, "1234"},
+				{semicolon, ";"},
 			},
 		},
 		{
@@ -54,8 +55,10 @@ o	"	`,
 		},
 		{
 			desc: "operators",
-			input: `< <= > >= ! !! !=`,
+			input: `= == < <= > >= ! !! != || &&`,
 			expected: []token{
+				{ operator, "="},
+				{ operator, "=="},
 				{ operator, "<"},
 				{ operator, "<="},
 				{ operator, ">"},
@@ -64,16 +67,21 @@ o	"	`,
 				{ operator, "!"},
 				{ operator, "!"},
 				{ operator, "!="},
+				{ operator, "||"},
+				{ operator, "&&"},
 			},
 		},
 		{
 			desc: "operators without spaces",
-			input: `<<=>>=!!!!=`,
+			input: `==<<=>>=||&&!!!!=`,
 			expected: []token{
+				{ operator, "=="},
 				{ operator, "<"},
 				{ operator, "<="},
 				{ operator, ">"},
 				{ operator, ">="},
+				{ operator, "||"},
+				{ operator, "&&"},
 				{ operator, "!"},
 				{ operator, "!"},
 				{ operator, "!"},
@@ -82,11 +90,18 @@ o	"	`,
 		},
 	}
 	for _, tC := range testCases {
+		stringify := func(xs []token) []string {
+			var out []string
+			for _, x := range xs {
+				out = append(out, x.String())
+			}
+			return out
+		}
 		t.Run(tC.desc, func(t *testing.T) {
 			got,err := lex(tC.input)
 			require.NoError(t, err)
-
-			assert.Equal(t, tC.expected, got)
+			
+			assert.Equal(t, stringify(tC.expected), stringify(got))
 		})
 	}
 }

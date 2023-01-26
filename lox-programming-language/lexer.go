@@ -15,7 +15,7 @@ const (
 	keyword
 	identifier
 	stringLiteral
-	invalid
+	semicolon
 )
 
 type token struct {
@@ -23,8 +23,23 @@ type token struct {
 	lexeme  string
 }
 
+func (t token) String() string {
+	tok := [...]string{
+		"opening",
+		"closing",
+		"operator",
+		"number",
+		"boolean",
+		"keyword",
+		"identifier",
+		"stringLiteral",
+		"semicolon",
+	}
+	return fmt.Sprintf("(%v, %v)", tok[t.tokType], t.lexeme)
+}
+
 func isKeyword(word string) bool {
-	return word == "define" || word == "if"
+	return word == "let" || word == "for" || word == "if"
 }
 
 func lex(input string) ([]token, error) {
@@ -45,43 +60,56 @@ func lex(input string) ([]token, error) {
 		return rune(input[idx]), true
 	}
 
+	addTok := func(t token) {
+		out = append(out, t)
+	}
+
 	for current, ok := currentChar(); ok; current,ok = currentChar() {
 		if unicode.IsSpace(current) {
 			if current == '\n' {
 				lineNumer++
 			}
-		} else if current == ')' {
-			out = append(out, token{closing, ")"})
-		} else if current == '(' {
-			out = append(out, token{opening, "("})
-		} else if current == '+' || current == '-' || current == '*' || current == '/' || current == '=' {
-			out = append(out, token{operator, string(current)})
-		} else if current == '!' || current == '<' || current == '>' {
+		} else if current == ')' || current == '}' {
+			addTok(token{closing, string(current)})
+		} else if current == ';' {
+			addTok(token{semicolon, string(current)})
+		} else if current == '(' || current == '{' {
+			addTok(token{closing, string(current)})
+		} else if current == '+' || current == '-' || current == '*' || current == '/' {
+			addTok(token{operator, string(current)})
+		} else if current == '!' || current == '<' || current == '>' || current == '=' {
 			if next, ok := peek(); ok && next == '=' {
 				idx++
-				out = append(out, token{operator, string(current)+"="})
+				addTok(token{operator, string(current)+"="})
 			} else {
-				out = append(out, token{operator, string(current)})
+				addTok(token{operator, string(current)})
+			}
+		} else if current == '|' || current == '&' {
+			if next, ok := peek(); ok && next == current {
+				idx++
+				addTok(token{operator, string(current) + string(next)})
+			} else {
+				return nil, fmt.Errorf("invalid boolean operator on line %d", lineNumer)
 			}
 		} else if current == '"' {
 			word := readUntil(input, &idx, func(r rune) bool {return r != '"'})
 			if next, ok := peek(); ok && next == '"' {
 				idx++
-				out = append(out, token{stringLiteral, word+"\""})
+				addTok(token{stringLiteral, word+"\""})
 			} else {
 				return nil, fmt.Errorf("Invalid token at line %d: %s", lineNumer, word)
 			}
 		} else if unicode.IsDigit(current) {
 			num := readUntil(input, &idx, unicode.IsDigit)
-			out = append(out, token{number, num})
+			addTok(token{number, num})
 		} else {
 			word := readUntil(input, &idx, unicode.IsLetter)
 			if isKeyword(word) {
-				out = append(out, token{keyword, word})
+				addTok(token{keyword, word})
 			} else if word == "true" || word == "false" {
-				out = append(out, token{boolean, word})
+				addTok(token{boolean, word})
 			} else {
-				out = append(out, token{identifier, word})
+				addTok(token{identifier, word})
 			}
 		}
 		idx++
