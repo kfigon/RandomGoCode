@@ -2,15 +2,16 @@
 
 based on https://craftinginterpreters.com/contents.html
 
-* run
+## run
 ```
 go run .
 ```
-    * run without params to run interpreter
-    * run with a file name to run the interpreter on the file itself
+### more params
+* run without params to run interpreter
+* run with a file name to run the interpreter on the file itself
 
 
-* test
+## test
 ```
 go test ./...
 ```
