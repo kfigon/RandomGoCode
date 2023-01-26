@@ -1,4 +1,4 @@
-module lisp
+module lox
 
 go 1.18
 

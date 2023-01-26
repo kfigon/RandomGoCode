@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println("hello")
 	if len(os.Args) == 1 {
 		interpreterMode()
 	} else if len(os.Args) == 2 {
@@ -31,7 +30,7 @@ func fileMode(fileName string) {
 }
 
 func interpreterMode() {
-	fmt.Println("Welcome to lisp interpreter")
+	fmt.Println("Welcome to lox interpreter")
 	fmt.Println("type 'quit' to exit")
 	for true {
 		var line string
