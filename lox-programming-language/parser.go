@@ -1,5 +1,6 @@
 package main
 
+
 // todo: implement a visitor maybe?
 type expression interface {
 	expr() // dummy method - lack of sum types
@@ -45,4 +46,30 @@ func (p *Parser) Parse() ([]expression, []error) {
 		_ = current
 	}
 	return p.Expressions, p.Errors
+}
+
+func (p *Parser) parseExpression() expression {
+	current,_ := p.it.current()
+	t := current.tokType
+
+	if t == number || t == stringLiteral || t == boolean {
+		return literal(current)
+	} else if t == operator && (current.lexeme == "!" || current.lexeme == "-") {
+		p.it.consume()
+		e := p.parseExpression()
+		// todo nil
+		return unary{op: current, ex: e}
+	} else if t == operator {
+		return operatorExpr(current)
+	} else if t == opening && current.lexeme == "(" {
+		p.it.consume()
+		e := p.parseExpression()
+		p.it.consume()
+		next, ok := p.it.current() 
+		if ok && next.tokType == closing && next.lexeme == ")" {
+			return nil // todo
+		}
+		return grouping{e}
+	}
+	return nil
 }
