@@ -41,7 +41,17 @@ func interpreterMode() {
 			fmt.Println("Bye")
 			return
 		} else if line != "" {
-			fmt.Println(line)
+			t, err := lex(line)
+			if err != nil {
+				fmt.Println("got error: ", err)
+				continue
+			}
+			exp, errs := NewParser(t).Parse()
+			if len(errs) > 0 {
+				fmt.Println("got errors: ", errs)
+			} else {
+				fmt.Println(exp)
+			}
 		}
 	}
 }

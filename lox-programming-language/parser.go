@@ -1,5 +1,6 @@
 package main
 
+import "fmt"
 
 // todo: implement a visitor maybe?
 type expression interface {
@@ -42,9 +43,11 @@ func NewParser(toks []token) *Parser {
 }
 
 func (p *Parser) Parse() ([]expression, []error) {
-	for current, ok := p.it.current(); ok; current, ok = p.it.current() {
-		_ = current
-		p.it.consume()
+	v := p.parseExpression()
+	if v == nil {
+		p.Errors = append(p.Errors, fmt.Errorf("some error"))
+	} else {
+		p.Expressions = append(p.Expressions, v)
 	}
 	return p.Expressions, p.Errors
 }
@@ -137,6 +140,7 @@ func (p *Parser) parsePrimary() expression {
 			// todo: unmatched paren, error
 		}
 	} else if checkTokenType(current, number) || checkTokenType(current, boolean) || checkTokenType(current, stringLiteral) {
+		p.it.consume()
 		return literal(current)
 	}
 	return nil // error

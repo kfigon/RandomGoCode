@@ -18,14 +18,8 @@ const (
 	semicolon
 )
 
-type token struct {
-	tokType tokenType
-	lexeme  string
-	line int
-}
-
-func (t token) String() string {
-	tok := [...]string{
+func (t tokenType) String() string {
+	return [...]string{
 		"opening",
 		"closing",
 		"operator",
@@ -35,8 +29,17 @@ func (t token) String() string {
 		"identifier",
 		"stringLiteral",
 		"semicolon",
-	}
-	return fmt.Sprintf("(%v, %v)", tok[t.tokType], t.lexeme)
+	}[t]
+}
+
+type token struct {
+	tokType tokenType
+	lexeme  string
+	line int
+}
+
+func (t token) String() string {
+	return fmt.Sprintf("(%v, %v)", t.tokType, t.lexeme)
 }
 
 func isKeyword(word string) bool {
@@ -75,7 +78,7 @@ func lex(input string) ([]token, error) {
 		} else if current == ';' {
 			addTok(semicolon, string(current))
 		} else if current == '(' || current == '{' {
-			addTok(closing, string(current))
+			addTok(opening, string(current))
 		} else if current == '+' || current == '-' || current == '*' || current == '/' {
 			addTok(operator, string(current))
 		} else if current == '!' || current == '<' || current == '>' || current == '=' {

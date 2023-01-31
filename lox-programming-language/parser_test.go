@@ -11,11 +11,50 @@ func TestParse(t *testing.T) {
 	testCases := []struct {
 		desc	string
 		input 	string
-		expected string
+		expected []expression
 	}{
 		{
-			desc: "",
-			
+			desc: "simple math expression",
+			input: "1 + 3",
+			expected: []expression{binary{op: token{operator, "+", 1}, left: literal(token{number, "1", 1}), right: literal(token{number, "3", 1})}},
+		},
+		{
+			desc: "more complicated math expression",
+			input: "8*1 + 3 * 2",
+			expected: []expression{
+				binary{
+					op: token{operator, "+", 1}, 
+					left: binary{
+						op: token{operator, "*", 1},
+						left: literal(token{number, "8", 1}),
+						right: literal(token{number, "1", 1}),
+					}, 
+					right: binary{
+						op: token{operator, "*", 1},
+						left: literal(token{number, "3", 1}),
+						right: literal(token{number, "2", 1}),
+					},
+				},
+			},
+		},
+		{
+			desc: "grouped math expression",
+			input: "8*1 / (3 + 2)",
+			expected: []expression{
+				binary{
+					op: token{operator, "/", 1}, 
+					left: binary{
+						op: token{operator, "*", 1},
+						left: literal(token{number, "8", 1}),
+						right: literal(token{number, "1", 1}),
+					}, 
+					right: binary{
+						op: token{operator, "+", 1},
+						left: literal(token{number, "3", 1}),
+						right: literal(token{number, "2", 1}),
+					},
+				},
+			},
 		},
 	}
 	for _, tC := range testCases {
@@ -23,12 +62,10 @@ func TestParse(t *testing.T) {
 			toks,err := lex(tC.input)
 			require.NoError(t, err, "got lexer error")
 
-			p := NewParser(toks)
-			p.Parse()
-			got, errs := p.Parse()
+			got, errs := NewParser(toks).Parse()
 			require.Empty(t, errs, "got parser errors")
 
-			assert.Equal(t, got, "todo")
+			assert.Equal(t, tC.expected, got)
 		})
 	}
 }
