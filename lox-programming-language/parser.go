@@ -43,35 +43,46 @@ func NewParser(toks []token) *Parser {
 }
 
 func (p *Parser) Parse() ([]expression, []error) {
-	v := p.parseExpression()
-	if v == nil {
-		p.Errors = append(p.Errors, fmt.Errorf("some error"))
+	v,err := p.parseExpression()
+	if err != nil {
+		p.Errors = append(p.Errors, err)
+		p.recover()
 	} else {
 		p.Expressions = append(p.Expressions, v)
 	}
 	return p.Expressions, p.Errors
 }
 
-func (p *Parser) parseExpression() expression {
+func (p *Parser) parseExpression() (expression,error) {
 	return p.parseEquality()
 }
 
-func (p *Parser) parseEquality() expression {
-	ex := p.parseComparison()
+func (p *Parser) parseEquality() (expression,error) {
+	ex,err := p.parseComparison()
+	if err != nil {
+		return nil, err
+	}
 	for  {
 		current, ok := p.it.current()
 		if ok && (checkToken(current, operator, "!=") || checkToken(current, operator, "==")) {
 			p.it.consume()
-			ex = binary{op: current, left: ex, right: p.parseComparison()}
+			e,err :=p.parseComparison()
+			if err != nil {
+				return nil, err
+			}
+			ex = binary{op: current, left: ex, right: e}
 		} else {
 			break
 		}
 	}
-	return ex
+	return ex, nil
 }
 
-func (p *Parser) parseComparison() expression {
-	ex := p.parseTerm()
+func (p *Parser) parseComparison() (expression,error) {
+	ex,err := p.parseTerm()
+	if err != nil {
+		return nil, err
+	}
 	for  {
 		current, ok := p.it.current()
 		if ok && (checkToken(current, operator, ">") || 
@@ -79,72 +90,101 @@ func (p *Parser) parseComparison() expression {
 			checkToken(current, operator, "<") ||
 			checkToken(current, operator, "<=")) {
 			p.it.consume()
-			ex = binary{op: current, left: ex, right: p.parseTerm()}
+			e, err := p.parseTerm()
+			if err != nil {
+				return nil, err
+			}
+			ex = binary{op: current, left: ex, right: e}
 		} else {
 			break
 		}
 	}
-	return ex
+	return ex,nil
 }
 
-func (p *Parser) parseTerm() expression {
-	ex := p.parseFactor()
+func (p *Parser) parseTerm() (expression,error) {
+	ex,err := p.parseFactor()
+	if err != nil {
+		return nil, err
+	}
 	for  {
 		current, ok := p.it.current()
 		if ok && (checkToken(current, operator, "-") || checkToken(current, operator, "+")) {
 			p.it.consume()
-			ex = binary{op: current, left: ex, right: p.parseFactor()}
+			e, err := p.parseFactor()
+			if err != nil {
+				return nil, err
+			}
+			ex = binary{op: current, left: ex, right: e}
 		} else {
 			break
 		}
 	}
-	return ex
+	return ex,nil
 }
 
-func (p *Parser) parseFactor() expression {
-	ex := p.parseUnary()
+func (p *Parser) parseFactor() (expression,error) {
+	ex,err := p.parseUnary()
+	if err != nil {
+		return nil, err
+	}
 	for  {
 		current, ok := p.it.current()
 		if ok && (checkToken(current, operator, "/") || checkToken(current, operator, "*")) {
 			p.it.consume()
-			ex = binary{op: current, left: ex, right: p.parseUnary()}
+			e, err := p.parseUnary()
+			if err != nil {
+				return nil, err
+			}
+			ex = binary{op: current, left: ex, right: e}
 		} else {
 			break
 		}
 	}
-	return ex
+	return ex,nil
 }
 
-func (p *Parser) parseUnary() expression {
+func (p *Parser) parseUnary() (expression,error) {
 	current, ok := p.it.current()
 	if ok && (checkToken(current, operator, "!") || checkToken(current, operator, "-")) {
 		op := current
 		p.it.consume()
-		return unary{op: op, ex: p.parseUnary()}
+		e, err := p.parseUnary()
+		if err != nil {
+			return nil, err
+		}
+		return unary{op: op, ex: e}, nil
 	} 
 	return p.parsePrimary()
 }
 
-func (p *Parser) parsePrimary() expression {
+func (p *Parser) parsePrimary() (expression,error) {
 	current, ok := p.it.current()
 	if !ok {
-		return nil // todo
-	}
-	if checkToken(current, opening, "(") {
+		return nil, eofError()
+	} else if checkToken(current, opening, "(") {
 		p.it.consume()
-		ex := p.parseExpression()
+		ex,err := p.parseExpression()
+		if err != nil {
+			return nil, err
+		}
+
 		next, ok := p.it.current()
 		if ok && checkToken(next, closing, ")") {
 			p.it.consume()
-			return ex
+			return ex, nil
 		} else {
-			// todo: unmatched paren, error
+			if !ok {
+				return nil, eofError()
+			} else {
+				return nil, makeError(next, "unmatched ')'")
+			}
 		}
 	} else if checkTokenType(current, number) || checkTokenType(current, boolean) || checkTokenType(current, stringLiteral) {
 		p.it.consume()
-		return literal(current)
+		return literal(current), nil
 	}
-	return nil // error
+	return nil, makeError(current, "unexpected token when parsing primary expression")
 }
 
 func checkToken(tok token, tokType tokenType, lexeme string) bool {
@@ -153,4 +193,22 @@ func checkToken(tok token, tokType tokenType, lexeme string) bool {
 
 func checkTokenType(tok token, tokType tokenType) bool {
 	return tok.tokType == tokType
+}
+
+func makeError(tok token, msg string) error {
+	return fmt.Errorf("%v, at line %v at token %v", msg, tok.lexeme, tok)
+}
+
+func eofError() error {
+	return fmt.Errorf("unexpected end of tokens")
+}
+
+func (p *Parser) recover() {
+	for {
+		current, ok := p.it.current()
+		if !ok || checkTokenType(current, semicolon) { // todo: more synchronisation tokens
+			break
+		}
+		p.it.consume()
+	}
 }
