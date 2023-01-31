@@ -101,8 +101,16 @@ func TestParserErrors(t *testing.T) {
 		expected string
 	}{
 		{
-			desc: "",
-			
+			desc: "unmatched paren on grouping",
+			input: "(1+3",
+		},
+		{
+			desc: "eof on grouping",
+			input: "(1+",
+		},
+		{
+			desc: "eof on binary",
+			input: "1+",
 		},
 	}
 	for _, tC := range testCases {
