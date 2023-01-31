@@ -10,11 +10,6 @@ type expression interface {
 type literal token
 func (literal) expr(){}
 
-type grouping struct {
-	expression
-}
-func (g grouping) expr(){}
-
 type unary struct {
 	op token
 	ex expression
@@ -27,9 +22,6 @@ type binary struct {
 	right expression
 }
 func (binary) expr(){}
-
-type operatorExpr token
-func (operatorExpr) expr(){}
 
 
 type Parser struct {
