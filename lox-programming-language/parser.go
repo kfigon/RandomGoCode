@@ -44,32 +44,108 @@ func NewParser(toks []token) *Parser {
 func (p *Parser) Parse() ([]expression, []error) {
 	for current, ok := p.it.current(); ok; current, ok = p.it.current() {
 		_ = current
+		p.it.consume()
 	}
 	return p.Expressions, p.Errors
 }
 
 func (p *Parser) parseExpression() expression {
-	current,_ := p.it.current()
-	t := current.tokType
+	return p.parseEquality()
+}
 
-	if t == number || t == stringLiteral || t == boolean {
-		return literal(current)
-	} else if t == operator && (current.lexeme == "!" || current.lexeme == "-") {
-		p.it.consume()
-		e := p.parseExpression()
-		// todo nil
-		return unary{op: current, ex: e}
-	} else if t == operator {
-		return operatorExpr(current)
-	} else if t == opening && current.lexeme == "(" {
-		p.it.consume()
-		e := p.parseExpression()
-		p.it.consume()
-		next, ok := p.it.current() 
-		if ok && next.tokType == closing && next.lexeme == ")" {
-			return nil // todo
+func (p *Parser) parseEquality() expression {
+	ex := p.parseComparison()
+	for  {
+		current, ok := p.it.current()
+		if ok && (checkToken(current, operator, "!=") || checkToken(current, operator, "==")) {
+			p.it.consume()
+			ex = binary{op: current, left: ex, right: p.parseComparison()}
+		} else {
+			break
 		}
-		return grouping{e}
 	}
-	return nil
+	return ex
+}
+
+func (p *Parser) parseComparison() expression {
+	ex := p.parseTerm()
+	for  {
+		current, ok := p.it.current()
+		if ok && (checkToken(current, operator, ">") || 
+			checkToken(current, operator, ">=") || 
+			checkToken(current, operator, "<") ||
+			checkToken(current, operator, "<=")) {
+			p.it.consume()
+			ex = binary{op: current, left: ex, right: p.parseTerm()}
+		} else {
+			break
+		}
+	}
+	return ex
+}
+
+func (p *Parser) parseTerm() expression {
+	ex := p.parseFactor()
+	for  {
+		current, ok := p.it.current()
+		if ok && (checkToken(current, operator, "-") || checkToken(current, operator, "+")) {
+			p.it.consume()
+			ex = binary{op: current, left: ex, right: p.parseFactor()}
+		} else {
+			break
+		}
+	}
+	return ex
+}
+
+func (p *Parser) parseFactor() expression {
+	ex := p.parseUnary()
+	for  {
+		current, ok := p.it.current()
+		if ok && (checkToken(current, operator, "/") || checkToken(current, operator, "*")) {
+			p.it.consume()
+			ex = binary{op: current, left: ex, right: p.parseUnary()}
+		} else {
+			break
+		}
+	}
+	return ex
+}
+
+func (p *Parser) parseUnary() expression {
+	current, ok := p.it.current()
+	if ok && (checkToken(current, operator, "!") || checkToken(current, operator, "-")) {
+		op := current
+		return unary{op: op, ex: p.parseUnary()}
+	} 
+	return p.parsePrimary()
+}
+
+func (p *Parser) parsePrimary() expression {
+	current, ok := p.it.current()
+	if !ok {
+		return nil // todo
+	}
+	if checkToken(current, opening, "(") {
+		p.it.consume()
+		ex := p.parseExpression()
+		next, ok := p.it.current()
+		if ok && checkToken(next, closing, ")") {
+			p.it.consume()
+			return ex
+		} else {
+			// todo: unmatched paren, error
+		}
+	} else if checkTokenType(current, number) || checkTokenType(current, boolean) || checkTokenType(current, stringLiteral) {
+		return literal(current)
+	}
+	return nil // error
+}
+
+func checkToken(tok token, tokType tokenType, lexeme string) bool {
+	return checkTokenType(tok, tokType) && tok.lexeme == lexeme
+}
+
+func checkTokenType(tok token, tokType tokenType) bool {
+	return tok.tokType == tokType
 }

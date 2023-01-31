@@ -19,16 +19,22 @@ go test ./...
 
 ## Grammar
 
-```
-expression     → literal
-               | unary
-               | binary
-               | grouping ;
+Recursive descend parser - top-down approach - go through the grammar from the top. Precedence - top - lowest, bottom - highest
 
-literal        → NUMBER | STRING | "true" | "false" | "nil" ;
-grouping       → "(" expression ")" ;
-unary          → ( "-" | "!" ) expression ;
-binary         → expression operator expression ;
-operator       → "==" | "!=" | "<" | "<=" | ">" | ">="
-               | "+"  | "-"  | "*" | "/" ;
+symbols:
+* `|` - or
+* `+` - at least once ( > 1)
+* `?` - at most once ( <= 1)
+* `*` - 0 or more ( >= 0)
+
+```
+expression     → equality ;
+equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term           → factor ( ( "-" | "+" ) factor )* ;
+factor         → unary ( ( "/" | "*" ) unary )* ;
+unary          → ( "!" | "-" ) unary
+               | primary ;
+primary        → NUMBER | STRING | "true" | "false" | "nil"
+               | "(" expression ")" ;
 ```
