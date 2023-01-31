@@ -56,6 +56,30 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "unary math expression",
+			input: "-3",
+			expected: []expression{
+				unary{
+					op: token{operator, "-", 1}, 
+					ex: literal(token{number, "3", 1}),
+				},
+			},
+		},
+		{
+			desc: "binary with unary math expression",
+			input: "-3 + 4",
+			expected: []expression{
+				binary{
+					op: token{operator, "+", 1},
+					left: unary{
+						op: token{operator, "-", 1}, 
+						ex: literal(token{number, "3", 1}),
+					},
+					right: literal(token{number, "4", 1}),
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

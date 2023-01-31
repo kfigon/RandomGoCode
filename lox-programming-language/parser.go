@@ -119,6 +119,7 @@ func (p *Parser) parseUnary() expression {
 	current, ok := p.it.current()
 	if ok && (checkToken(current, operator, "!") || checkToken(current, operator, "-")) {
 		op := current
+		p.it.consume()
 		return unary{op: op, ex: p.parseUnary()}
 	} 
 	return p.parsePrimary()
