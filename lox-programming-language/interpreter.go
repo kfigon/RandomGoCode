@@ -145,6 +145,21 @@ func (i *interpreter) visitBinary(b binary) {
 		return
 	}
 
+	leftStr, leftErr := castTo[string](b.op, leftI.lastResult.v)
+	rightStr, rightErr := castTo[string](b.op, rightI.lastResult.v)
+	if leftErr == nil && rightErr == nil {
+		if b.op.lexeme == "+" {
+			i.lastResult = loxObject{v: toAnyPtr(leftStr + rightStr)}
+		} else if b.op.lexeme == "==" {
+			i.lastResult = loxObject{v: toAnyPtr(leftStr == rightStr)}
+		} else if b.op.lexeme == "!=" {
+			i.lastResult = loxObject{v: toAnyPtr(leftStr != rightStr)}
+		} else {
+			i.lastError = fmt.Errorf("unsupported binary operator on strings %v, line %v", b.op, b.op.line)
+		}
+		return
+	}
+
 	leftV,leftErr := castTo[int](b.op, leftI.lastResult.v)
 	rightV,rightErr := castTo[int](b.op, rightI.lastResult.v)
 	if leftErr != nil {

@@ -42,14 +42,14 @@ func TestLex(t *testing.T) {
 " fo
 o	"	`,
 			expected: []token{
-				{tokType: stringLiteral, lexeme: "\" fo\no\t\""},
+				{tokType: stringLiteral, lexeme: " fo\no\t"},
 			},
 		},
 		{
 			desc: "string literal",
 			input: "\" hello world if 123\" 123",
 			expected: []token{
-				{tokType: stringLiteral, lexeme:  "\" hello world if 123\""},
+				{tokType: stringLiteral, lexeme:  " hello world if 123"},
 				{tokType: number, lexeme:  "123"},
 			},
 		},
@@ -112,6 +112,6 @@ func TestInvalidInput(t *testing.T) {
 
 		_, err := lex(input)
 		assert.Error(t, err)
-		assert.Equal(t, "Invalid token at line 1: \" hello world ", err.Error())
+		assert.Equal(t, "Invalid token at line 1: \" hello world \"", err.Error())
 	})
 }

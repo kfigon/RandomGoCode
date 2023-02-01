@@ -106,12 +106,13 @@ func lex(input string) ([]token, error) {
 				return nil, fmt.Errorf("invalid boolean operator on line %d", lineNumer)
 			}
 		} else if current == '"' {
+			idx++
 			word := readUntil(input, &idx, func(r rune) bool {return r != '"'})
 			if next, ok := peek(); ok && next == '"' {
 				idx++
-				addTok(stringLiteral, word+"\"")
+				addTok(stringLiteral, word)
 			} else {
-				return nil, fmt.Errorf("Invalid token at line %d: %s", lineNumer, word)
+				return nil, fmt.Errorf("Invalid token at line %d: \"%s\"", lineNumer, word)
 			}
 		} else if unicode.IsDigit(current) {
 			num := readUntil(input, &idx, unicode.IsDigit)

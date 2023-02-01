@@ -93,6 +93,16 @@ func TestInterpretExpression(t *testing.T) {
 			input: `true;!true`,
 			expected: []loxObject{{v: toAnyPtr(true)},{v: toAnyPtr(false)}},
 		},
+		{
+			desc: "string concantenation and comparison",
+			input: `"foo" + "bar" == "foobar"`,
+			expected: []loxObject{{v: toAnyPtr(true)}},
+		},
+		{
+			desc: "string concantenation",
+			input: `"foo" + "bar"`,
+			expected: []loxObject{{v: toAnyPtr("foobar")}},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
