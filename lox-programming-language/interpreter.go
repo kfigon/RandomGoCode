@@ -33,18 +33,18 @@ func (i *interpreter) visitLiteral(li literal) {
 		v, err := strconv.Atoi(li.lexeme)
 		if err != nil {
 			i.lastError = fmt.Errorf("invalid number %v, line %v, error: %w", li, li.line, err)
-			return 
+		} else {
+			i.lastResult = loxObject{v: toAnyPtr(v)}
 		}
-		i.lastResult = loxObject{v: toAnyPtr(v)}
 	} else if checkTokenType(tok, stringLiteral) {
 		i.lastResult = loxObject{v: toAnyPtr(li.lexeme)}
 	} else if checkTokenType(tok, boolean) {
 		v, err := strconv.ParseBool(li.lexeme)
 		if err != nil {
 			i.lastError = fmt.Errorf("invalid boolean %v, line %v, error: %w", li, li.line, err)
-			return 
+		} else {
+			i.lastResult = loxObject{v: toAnyPtr(v)}
 		}
-		i.lastResult = loxObject{v: toAnyPtr(v)}
 	} else {
 		i.lastError = fmt.Errorf("invalid literal %v, line %v", li, li.line)
 	}
@@ -63,24 +63,32 @@ func (i *interpreter) visitUnary(u unary) {
 	}
 
 	if op == "!" {
-		b, ok := (*tmp.lastResult.v).(*bool)
-		if !ok {
-			i.lastError = fmt.Errorf("boolean value not found %v, line %v", u.op, u.op.line)
-			return
+		v, err := castTo[bool](u.op, tmp.lastResult.v)
+		if err != nil {
+			i.lastError = err
+		} else {
+			i.lastResult = loxObject{v: toAnyPtr(!v)}
 		}
-		i.lastResult = loxObject{v: toAnyPtr(!*b)}
 	} else if op == "-" {
-		b, ok := (*tmp.lastResult.v).(*int)
-		if !ok {
-			i.lastError = fmt.Errorf("number value not found %v, line %v", u.op, u.op.line)
-			return
+		v, err := castTo[int](u.op, tmp.lastResult.v)
+		if err != nil {
+			i.lastError = err
+		} else {
+			i.lastResult = loxObject{v: toAnyPtr(-v)}
 		}
-		i.lastResult = loxObject{v: toAnyPtr(-(*b))}
 	} else {
 		i.lastError = fmt.Errorf("invalid unary operator %v, line %v", u.op, u.op.line)
-		return
 	}
 }
+
+func castTo[T any](t token, v *any) (T, error) {
+	val, ok := (*v).(T)
+	if !ok {
+		return val, fmt.Errorf("%v value not found %v, line %v", t.tokType, t, t.line)
+	}
+	return val, nil
+}
+
 func (i *interpreter) visitBinary(b binary) {
 	leftI := &interpreter{}
 	rightI := &interpreter{}
@@ -100,23 +108,6 @@ func (i *interpreter) visitBinary(b binary) {
 		i.lastError = fmt.Errorf("failed to evaluate right binary expression %v, line %v", b.op, b.op.line)
 		return
 	}
-	isNumber := func(v *any) (int, bool) {
-		val, ok := (*v).(*int)
-		if !ok {
-			i.lastError = fmt.Errorf("number value not found %v, line %v", b.op, b.op.line)
-			return 0, false
-		}
-		return *val, true
-	}
-
-	isBool := func(v *any) (bool, bool) {
-		val, ok := (*v).(*bool)
-		if !ok {
-			i.lastError = fmt.Errorf("boolean value not found %v, line %v", b.op, b.op.line)
-			return false, false
-		}
-		return *val, true
-	}
 
 	numeric := map[string]func(int,int)int {
 		"+": func(a, b int) int {return a+b},
@@ -135,29 +126,36 @@ func (i *interpreter) visitBinary(b binary) {
 		">=": func(a, b int) bool {return a>=b},
 		"<": func(a, b int) bool {return a<b},
 		"<=": func(a, b int) bool {return a<=b},
+		"!=": func(a, b int) bool {return a!=b},
+		"==": func(a, b int) bool {return a==b},
 	}
 
+	leftBool,leftErr := castTo[bool](b.op, leftI.lastResult.v)
+	rightBool,rightErr := castTo[bool](b.op, rightI.lastResult.v)
 
-	if op, ok := boolean[b.op.lexeme]; ok {
-		leftV,leftOk := isBool(leftI.lastResult.v)
-		rightV,rightOk := isBool(rightI.lastResult.v)
-		if leftOk && rightOk {
-			i.lastResult = loxObject{v: toAnyPtr(op(leftV, rightV))}
-		}
-	} else {
-		leftV,leftOk := isNumber(leftI.lastResult.v)
-		rightV,rightOk := isNumber(rightI.lastResult.v)
-		if !leftOk || !rightOk {
-			return
-		}
-
-		if op, ok := numeric[b.op.lexeme]; ok {
-			i.lastResult = loxObject{v: toAnyPtr(op(leftV, rightV))}
-		} else if op,ok := comparison[b.op.lexeme]; ok {
-			i.lastResult = loxObject{v: toAnyPtr(op(leftV, rightV))}
+	if op, ok := boolean[b.op.lexeme]; ok && leftErr == nil && rightErr == nil {
+		if leftErr != nil {
+			i.lastError = leftErr
+		} else if rightErr != nil {
+			i.lastError = rightErr
 		} else {
-			i.lastError = fmt.Errorf("unsupported binary operator %v, line %v", b.op, b.op.line)
+			i.lastResult = loxObject{v: toAnyPtr(op(leftBool, rightBool))}
 		}
+		return
+	}
+
+	leftV,leftErr := castTo[int](b.op, leftI.lastResult.v)
+	rightV,rightErr := castTo[int](b.op, rightI.lastResult.v)
+	if leftErr != nil {
+		i.lastError = leftErr
+	} else if rightErr != nil {
+		i.lastError = rightErr
+	} else if op, ok := numeric[b.op.lexeme]; ok {
+		i.lastResult = loxObject{v: toAnyPtr(op(leftV, rightV))}
+	} else if op,ok := comparison[b.op.lexeme]; ok {
+		i.lastResult = loxObject{v: toAnyPtr(op(leftV, rightV))}
+	} else {
+		i.lastError = fmt.Errorf("unsupported binary operator %v, line %v", b.op, b.op.line)
 	}
 }
 
