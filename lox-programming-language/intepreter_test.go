@@ -68,6 +68,11 @@ func TestInterpretExpression(t *testing.T) {
 			input: "5*3+1 == 16",
 			expected: []loxObject{{v: toAnyPtr(true)}},
 		},
+		{
+			desc: "multiple expressions",
+			input: `true;!true`,
+			expected: []loxObject{{v: toAnyPtr(true)},{v: toAnyPtr(false)}},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
