@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 )
@@ -33,9 +34,9 @@ func interpreterMode() {
 	fmt.Println("Welcome to lox interpreter")
 	fmt.Println("type 'quit' to exit")
 	for true {
-		var line string
 		fmt.Print("> ")
-		fmt.Scanln(&line)
+		in := bufio.NewReader(os.Stdin)
+		line, _ := in.ReadString('\n')
 		
 		if line == "quit" {
 			fmt.Println("Bye")
@@ -43,14 +44,21 @@ func interpreterMode() {
 		} else if line != "" {
 			t, err := lex(line)
 			if err != nil {
-				fmt.Println("got error: ", err)
+				fmt.Println("got lexer error: ", err)
 				continue
 			}
 			exp, errs := NewParser(t).Parse()
 			if len(errs) > 0 {
-				fmt.Println("got errors: ", errs)
-			} else {
-				fmt.Println(exp)
+				fmt.Println("got parser errors: ", errs)
+				continue
+			}			
+			got, err := interpret(exp)
+			if err != nil {
+				fmt.Println("got interpreter error:",err)
+				continue
+			}
+			for _,v := range got {
+				fmt.Println(*(v.v))
 			}
 		}
 	}
