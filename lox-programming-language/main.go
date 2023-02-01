@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -37,8 +38,10 @@ func interpreterMode() {
 		fmt.Print("> ")
 		in := bufio.NewReader(os.Stdin)
 		line, _ := in.ReadString('\n')
-		
-		if line == "quit" {
+		line = strings.TrimSuffix(line, "\r\n")
+		line = strings.TrimSuffix(line, "\n")
+
+		if line == "quit" || line == "exit" {
 			fmt.Println("Bye")
 			return
 		} else if line != "" {
