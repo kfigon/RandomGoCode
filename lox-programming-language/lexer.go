@@ -16,6 +16,7 @@ const (
 	identifier
 	stringLiteral
 	semicolon
+	null
 )
 
 func (t tokenType) String() string {
@@ -29,6 +30,7 @@ func (t tokenType) String() string {
 		"identifier",
 		"stringLiteral",
 		"semicolon",
+		"null",
 	}[t]
 }
 
@@ -108,17 +110,23 @@ func lex(input string) ([]token, error) {
 			addTok(number, num)
 		} else {
 			word := readUntil(input, &idx, unicode.IsLetter)
-			if isKeyword(word) {
-				addTok(keyword, word)
-			} else if word == "true" || word == "false" {
-				addTok(boolean, word)
-			} else {
-				addTok(identifier, word)
-			}
+			tokType := classifyWord(word)
+			addTok(tokType, word)
 		}
 		idx++
 	}
 	return out, nil
+}
+
+func classifyWord(word string) tokenType {
+	if isKeyword(word) {
+		return keyword
+	} else if word == "true" || word == "false" {
+		return boolean
+	} else if word == "null" {
+		return null
+	} 
+	return identifier
 }
 
 func readUntil(input string, idx *int, fn func(rune)bool) string {
