@@ -121,3 +121,21 @@ func TestInterpretExpression(t *testing.T) {
 		})
 	}
 }
+
+func TestInvalidExpressions(t *testing.T) {
+	t.Run("mismatched types", func(t *testing.T) {
+		input := `2 * (3 / -"muffin")`
+		toks,err := lex(input)
+		require.NoError(t, err, "got lexer error")
+
+		p := NewParser(toks)
+		p.Parse()
+		exps, errs := p.Parse()
+		require.Empty(t, errs, "got parser errors")
+
+		got, interpreterErrs := interpret(exps)
+		require.Empty(t, got, "expected intepreter errors")
+
+		assert.Error(t, interpreterErrs)
+	})
+}
