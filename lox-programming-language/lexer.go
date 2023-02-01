@@ -44,6 +44,14 @@ func (t token) String() string {
 	return fmt.Sprintf("(%v, %v)", t.tokType, t.lexeme)
 }
 
+func checkToken(tok token, tokType tokenType, lexeme string) bool {
+	return checkTokenType(tok, tokType) && tok.lexeme == lexeme
+}
+
+func checkTokenType(tok token, tokType tokenType) bool {
+	return tok.tokType == tokType
+}
+
 func isKeyword(word string) bool {
 	return word == "let" || word == "for" || word == "return" || word == "else" || word == "if"
 }

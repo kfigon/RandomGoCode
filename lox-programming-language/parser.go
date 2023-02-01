@@ -2,27 +2,37 @@ package main
 
 import "fmt"
 
-// todo: implement a visitor maybe?
 type expression interface {
-	expr() // dummy method - lack of sum types
+	visitExpr(visitor)
+}
+
+type visitor interface {
+	visitLiteral(literal)
+	visitUnary(unary)
+	visitBinary(binary)
 }
 
 type literal token
-func (literal) expr(){}
+func (l literal) visitExpr(v visitor){
+	v.visitLiteral(l)
+}
 
 type unary struct {
 	op token
 	ex expression
 }
-func (unary) expr(){}
+func (u unary) visitExpr(v visitor){
+	v.visitUnary(u)
+}
 
 type binary struct {
 	op token
 	left expression
 	right expression
 }
-func (binary) expr(){}
-
+func (b binary) visitExpr(v visitor){
+	v.visitBinary(b)
+}
 
 type Parser struct {
 	it *iter[token]
@@ -190,14 +200,6 @@ func (p *Parser) parsePrimary() (expression,error) {
 		return p.parseExpression()
 	}
 	return nil, makeError(current, "unexpected token when parsing primary expression")
-}
-
-func checkToken(tok token, tokType tokenType, lexeme string) bool {
-	return checkTokenType(tok, tokType) && tok.lexeme == lexeme
-}
-
-func checkTokenType(tok token, tokType tokenType) bool {
-	return tok.tokType == tokType
 }
 
 func makeError(tok token, msg string) error {
