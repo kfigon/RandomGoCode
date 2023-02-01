@@ -69,6 +69,16 @@ func TestInterpretExpression(t *testing.T) {
 			expected: []loxObject{{v: toAnyPtr(true)}},
 		},
 		{
+			desc: "complicated expr4",
+			input: "true == !true",
+			expected: []loxObject{{v: toAnyPtr(false)}},
+		},
+		{
+			desc: "complicated expr5",
+			input: "!false != !true",
+			expected: []loxObject{{v: toAnyPtr(true)}},
+		},
+		{
 			desc: "multiple expressions",
 			input: `true;!true`,
 			expected: []loxObject{{v: toAnyPtr(true)},{v: toAnyPtr(false)}},
