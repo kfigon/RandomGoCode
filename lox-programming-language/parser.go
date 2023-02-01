@@ -35,12 +35,22 @@ func NewParser(toks []token) *Parser {
 }
 
 func (p *Parser) Parse() ([]expression, []error) {
-	v,err := p.parseExpression()
-	if err != nil {
-		p.Errors = append(p.Errors, err)
-		p.recover()
-	} else {
-		p.Expressions = append(p.Expressions, v)
+	for  {
+		current, ok := p.it.current()
+		if !ok {
+			break
+		}
+		v,err := p.parseExpression()
+		if err != nil {
+			p.Errors = append(p.Errors, err)
+			p.recover()
+		} else {
+			p.Expressions = append(p.Expressions, v)
+		}
+
+		if checkTokenType(current, semicolon) {
+			p.it.consume()
+		}
 	}
 	return p.Expressions, p.Errors
 }
@@ -175,6 +185,9 @@ func (p *Parser) parsePrimary() (expression,error) {
 	} else if checkTokenType(current, number) || checkTokenType(current, boolean) || checkTokenType(current, stringLiteral) {
 		p.it.consume()
 		return literal(current), nil
+	} else if checkTokenType(current, semicolon) {
+		p.it.consume()
+		return p.parseExpression()
 	}
 	return nil, makeError(current, "unexpected token when parsing primary expression")
 }
@@ -188,7 +201,7 @@ func checkTokenType(tok token, tokType tokenType) bool {
 }
 
 func makeError(tok token, msg string) error {
-	return fmt.Errorf("%v, at line %v at token %v", msg, tok.lexeme, tok)
+	return fmt.Errorf("%v, at line %v at token %v", msg, tok.line, tok)
 }
 
 func eofError() error {
