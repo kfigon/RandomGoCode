@@ -10,6 +10,7 @@ type loxObject struct {
 }
 
 type interpreter struct {
+	// go is stupid with generics, so this is a workaround to get results
 	lastResult loxObject
 	lastError  error
 }
