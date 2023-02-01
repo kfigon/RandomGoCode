@@ -65,16 +65,26 @@ func TestInterpretExpression(t *testing.T) {
 		},
 		{
 			desc: "complicated expr3",
+			input: "(1+5)*3 + 2",
+			expected: []loxObject{{v: toAnyPtr(20)}},
+		},
+		{
+			desc: "complicated expr4",
+			input: "1+5*3 + 2",
+			expected: []loxObject{{v: toAnyPtr(18)}},
+		},
+		{
+			desc: "boolean expr",
 			input: "5*3+1 == 16",
 			expected: []loxObject{{v: toAnyPtr(true)}},
 		},
 		{
-			desc: "complicated expr4",
+			desc: "boolean expr2",
 			input: "true == !true",
 			expected: []loxObject{{v: toAnyPtr(false)}},
 		},
 		{
-			desc: "complicated expr5",
+			desc: "boolean expr3",
 			input: "!false != !true",
 			expected: []loxObject{{v: toAnyPtr(true)}},
 		},
