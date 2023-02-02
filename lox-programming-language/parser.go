@@ -3,26 +3,26 @@ package main
 import "fmt"
 
 type expression interface {
-	visitExpr(visitor)
+	visitExpr(visitor) (any, error)
 }
 
 type visitor interface {
-	visitLiteral(literal)
-	visitUnary(unary)
-	visitBinary(binary)
+	visitLiteral(literal) (any, error)
+	visitUnary(unary) (any, error)
+	visitBinary(binary) (any, error)
 }
 
 type literal token
-func (l literal) visitExpr(v visitor){
-	v.visitLiteral(l)
+func (l literal) visitExpr(v visitor) (any, error) {
+	return v.visitLiteral(l)
 }
 
 type unary struct {
 	op token
 	ex expression
 }
-func (u unary) visitExpr(v visitor){
-	v.visitUnary(u)
+func (u unary) visitExpr(v visitor)(any, error) {
+	return v.visitUnary(u)
 }
 
 type binary struct {
@@ -30,8 +30,8 @@ type binary struct {
 	left expression
 	right expression
 }
-func (b binary) visitExpr(v visitor){
-	v.visitBinary(b)
+func (b binary) visitExpr(v visitor)(any, error){
+	return v.visitBinary(b)
 }
 
 type Parser struct {
