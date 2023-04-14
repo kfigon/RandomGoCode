@@ -51,28 +51,16 @@ func TestLexer(t *testing.T) {
 }
 
 func TestInvalidInput(t *testing.T) {
-	testCases := []struct {
-		input string
-	}{
-		{
-			input: "123a",
-		},
-		{
-			input: "a123",
-		},
-		{
-			input: "a",
-		},
-		{
-			input: "1a3",
-		},
-		{
-			input: "*/3a",
-		},
+	testCases := []string {
+		"123a",
+		"a123",
+		"a",
+		"1a3",
+		"*/3a",
 	}
 	for _, tC := range testCases {
-		t.Run(tC.input, func(t *testing.T) {
-			_, err := tokenize(tC.input)
+		t.Run(tC, func(t *testing.T) {
+			_, err := tokenize(tC)
 			assert.Error(t, err)
 		})
 	}

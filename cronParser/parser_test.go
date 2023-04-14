@@ -76,3 +76,40 @@ func TestParser(t *testing.T) {
 		})
 	}
 }
+
+func TestParserError(t *testing.T) {
+	testCases := []struct {
+		desc	string
+		input 	string
+	}{
+		{
+			desc: "just dash",
+			input: "-",
+		},
+		{
+			desc: "just comma",
+			input: ",",
+		},
+		{
+			desc: "dash without number",
+			input: "1-",
+		},
+		{
+			desc: "non terminated div",
+			input: "1,2/",
+		},
+		{
+			desc: "wildcard after div",
+			input: "1/*",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			got, err := tokenize(tC.input)
+			require.NoError(t, err, "unexpected lexer error")
+
+			_, err = eval(got, 0, 59)
+			assert.Error(t, err, "expected parser error")
+		})
+	}
+}
