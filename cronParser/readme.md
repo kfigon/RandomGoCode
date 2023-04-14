@@ -2,7 +2,7 @@
 
 * `*` - any
 * `x-y` - range <x;y>
-* `,` - value sepratarot
-* `/` step, allowed grammar:
+* `,` - value sepratator
+* `/` step, used with wildcards and ranges. Allowed grammar:
     * `*/s`
     * `x-y/s`

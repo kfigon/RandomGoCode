@@ -64,7 +64,7 @@ func TestParser(t *testing.T) {
 			got, err := tokenize(tC.input)
 			require.NoError(t, err, "unexpected lexer error")
 
-			result, err := eval(got)
+			result, err := eval(got, 0, 59)
 			require.NoError(t, err, "parser error")
 
 			assert.Equal(t, tC.exp, result)

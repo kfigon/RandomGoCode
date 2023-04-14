@@ -11,8 +11,8 @@ type rng struct {
 	stop int
 }
 
-func eval(toks []token) ([]int, error) {
-	ranges,step, err := parse(toks)
+func eval(toks []token, min, max int) ([]int, error) {
+	ranges,step, err := parse(toks, min, max)
 	if err != nil {
 		return nil, err
 	}
@@ -26,24 +26,18 @@ func eval(toks []token) ([]int, error) {
 	return out,nil
 }
 
-func parse(toks []token) ([]rng, int, error) {
-	// let's assume minutes for now
+func parse(toks []token, min, max int) ([]rng, int, error) {
 	p := &parser{
 		it: toIter(toks),
 		ranges: []rng{},
-		min: 0,
-		max: 59,
+		min: min,
+		max: max,
 	}
 	return p.parse()
 }
 
 func (p *parser) parse() ([]rng, int, error) {
-	for {
-		current, ok := p.it.current()
-		if !ok {
-			break
-		}
-		
+	for current, ok := p.it.current(); ok; current, ok = p.it.current(){
 		if current.tokType == number {
 			if err := p.parseNumber(); err != nil {
 				return nil, 0, err
@@ -52,7 +46,7 @@ func (p *parser) parse() ([]rng, int, error) {
 			if err := p.parseWildcard(); err != nil {
 				return nil, 0, err
 			}
-		}else if current.tokType == div {
+		} else if current.tokType == div {
 			if err := p.parseDiv(); err != nil {
 				return nil,0, err
 			}
@@ -60,9 +54,10 @@ func (p *parser) parse() ([]rng, int, error) {
 			return nil, 0, fmt.Errorf("unexpected token: %v", current)
 		}
 	}
+
 	step := 1
-	if p.divisor != nil {
-		step = *p.divisor
+	if p.step != nil {
+		step = *p.step
 	}
 	return p.ranges, step, nil
 }
@@ -70,7 +65,7 @@ func (p *parser) parse() ([]rng, int, error) {
 type parser struct {
 	it *iter[token]
 	ranges []rng
-	divisor *int
+	step *int
 	min int
 	max int
 }
@@ -83,6 +78,14 @@ func (p *parser) peekNext(tokType tokenType) bool {
 	return next.tokType == tokType
 }
 
+func (p *parser) checkCurrent(tokType tokenType) bool {
+	current, ok := p.it.current()
+	if !ok {
+		return false
+	}
+	return current.tokType == tokType
+}
+
 func (p *parser) parseNumber() error {
 	current, ok := p.it.current()
 	num1, _ := strconv.Atoi(current.lexeme)
@@ -91,9 +94,8 @@ func (p *parser) parseNumber() error {
 		return nil
 	}
 	p.it.consume() // num
-	current, ok = p.it.current()
 
-	if ok && current.tokType == dash {
+	if p.checkCurrent(dash) {
 		p.it.consume() // -
 		current, ok := p.it.current()
 		if !ok {
@@ -103,12 +105,12 @@ func (p *parser) parseNumber() error {
 		}
 		num2, _ := strconv.Atoi(current.lexeme)
 		p.ranges = append(p.ranges, rng{start: num1, stop: num2})
-		
-		if p.peekNext(comma) {
+		p.it.consume() // num2
+
+		if p.checkCurrent(comma) {
 			p.it.consume() // ,	
 		}
-		p.it.consume() // num2
-	} else if ok && current.tokType == comma {
+	} else if p.checkCurrent(comma) {
 		p.it.consume() // ,
 		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
 	} else {
@@ -131,12 +133,12 @@ func (p *parser) parseDiv() error {
 		return fmt.Errorf("unexpected end when parsing div, expected number")
 	} else if current.tokType != number {
 		return fmt.Errorf("unexpected token when parsing div, expected number, got %v", current)
-	} else if p.divisor != nil {
-		return fmt.Errorf("divisor already set, previous %v, this: %v", *p.divisor, current)
+	} else if p.step != nil {
+		return fmt.Errorf("divisor already set, previous %v, this: %v", *p.step, current)
 	}
 
 	num, _ := strconv.Atoi(current.lexeme)
-	p.divisor = &num
+	p.step = &num
 	p.it.consume() // num
 	return nil
 }
