@@ -52,8 +52,6 @@ func (p *parser) parse() ([]rng, int, error) {
 			if err := p.parseWildcard(); err != nil {
 				return nil, 0, err
 			}
-		} else if current.tokType == comma {
-			p.it.consume() // ,
 		} else {
 			return nil, 0, fmt.Errorf("unexpected token: %v", current)
 		}
@@ -82,16 +80,16 @@ func (p *parser) peekNext(tokType tokenType) bool {
 }
 
 func (p *parser) parseNumber() error {
-	v, ok := p.it.current()
+	current, ok := p.it.current()
 	if !ok {
 		return nil
 	}
 
-	num1, _ := strconv.Atoi(v.lexeme)
+	num1, _ := strconv.Atoi(current.lexeme)
 
 	p.it.consume() // number
 
-	current, ok := p.it.current()
+	current, ok = p.it.current()
 	if !ok {
 		// just number
 		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
@@ -107,14 +105,16 @@ func (p *parser) parseNumber() error {
 			return fmt.Errorf("unexpected token when parsing dash, expected number, got %v", current)
 		}
 
-		num2, _ := strconv.Atoi(v.lexeme)
+		num2, _ := strconv.Atoi(current.lexeme)
 		p.ranges = append(p.ranges, rng{start: num1, stop: num2})
-		
 		return nil
 	} else if current.tokType == div {
 		if err := p.parseDiv(); err != nil {
 			return err
 		}
+		return nil
+	} else if current.tokType == comma {
+		p.it.consume() // ,
 		return nil
 	}
 	return fmt.Errorf("unexpected token when parsing number, got %v", current)
