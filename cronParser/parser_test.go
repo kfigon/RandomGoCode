@@ -58,6 +58,11 @@ func TestParser(t *testing.T) {
 			desc: "non overlapping range with step",
 			exp: []int{0,10,20},
 		},
+		{
+			input: `1-22/10`,
+			desc: "non overlapping range with step2",
+			exp: []int{1,11,21},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
