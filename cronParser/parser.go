@@ -52,6 +52,10 @@ func (p *parser) parse() ([]rng, int, error) {
 			if err := p.parseWildcard(); err != nil {
 				return nil, 0, err
 			}
+		}else if current.tokType == div {
+			if err := p.parseDiv(); err != nil {
+				return nil,0, err
+			}
 		} else {
 			return nil, 0, fmt.Errorf("unexpected token: %v", current)
 		}
@@ -81,61 +85,42 @@ func (p *parser) peekNext(tokType tokenType) bool {
 
 func (p *parser) parseNumber() error {
 	current, ok := p.it.current()
-	if !ok {
-		return nil
-	}
-
 	num1, _ := strconv.Atoi(current.lexeme)
-
-	p.it.consume() // number
-
-	current, ok = p.it.current()
 	if !ok {
-		// just number
 		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
 		return nil
 	}
+	p.it.consume() // num
+	current, ok = p.it.current()
 
-	if current.tokType == dash {
+	if ok && current.tokType == dash {
 		p.it.consume() // -
-		current, ok = p.it.current()
+		current, ok := p.it.current()
 		if !ok {
 			return fmt.Errorf("unexpected end of tokens when parsing dash")
 		} else if current.tokType != number {
 			return fmt.Errorf("unexpected token when parsing dash, expected number, got %v", current)
 		}
-
 		num2, _ := strconv.Atoi(current.lexeme)
 		p.ranges = append(p.ranges, rng{start: num1, stop: num2})
-		return nil
-	} else if current.tokType == div {
-		if err := p.parseDiv(); err != nil {
-			return err
+		
+		if p.peekNext(comma) {
+			p.it.consume() // ,	
 		}
-		return nil
-	} else if current.tokType == comma {
+		p.it.consume() // num2
+	} else if ok && current.tokType == comma {
 		p.it.consume() // ,
-		return nil
+		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
+	} else {
+		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
 	}
-	return fmt.Errorf("unexpected token when parsing number, got %v", current)
+	return nil
 }
 
 func (p *parser) parseWildcard() error {
 	p.it.consume() // *
-	current, ok := p.it.current()
-	if !ok {
-		p.ranges = append(p.ranges, rng{start: p.min, stop: p.max})
-		return nil
-	}
-
-	if current.tokType == div {
-		if err := p.parseDiv(); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	return fmt.Errorf("error during parsing wildcard, unexpected token %v", current)
+	p.ranges = append(p.ranges, rng{start: p.min, stop: p.max})
+	return nil
 }
 
 func (p *parser) parseDiv() error {
@@ -152,5 +137,6 @@ func (p *parser) parseDiv() error {
 
 	num, _ := strconv.Atoi(current.lexeme)
 	p.divisor = &num
+	p.it.consume() // num
 	return nil
 }

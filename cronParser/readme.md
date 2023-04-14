@@ -6,5 +6,3 @@
 * `/` step, allowed grammar:
     * `*/s`
     * `x-y/s`
-    * `1,2,3/s`
-    * `5,20-30/5`

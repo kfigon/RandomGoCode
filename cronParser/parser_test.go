@@ -58,16 +58,6 @@ func TestParser(t *testing.T) {
 			desc: "non overlapping range with step",
 			exp: []int{0,10,20},
 		},
-		{
-			input: `1,2,3,4,5,6,7,8,9,10/2`,
-			desc: "enumeration with step",
-			exp: []int{2,4,6,8,10},
-		},
-		{
-			input: `5,20-30/5`,
-			desc: "enumeration and ranges with step",
-			exp: []int{5,20,25,30},
-		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
