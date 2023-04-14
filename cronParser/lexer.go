@@ -30,6 +30,10 @@ type token struct {
 	lexeme  string
 }
 
+func (t token) String() string {
+	return fmt.Sprintf("(%v, %q)", t.tokType.String(), t.lexeme)
+}
+
 func tokenize(input string) ([]token, error) {
 	i := 0
 	out := []token{}
