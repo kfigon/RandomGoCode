@@ -17,7 +17,7 @@ func (i *iter[T]) current() (T, bool) {
 	return i.vs[i.idx], true
 }
 
-func (i *iter[T]) next() {
+func (i *iter[T]) consume() {
 	i.idx++
 }
 
