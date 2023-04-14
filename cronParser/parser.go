@@ -9,25 +9,24 @@ import (
 type rng struct {
 	start int
 	stop int
-	step int
 }
 
 func eval(toks []token) ([]int, error) {
-	ranges, err := parse(toks)
+	ranges,step, err := parse(toks)
 	if err != nil {
 		return nil, err
 	}
 
 	out := []int{}
 	for _, r := range ranges {
-		for i := r.start; i <= r.stop; i+=r.step {
+		for i := r.start; i <= r.stop; i+=step {
 			out = append(out, i)
 		}
 	}
 	return out,nil
 }
 
-func parse(toks []token) ([]rng, error) {
+func parse(toks []token) ([]rng, int, error) {
 	// let's assume minutes for now
 	p := &parser{
 		it: toIter(toks),
@@ -38,7 +37,7 @@ func parse(toks []token) ([]rng, error) {
 	return p.parse()
 }
 
-func (p *parser) parse() ([]rng, error) {
+func (p *parser) parse() ([]rng, int, error) {
 	for {
 		current, ok := p.it.current()
 		if !ok {
@@ -47,17 +46,23 @@ func (p *parser) parse() ([]rng, error) {
 		
 		if current.tokType == number {
 			if err := p.parseNumber(); err != nil {
-				return nil, err
+				return nil, 0, err
 			}
 		} else if current.tokType == wildcard {
 			if err := p.parseWildcard(); err != nil {
-				return nil, err
+				return nil, 0, err
 			}
+		} else if current.tokType == comma {
+			p.it.consume() // ,
 		} else {
-			return nil, fmt.Errorf("unexpected token: %v", current)
+			return nil, 0, fmt.Errorf("unexpected token: %v", current)
 		}
 	}
-	return p.ranges, nil
+	step := 1
+	if p.divisor != nil {
+		step = *p.divisor
+	}
+	return p.ranges, step, nil
 }
 
 type parser struct {
@@ -89,17 +94,11 @@ func (p *parser) parseNumber() error {
 	current, ok := p.it.current()
 	if !ok {
 		// just number
-		p.ranges = append(p.ranges, rng{start: num1, stop: num1, step: 1})
+		p.ranges = append(p.ranges, rng{start: num1, stop: num1})
 		return nil
 	}
 
-	if current.tokType == comma {
-		p.it.consume() // ,
-		err := p.parseNumber()
-		if err != nil {
-			return err
-		}
-	} else if current.tokType == dash {
+	if current.tokType == dash {
 		p.it.consume() // -
 		current, ok = p.it.current()
 		if !ok {
@@ -107,21 +106,25 @@ func (p *parser) parseNumber() error {
 		} else if current.tokType != number {
 			return fmt.Errorf("unexpected token when parsing dash, expected number, got %v", current)
 		}
+
 		num2, _ := strconv.Atoi(v.lexeme)
-		p.ranges = append(p.ranges, rng{start: num1, stop: num2, step: 1})
+		p.ranges = append(p.ranges, rng{start: num1, stop: num2})
+		
+		return nil
 	} else if current.tokType == div {
 		if err := p.parseDiv(); err != nil {
 			return err
 		}
+		return nil
 	}
-	return nil
+	return fmt.Errorf("unexpected token when parsing number, got %v", current)
 }
 
 func (p *parser) parseWildcard() error {
 	p.it.consume() // *
 	current, ok := p.it.current()
 	if !ok {
-		p.ranges = append(p.ranges, rng{start: p.min, stop: p.max, step: 1})
+		p.ranges = append(p.ranges, rng{start: p.min, stop: p.max})
 		return nil
 	}
 
@@ -129,6 +132,7 @@ func (p *parser) parseWildcard() error {
 		if err := p.parseDiv(); err != nil {
 			return err
 		}
+		return nil
 	}
 
 	return fmt.Errorf("error during parsing wildcard, unexpected token %v", current)
