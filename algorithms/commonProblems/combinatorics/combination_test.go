@@ -1,0 +1,45 @@
+package combinatorics
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestCombination(t *testing.T) {
+	testCases := []struct {
+		input []int
+		expected [][]int
+	}{
+		{[]int{}, [][]int{{}}},
+		{[]int{1}, [][]int{{},{1}}},
+		{[]int{1,2}, [][]int{{},{1,2}, {1}, {2}}},
+		{[]int{1,2,3}, [][]int{{},{1,2,3}, {1}, {2}, {3}, {1,2}, {1,3},{2,3}}},
+	}
+	for _, tC := range testCases {
+		t.Run(fmt.Sprintf("%v", tC.input), func(t *testing.T) {
+			out := combination(tC.input)
+			assert.ElementsMatch(t, out, tC.expected)
+		})
+	}
+}
+
+func combination[T any](input []T) [][]T {
+	var out [][]T
+	var fn func([]T, []T)
+	fn = func(remaining, pending []T) {
+		if len(remaining) == 0 {
+			out = append(out, pending)
+			return
+		}
+		first := remaining[0]
+		rest := remaining[1:]
+
+		fn(rest, pending)
+		fn(rest, append(pending, first))
+	}
+
+	fn(input, []T{})
+	return out
+}
