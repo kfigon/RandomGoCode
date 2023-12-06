@@ -25,3 +25,7 @@ func post(fn http.HandlerFunc) http.HandlerFunc {
 func put(fn http.HandlerFunc) http.HandlerFunc {
 	return allowedMethod(http.MethodPut, fn)
 }
+
+func delete(fn http.HandlerFunc) http.HandlerFunc {
+	return allowedMethod(http.MethodDelete, fn)
+}

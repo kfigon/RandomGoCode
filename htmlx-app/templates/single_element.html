@@ -3,4 +3,5 @@
 {{ else }}
     <input type="checkbox" hx-put="/todo/{{.Id}}">
 {{ end}}
-<p>{{ .Desc }}</p>
+<p>{{ .Desc }}</p> 
+<p hx-delete="/todo/{{.Id}}" hx-target="#app">DELETE</p>
