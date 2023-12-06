@@ -5,6 +5,8 @@
 
 <ul id="list">
     {{range $t := .}}
-    {{template "single_element.html" $t }}
+    <li>            
+        {{template "single_element.html" $t }}
+    </li>
     {{end}}
 </ul>
