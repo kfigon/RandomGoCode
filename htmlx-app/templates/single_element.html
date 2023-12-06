@@ -1,0 +1,8 @@
+<li>            
+    {{ if .Done}}
+        <input type="checkbox" checked hx-put="/todo/{{.Id}}">
+    {{ else }}
+        <input type="checkbox" hx-put="/todo/{{.Id}}">
+    {{ end}}
+    <p>{{ .Desc }}</p>
+</li>

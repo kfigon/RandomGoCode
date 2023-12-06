@@ -5,13 +5,6 @@
 
 <ul id="list">
     {{range $t := .}}
-        <li>
-            {{ if $t.Done}}
-                <input type="checkbox" checked hx-put="/todo/{{$t.Id}}">
-            {{ else }}
-                <input type="checkbox" hx-put="/todo/{{$t.Id}}">
-            {{ end}}
-            <p>{{ $t.Desc }}</p>
-        </li>
+    {{template "single_element.html" $t }}
     {{end}}
 </ul>

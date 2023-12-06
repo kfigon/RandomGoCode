@@ -15,9 +15,10 @@ type Todo struct {
 }
 
 // todo: return templates on errors
+// todo: embedd templates
 func main() {
 	todoList := &Protected[[]Todo]{}
-	todoList.Access(func(todos *[]Todo) {		
+	todoList.Access(func(todos *[]Todo) {
 		*todos = append(*todos, Todo{Id: 0, Desc: "buy things", Done: false})
 		*todos = append(*todos, Todo{Id: 1, Desc: "play games", Done: true})
 		*todos = append(*todos, Todo{Id: 2, Desc: "code", Done: false})
@@ -47,7 +48,7 @@ func todoHandler(todoList *Protected[[]Todo]) http.HandlerFunc {
 			todos = append(todos, *list...)
 		})
 
-		t := template.Must(template.ParseFiles("templates/todos.html"))
+		t := template.Must(template.ParseFiles("templates/todos.html", "templates/single_element.html"))
 		if err := t.Execute(w, todos); err != nil {
 			fmt.Println(err)
 		}	
@@ -77,14 +78,10 @@ func addItem(todoList *Protected[[]Todo]) http.HandlerFunc {
 			*list = append(*list, newItem)
 		})
 
-		// todo: refactor and remove duplication in rendering all items
-		
-		template.Must(template.New("t").Parse(`<li>            {{ if .Done}}
-		<input type="checkbox" checked hx-put="/todo/{{.Id}}">
-	{{ else }}
-		<input type="checkbox" hx-put="/todo/{{.Id}}">
-	{{ end}}
-	<p>{{ .Desc }}</p></li>`)).Execute(w, newItem)
+		t := template.Must(template.ParseFiles("templates/single_element.html"))
+		if err := t.Execute(w, newItem); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
