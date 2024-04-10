@@ -1,3 +1,4 @@
+{{ block "index" . }}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,3 +15,30 @@
     </div>
 </body>
 </html>
+
+{{end}}
+
+{{ block "single_element" .}}
+{{ if .Done}}
+    <input type="checkbox" checked hx-put="/todo/{{.Id}}">
+{{ else }}
+    <input type="checkbox" hx-put="/todo/{{.Id}}">
+{{ end}}
+<p>{{ .Desc }}</p> 
+<p hx-delete="/todo/{{.Id}}" hx-target="#app">DELETE</p>
+{{end}}
+
+{{ block "todos" .}}
+<form hx-post="/todo" hx-target="#list" hx-swap="beforeend">
+    <label>Description: </label><input type="text" name="description">
+    <button>Submit</button>
+</form>
+
+<ul id="list">
+    {{range $t := .}}
+    <li>            
+        {{template "single_element" $t }}
+    </li>
+    {{end}}
+</ul>
+{{end}}

@@ -36,7 +36,7 @@ func main() {
 
 func index(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("templates/index.html"))
-	if err := t.Execute(w, nil); err != nil {
+	if err := t.ExecuteTemplate(w, "index", nil); err != nil {
 		fmt.Println(err)
 	}
 }
@@ -48,8 +48,8 @@ func todoHandler(todoList *Protected[[]Todo]) http.HandlerFunc {
 			todos = append(todos, *list...)
 		})
 
-		t := template.Must(template.ParseFiles("templates/todos.html", "templates/single_element.html"))
-		if err := t.Execute(w, todos); err != nil {
+		t := template.Must(template.ParseFiles("templates/index.html"))
+		if err := t.ExecuteTemplate(w, "todos", todos); err != nil {
 			fmt.Println(err)
 		}	
 	}
@@ -82,8 +82,8 @@ func addItem(todoList *Protected[[]Todo]) http.HandlerFunc {
 			*list = append(*list, newItem)
 		})
 
-		t := template.Must(template.ParseFiles("templates/single_element.html"))
-		if err := t.Execute(w, newItem); err != nil {
+		t := template.Must(template.ParseFiles("templates/index.html"))
+		if err := t.ExecuteTemplate(w, "single_element", newItem); err != nil {
 			fmt.Println(err)
 		}
 	}
@@ -160,8 +160,8 @@ func deleteItem(todoList *Protected[[]Todo]) http.HandlerFunc {
 			todos = *list
 		})
 
-		t := template.Must(template.ParseFiles("templates/todos.html", "templates/single_element.html"))
-		if err := t.Execute(w, todos); err != nil {
+		t := template.Must(template.ParseFiles("templates/index.html"))
+		if err := t.ExecuteTemplate(w, "todos", todos); err != nil {
 			fmt.Println(err)
 		}	
 	}
