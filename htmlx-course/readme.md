@@ -8,7 +8,7 @@
     * we can also use some commands, like `closest li`, to get closest relative selector
 * hx-trigger - event types that trigger requests
 * hx-select - extract part of response (css selector), not use the full one. Useful for redirects
-
+* `hx-disabled-elt` - disable element (e.g. button) when request is issued
 
 * `hx-on` hooks for standard events or htmx specific
 * most htmx elements are inherited to children, so `hx-swap` could be set on a list, instead of every list element
