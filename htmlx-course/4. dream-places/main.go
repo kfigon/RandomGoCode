@@ -54,5 +54,5 @@ func style(w http.ResponseWriter, r *http.Request){
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	_ = tmpl.ExecuteTemplate(w, "index", nil)
+	_ = tmpl.ExecuteTemplate(w, "index", placesDb)
 }

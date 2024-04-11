@@ -9,7 +9,24 @@
     <title>Document</title>
 </head>
 <body>
+    <h1>Dream places</h1>
 
+    {{ template "all-places" . }}
 </body>
 </html>
 {{ end }}
+
+{{block "all-places" . }}
+<div id="all-places" class="boxcontainer">
+    {{range.}}
+        {{template "place" .}}
+    {{end}}
+</div>
+{{end}}
+
+{{block "place" . }}
+<div id="place-{{.Id}}">
+    <h3>{{.Title}}</h3>
+    <img width="90%" height="90%" src="images/{{.Image.Src}}" title="{{.Image.Description}}">
+</div>
+{{end}}

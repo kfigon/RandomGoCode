@@ -9,3 +9,9 @@ button{
     border-radius: 10%;
     background-color: azure
 }
+
+.boxcontainer{
+    display: grid;                          
+    grid-template-columns: 1fr 1fr 1fr 1fr; 
+    gap: 100px;                              
+}
