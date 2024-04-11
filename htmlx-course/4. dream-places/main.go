@@ -11,6 +11,8 @@ import (
 var tmpl *template.Template 
 var placesDb []Place
 
+var favouritePlaces map[string]Place
+
 type Place struct {
 	Id string `json:"id"`
 	Title string `json:"title"`
@@ -35,6 +37,7 @@ func main() {
 	if err := json.Unmarshal(d, &placesDb); err != nil {
 		panic(err)
 	}
+	favouritePlaces = map[string]Place{}
 
 	fs := http.FileServer(http.Dir("./images"))
 	http.Handle("/images/", http.StripPrefix("/images/", fs))
@@ -43,6 +46,7 @@ func main() {
 	http.HandleFunc("/favicon.ico", noop)
 
 	http.HandleFunc("/", index)
+	http.HandleFunc("POST /favourite/{id}", favourite)
 
 	fmt.Println("started on port", port)
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
@@ -54,5 +58,33 @@ func style(w http.ResponseWriter, r *http.Request){
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	_ = tmpl.ExecuteTemplate(w, "index", placesDb)
+	_ = tmpl.ExecuteTemplate(w, "index", remainingPlaces())
+}
+
+func remainingPlaces() []Place {
+	out := []Place{}
+	for _, v := range placesDb {
+		if _, ok := favouritePlaces[v.Id]; !ok {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func favourite(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var f *Place
+	for _, v := range placesDb {
+		if v.Id == id {
+			f = &v
+			break
+		}
+	}
+
+	// todo: rerender places
+	if f == nil {
+		return
+	}
+
+	favouritePlaces[f.Id] = *f
 }

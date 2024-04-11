@@ -25,7 +25,9 @@
 {{end}}
 
 {{block "place" . }}
-<div id="place-{{.Id}}">
+<!-- instead of using ID in the url, we can also attach it in the body, it'll be form encoded
+hx-vals='{"id": "{{.Id}}" }' -->
+<div id="place-{{.Id}}" hx-post="/favourite/{{.Id}}">
     <h3>{{.Title}}</h3>
     <img width="90%" height="90%" src="images/{{.Image.Src}}" title="{{.Image.Description}}">
 </div>
