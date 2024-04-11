@@ -1,3 +1,5 @@
+# basics
+
 * hx-METHOD - method and url
 * hx-swap
     * outer - replace entire target element
