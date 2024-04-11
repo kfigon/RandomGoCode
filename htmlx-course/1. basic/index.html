@@ -1,0 +1,32 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    
+    <!-- by default it renders response inside the calling element,
+        so specify the target -->
+    <!-- we can aso use hx-swap -->
+    <button hx-get="/get-data" hx-target="#data">Load more</button>
+    
+    <span>
+        <label>Type something</label>
+        <input type="text" hx-post="/send" name="the-data" hx-target="#live-updates" hx-trigger="keyup changed" placeholder="send some data">
+    </span>
+
+    <div id="data"></div>
+    <div id="live-updates"></div>
+</body>
+</html>
+
+{{end}}
+
+{{block "get-data" .}}
+<h1>{{.}}</h1>
+{{end}}
