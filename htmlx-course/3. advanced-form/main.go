@@ -73,6 +73,7 @@ func done(w http.ResponseWriter, r *http.Request) {
 		if page.Goals[i].Id == id {
 			page.Goals[i].Done = !page.Goals[i].Done
 			out = &page.Goals[i]
+			break
 		}
 	}
 	

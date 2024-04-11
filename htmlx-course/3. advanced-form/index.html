@@ -11,7 +11,12 @@
 <body>
    <h1>your goals</h1>
 
-   <form hx-post="/store" hx-target="#goal-list" hx-swap="beforeend">
+   <form 
+    id="the-form" 
+    hx-post="/store" 
+    hx-target="#goal-list" 
+    hx-swap="beforeend" 
+    hx-on:submit="document.querySelector('form').reset()"> 
     <input type="text" name="goal">
     <button type="submit">Send</button>
    </form>
@@ -31,7 +36,7 @@
         <p style="text-decoration:{{ if .Done}} line-through {{else}} none {{end}}">
             {{.Name}} 
             <button hx-post="/done/{{.Id}}" hx-swap="outerHTML" hx-target="#goal-{{.Id}}">Done</button>
-            <button hx-delete="/remove/{{.Id}}" hx-swap="outerHTML" hx-target="#goal-{{.Id}}">Delete</button>
+            <button hx-delete="/remove/{{.Id}}" hx-swap="outerHTML" hx-target="#goal-{{.Id}}" hx-confirm="Remove {{.Name}}?">Delete</button>
         </p>
     </li>
 {{end}}
