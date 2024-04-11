@@ -10,5 +10,6 @@
 * hx-select - extract part of response (css selector), not use the full one. Useful for redirects
 
 
+* `hx-on` hooks for standard events or htmx specific
 * most htmx elements are inherited to children, so `hx-swap` could be set on a list, instead of every list element
 * by default only 200 status is rendered. 4xx and 5xx are ignored
