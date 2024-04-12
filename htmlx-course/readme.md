@@ -18,6 +18,7 @@ hx-vals='{"id": "{{.Id}}" }'
 * `hx-sync` - for syncing multiple requests (cancel other request when other element sent something)
 * redirection: `r.Header.Add("HX-Redirect", "/path")`
 * `hx-on` hooks for standard events or htmx specific
+* `hx-boost` on body - all `a href` push data to url (so back button works), replace the data to body
 * most htmx elements are inherited to children, so `hx-swap` could be set on a list, instead of every list element
 * by default only 200 status is rendered. 4xx and 5xx are ignored
 * out of bands - we can send updates for 2 or more elements within single response
