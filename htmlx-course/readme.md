@@ -13,7 +13,10 @@
 ```
 hx-vals='{"id": "{{.Id}}" }'
 ```
-
+* `hx-params` to include data from different form fields
+* `hx-headers` additional headers e.g. for csrf
+* `hx-sync` - for syncing multiple requests (cancel other request when other element sent something)
+* redirection: `r.Header.Add("HX-Redirect", "/path")`
 * `hx-on` hooks for standard events or htmx specific
 * most htmx elements are inherited to children, so `hx-swap` could be set on a list, instead of every list element
 * by default only 200 status is rendered. 4xx and 5xx are ignored
