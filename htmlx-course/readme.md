@@ -9,7 +9,18 @@
 * hx-trigger - event types that trigger requests
 * hx-select - extract part of response (css selector), not use the full one. Useful for redirects
 * `hx-disabled-elt` - disable element (e.g. button) when request is issued
+* add more data:
+```
+hx-vals='{"id": "{{.Id}}" }'
+```
 
 * `hx-on` hooks for standard events or htmx specific
 * most htmx elements are inherited to children, so `hx-swap` could be set on a list, instead of every list element
 * by default only 200 status is rendered. 4xx and 5xx are ignored
+* out of bands - we can send updates for 2 or more elements within single response
+    * on the second response, just return `hx-swap-oob` (similar to hx-swap) and id to target. Or use `hx-swap-oob="true:#modal"` to get the same. Need to wrap in div, as the content will be swapped
+```
+<h2 id="modal" hx-swap-oob="true">
+or
+<h2 hx-swap-oob="true:#modal">
+```

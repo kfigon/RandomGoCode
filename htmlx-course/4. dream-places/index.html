@@ -11,24 +11,55 @@
 <body>
     <h1>Dream places</h1>
 
-    {{ template "all-places" . }}
+    {{ template "favourite-places" .Favourite }}
+    {{ template "all-places" .AllPlaces }}
 </body>
 </html>
 {{ end }}
 
+{{block "favourite-places" . }}
+<h1>Fav PLACES</h1>
+<ul id="fav-places">    <!--class="boxcontainer" -->
+    {{range.}}
+        {{template "fav-place" .}}
+    {{end}}
+</ul>
+{{end}}
+
 {{block "all-places" . }}
-<div id="all-places" class="boxcontainer">
+<h1>ALL PLACES</h1>
+<ul id="all-places">    <!--class="boxcontainer" -->
     {{range.}}
         {{template "place" .}}
     {{end}}
-</div>
+</ul>
+{{end}}
+
+{{block "fav-place" . }}
+<li id="place-{{.Id}}" hx-post="/unfavourite/{{.Id}}" hx-swap="outerHTML">
+    {{template "place-details" .}}
+</li>
 {{end}}
 
 {{block "place" . }}
-<!-- instead of using ID in the url, we can also attach it in the body, it'll be form encoded
-hx-vals='{"id": "{{.Id}}" }' -->
-<div id="place-{{.Id}}" hx-post="/favourite/{{.Id}}">
-    <h3>{{.Title}}</h3>
-    <img width="90%" height="90%" src="images/{{.Image.Src}}" title="{{.Image.Description}}">
+<li id="place-{{.Id}}" hx-post="/favourite/{{.Id}}" hx-swap="outerHTML">
+    {{template "place-details" .}}
+</li>
+{{end}}
+
+{{block "move-to-fav-response" . }}
+<div hx-swap-oob="beforeend:#fav-places">
+    {{ template "fav-place" .}}
 </div>
+{{end}}
+
+{{block "move-to-unfav-response" . }}
+<div hx-swap-oob="beforeend:#all-places">
+    {{ template "place" .}}
+</div>
+{{end}}
+
+{{block "place-details" .}}
+<h3>{{.Title}}</h3>
+<img width="30%" height="30%" src="images/{{.Image.Src}}" title="{{.Image.Description}}">
 {{end}}

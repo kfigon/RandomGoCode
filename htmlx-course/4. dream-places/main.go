@@ -26,6 +26,11 @@ type Img struct {
 	Description string `json:"alt"`
 }
 
+type Page struct {
+	Favourite []Place
+	AllPlaces []Place
+}
+
 func main() {
 	port := 3000
 	
@@ -47,6 +52,7 @@ func main() {
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("POST /favourite/{id}", favourite)
+	http.HandleFunc("POST /unfavourite/{id}", unfavourite)
 
 	fmt.Println("started on port", port)
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
@@ -58,7 +64,18 @@ func style(w http.ResponseWriter, r *http.Request){
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	_ = tmpl.ExecuteTemplate(w, "index", remainingPlaces())
+	_ = tmpl.ExecuteTemplate(w, "index", Page{
+		Favourite: favPlaces(),
+		AllPlaces: remainingPlaces(),
+	})
+}
+
+func favPlaces() []Place{
+	out := []Place{}
+	for _, v := range favouritePlaces {
+		out = append(out, v)
+	}
+	return out
 }
 
 func remainingPlaces() []Place {
@@ -81,10 +98,29 @@ func favourite(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// todo: rerender places
 	if f == nil {
 		return
 	}
 
 	favouritePlaces[f.Id] = *f
+	
+	// return only oob response. Regular will be empty, so
+	// we'll remove it from the main list
+	_ = tmpl.ExecuteTemplate(w, "move-to-fav-response", *f)
+}
+
+func unfavourite(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	
+	out,ok := favouritePlaces[id]
+	if !ok {
+		return
+	}
+	
+	delete(favouritePlaces, id)
+
+	
+	// return only oob response. Regular will be empty, so
+	// we'll remove it from the main list
+	_ = tmpl.ExecuteTemplate(w, "move-to-unfav-response", out)
 }
