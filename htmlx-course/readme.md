@@ -16,7 +16,10 @@ hx-vals='{"id": "{{.Id}}" }'
 * `hx-params` to include data from different form fields
 * `hx-headers` additional headers e.g. for csrf
 * `hx-sync` - for syncing multiple requests (cancel other request when other element sent something)
-* redirection: `r.Header.Add("HX-Redirect", "/path")`
+* redirection: 
+```
+r.Header.Add("HX-Redirect", "/path")
+```
 * `hx-on` hooks for standard events or htmx specific
 * `hx-boost` on body - all `a href` push data to url (so back button works), replace the data to body
     * works also on forms - translates regular form attributes `method` and `action` to `hx-method`and update entire page - useful for redirects
