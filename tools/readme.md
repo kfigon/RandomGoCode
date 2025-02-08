@@ -3,10 +3,6 @@ the c programming language
 the practice of programming
 the go programming language
 
-Exercise 1-10. Word count (linear time, no buffers)
-
-Exercise 1-14. Write a program to print a histogram of the frequencies of different characters in its input.
-It is easy to draw the histogram with the bars horizontal; a vertical orientation is more challenging.
 
 Exercise 1-23. Write a program to remove all comments from a C program. Don’t forget to handle quoted strings and character constants properly. C comments do not nest.
 
