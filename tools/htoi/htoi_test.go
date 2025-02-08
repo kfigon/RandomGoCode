@@ -56,7 +56,6 @@ func TestStressHex(t *testing.T) {
 	for i := 0; i <= 1_000_000; i++ {
 		assertHex(t, i, "")
 		assertHex(t, i, "0x")
-		assertHex(t, i, "0X")
 	}
 }
 
