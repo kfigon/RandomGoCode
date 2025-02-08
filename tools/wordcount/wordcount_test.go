@@ -13,22 +13,10 @@ func TestWordCount(t *testing.T) {
 		input string
 		exp int
 	}{
-		{
-			input: "foo bar asd 123",
-			exp: 4,
-		},
-		{
-			input: "   foo bar asd 123   ",
-			exp: 4,
-		},
-		{
-			input: "1 foo bar asd 123 1",
-			exp: 6,
-		},
-		{
-			input: "  foo   bar   asd   123  1  ",
-			exp: 5,
-		},
+		{ input: "foo bar asd 123", exp: 4 },
+		{ input: "   foo bar asd 123   ", exp: 4 },
+		{ input: "1 foo bar asd 123 1", exp: 6 },
+		{ input: "  foo   bar   asd   123  1  ", exp: 5 },
 	}
 	for i, tC := range testCases {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
