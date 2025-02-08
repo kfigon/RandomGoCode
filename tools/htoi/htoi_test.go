@@ -44,6 +44,22 @@ func TestHtoi(t *testing.T) {
 	}
 }
 
+func assertHex(t *testing.T, i int, prefix string) {
+	t.Helper()
+
+	got, err := htoi(fmt.Sprintf("%s%x", prefix, i))
+	assert.NoError(t, err)
+	assert.Equal(t, i, got, "%s%x != %s%x", prefix, i , prefix, got)
+}
+
+func TestStressHex(t *testing.T) {
+	for i := 0; i <= 1_000_000; i++ {
+		assertHex(t, i, "")
+		assertHex(t, i, "0x")
+		assertHex(t, i, "0X")
+	}
+}
+
 func htoi(s string) (int, error) {
 	const (
 		parsing int = iota
