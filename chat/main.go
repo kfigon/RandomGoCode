@@ -80,13 +80,14 @@ func (s *server) handleConn(con net.Conn) {
     s.userEnter <- userChan
     addr := con.RemoteAddr()
     
-    fmt.Println("client connected", addr)
+    s.text <- fmt.Sprintf("%s joined", addr)
     
     defer con.Close()
     scanner := bufio.NewScanner(con)
     for scanner.Scan() {
-        s.text <- fmt.Sprintf("%s says %s\n", addr, scanner.Text())
+        s.text <- fmt.Sprintf("%s says %s", addr, scanner.Text())
     }
-    fmt.Println("closed", addr)
+    s.text <- fmt.Sprintf("%s left", addr)
+    
     s.userLeft <- userChan
 }
