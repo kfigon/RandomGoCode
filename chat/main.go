@@ -9,8 +9,7 @@ import (
 // nc localhost 8000
 func main() {
     fmt.Println("hello")
-    s := newServer()
-    fmt.Println(s.run(8000))
+    fmt.Println(newServer().run(8000))
 }
 
 type clientChan chan<- string
