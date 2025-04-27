@@ -26,8 +26,29 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			desc: "some keywords",
+			input:`let    true;
+			for false{}
+			if asdf return true false` ,
+			exp: []Token{
+				{Let, "let"},
+				{True, "true"},
+				{Semicolon, ";"},
+				{For, "for"},
+				{False, "false"},
+				{LBrace, "{"},
+				{RBrace, "}"},
+				{If, "if"},
+				{Identifier, "asdf"},
+				{Return, "return"},
+				{True, "true"},
+				{False, "false"},
+				{EOF, ""},
+			},
+		},
+		{
 			desc: "control chars",
-			input: "=,(){} fun",
+			input: "=,(){} == !=,fun",
 			exp: []Token{
 				{Assign, "="},
 				{Comma, ","},
@@ -35,6 +56,9 @@ func TestLexer(t *testing.T) {
 				{RParen, ")"},
 				{LBrace, "{"},
 				{RBrace, "}"},
+				{EQ, "=="},
+				{NEQ, "!="},
+				{Comma, ","},
 				{Function, "fun"},
 				{EOF, ""},
 			},
@@ -45,6 +69,20 @@ func TestLexer(t *testing.T) {
 			exp: []Token{
 				{Let, "let"},
 				{Identifier, "foobar"},
+				{EOF, ""},
+			},
+		},
+		{
+			desc: "operators",
+			input: "<> asdf /!*x12",
+			exp: []Token{
+				{LT, "<"},
+				{GT, ">"},
+				{Identifier, "asdf"},
+				{Slash, "/"},
+				{Bang, "!"},
+				{Asterisk, "*"},
+				{Identifier, "x12"},
 				{EOF, ""},
 			},
 		},

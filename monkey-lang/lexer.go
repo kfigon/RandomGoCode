@@ -6,43 +6,47 @@ import (
 	"unicode"
 )
 
-type TokenType int
+type TokenType string
 const (
-	EOF TokenType = iota
+	EOF TokenType = "EOF"
+
 	// identifiers and literals
-	Identifier
-	Number
+	Identifier = "Identifier"
+	Number = "Number"
+
 	// operators
-	Assign
-	Plus
+	Assign = "Assign"
+	Plus = "Plus"
+	Minus = "Minus"
+	Bang = "Bang"
+	Asterisk = "Asterisk"
+	Slash = "Slash"
+	LT = "LT"
+	GT = "GT"
+	EQ = "=="
+	NEQ = "!="
+
 	// delimiters
-	Comma
-	Semicolon
-	LParen
-	RParen
-	LBrace
+	Comma = "Comma"
+	Semicolon = "Semicolon"
+	LParen = "LParen"
+	RParen = "RParen"
+	LBrace = "LBrace"
 	RBrace
+
 	// keywords
-	Function
-	Let
+	Function = "Function"
+	Let = "Let"
+	If = "If"
+	Else = "Else"
+	Return = "Return"
+	True = "true"
+	False = "false"
+	For = "for"
 )
 
 func (t TokenType) String() string {
-	return [...]string{
-		"EOF",
-		"Identifier",
-		"Number",
-		"Assign",
-		"Plus",
-		"Comma",
-		"Semicolon",
-		"LParen",
-		"RParen",
-		"LBrace",
-		"RBrace",
-		"Function",
-		"Let",
-	}[t]
+	return string(t)
 }
 
 type Token struct {
@@ -64,11 +68,23 @@ func Lex(input string) iter.Seq[Token] {
 		'{': LBrace,
 		'}': RBrace,
 		'=': Assign,
+		'-': Minus,
+		'!': Bang,
+		'*': Asterisk,
+		'/': Slash,
+		'>': GT,
+		'<': LT,
 	}
 
 	keywords := map[string]TokenType {
 		"fun": Function,
 		"let": Let,
+		"if": If,
+		"else": Else,
+		"return": Return,
+		"true": True,
+		"false": False,
+		"for": For,
 	}
 	i := 0
 
@@ -81,7 +97,15 @@ func Lex(input string) iter.Seq[Token] {
 			if unicode.IsSpace(c) {
 				continue
 			} else if t, ok := singleCharTokens[c]; ok {
-				tok = Token{t, string(c)}
+				if c == '!' && peekNext(input, i, '=') {
+					i++
+					tok = Token{NEQ, "!="}
+				} else if c == '=' && peekNext(input, i, '=') {
+					i++
+					tok = Token{EQ, "=="}
+				} else {
+					tok = Token{t, string(c)}
+				}
 			} else if unicode.IsDigit(c) {
 				candidate := readUntil(input, &i, unicode.IsDigit)
 				tok = Token{Number, candidate}
@@ -107,6 +131,10 @@ func Lex(input string) iter.Seq[Token] {
 			return
 		}
 	}
+}
+
+func peekNext(in string, i int, exp rune) bool {
+	return i+1 < len(in) && rune(in[i+1]) == exp
 }
 
 func readUntil(in string, i *int, pred func(rune)bool) string {
