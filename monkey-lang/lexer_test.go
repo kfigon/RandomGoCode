@@ -1,7 +1,9 @@
 package main
 
 import (
+	"slices"
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,7 +52,7 @@ func TestLexer(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			got := Lex(tC.input)
-			assert.Equal(t, tC.exp, got)
+			assert.Equal(t, tC.exp, slices.Collect(got))
 		})
 	}
 }

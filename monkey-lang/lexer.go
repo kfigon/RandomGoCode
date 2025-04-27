@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"iter"
 	"unicode"
 )
 
@@ -48,9 +50,11 @@ type Token struct {
 	Lexeme string
 }
 
-func Lex(input string) []Token {
-	out := []Token{}
-	
+func (t Token) String() string {
+	return fmt.Sprintf("<%v; %s>", t.Typ, t.Lexeme)
+}
+
+func Lex(input string) iter.Seq[Token] {
 	singleCharTokens := map[rune]TokenType {
 		'+': Plus,
 		',': Comma,
@@ -66,32 +70,43 @@ func Lex(input string) []Token {
 		"fun": Function,
 		"let": Let,
 	}
+	i := 0
 
-	// no utf support
-	for i := 0; i < len(input); i++ {
-		c := rune(input[i])
-		if unicode.IsSpace(c) {
-			continue
-		} else if t, ok := singleCharTokens[c]; ok {
-			out = append(out, Token{t, string(c)})
-		} else if unicode.IsDigit(c) {
-			candidate := readUntil(input, &i, unicode.IsDigit)
-			out = append(out, Token{Number, candidate})
-		} else {
-			word := readUntil(input, &i, func(r rune) bool {
-				return unicode.IsDigit(r) || unicode.IsLetter(r)
-			})
+	return func(yield func(Token) bool) {
+		// no utf support
+		for ; i < len(input); i++ {
+			c := rune(input[i])
+			var tok Token
 
-			if v, ok := keywords[word]; ok {
-				out = append(out, Token{v, word})
+			if unicode.IsSpace(c) {
+				continue
+			} else if t, ok := singleCharTokens[c]; ok {
+				tok = Token{t, string(c)}
+			} else if unicode.IsDigit(c) {
+				candidate := readUntil(input, &i, unicode.IsDigit)
+				tok = Token{Number, candidate}
 			} else {
-				out = append(out, Token{Identifier, word})
+				word := readUntil(input, &i, func(r rune) bool {
+					return unicode.IsDigit(r) || unicode.IsLetter(r)
+				})
+
+				if v, ok := keywords[word]; ok {
+					tok = Token{v, word}
+				} else {
+					tok = Token{Identifier, word}
+				}
+			}
+
+
+			if !yield(tok) {
+				return
 			}
 		}
+		
+		if !yield(Token{EOF, ""}) {
+			return
+		}
 	}
-
-	out = append(out, Token{EOF,""})
-	return out
 }
 
 func readUntil(in string, i *int, pred func(rune)bool) string {
