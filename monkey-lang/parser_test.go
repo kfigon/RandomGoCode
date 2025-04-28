@@ -27,14 +27,18 @@ func TestParser(t *testing.T) {
 			desc: "return stmt",
 			input: `return 234;`,
 			expected: []Statement{
-				&ReturnStatement{ nil },
+				&ReturnStatement{
+					&PrimitiveLiteral[int]{234},
+				 },
 			},
 		},
 		{
 			desc: "return stmt with identifier",
 			input: `return foobar;`,
 			expected: []Statement{
-				&ReturnStatement{ nil },
+				&ReturnStatement{
+					&IdentifierExpression{"foobar"},
+				},
 			},
 		},
 		{

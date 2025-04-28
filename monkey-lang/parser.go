@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"iter"
+	"strconv"
 )
 
 type parser struct {
@@ -113,12 +114,36 @@ func (p *parser) parseExpressionStatement() (*ExpressionStatement, error) {
 }
 
 func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
+	left, err := p.parseInfixExpression()
+	if err != nil {
+		return nil, err
+	}
+
 	for !p.peekIs(Semicolon) {
 		// todo
 		p.consume()
 	}
+	return left, nil
+}
 
-	return nil, nil
+func (p *parser) parseInfixExpression() (Expression, error) {
+	switch p.current.Typ {
+	case Identifier: return &IdentifierExpression{p.current.Lexeme}, nil
+	case Number:
+		num, err := strconv.Atoi(p.current.Lexeme)
+		if err != nil {
+			return nil, err
+		}
+		return &PrimitiveLiteral[int]{num}, nil
+	case True, False:
+		b, err := strconv.ParseBool(p.current.Lexeme)
+		if err != nil {
+			return nil, err
+		}
+		return &PrimitiveLiteral[bool]{b}, nil
+	}
+
+	return nil,nil
 }
 
 func (p *parser) currentIs(t TokenType) bool {
