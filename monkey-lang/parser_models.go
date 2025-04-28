@@ -52,3 +52,10 @@ type IdentifierExpression struct {
 }
 
 func (*IdentifierExpression) expressionTag() {}
+
+type PrefixExpression struct {
+	Operator Token
+	Expr Expression
+}
+
+func (*PrefixExpression) expressionTag(){}

@@ -62,6 +62,42 @@ func TestParser(t *testing.T) {
 				&ExpressionStatement{&IdentifierExpression{"foobar"}},
 			},
 		},
+		{
+			desc: "prefix bang with identifier",
+			input: `!foobar;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&PrefixExpression{
+						Token{Bang,"!"},
+						&IdentifierExpression{"foobar"},
+					},
+				},
+			},
+		},
+		{
+			desc: "prefix bang with boolean",
+			input: `!true;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&PrefixExpression{
+						Token{Bang,"!"},
+						&PrimitiveLiteral[bool]{true},
+					},
+				},
+			},
+		},
+		{
+			desc: "negative 123",
+			input: `-123;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&PrefixExpression{
+						Token{Minus, "-"},
+						&PrimitiveLiteral[int]{123},
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
