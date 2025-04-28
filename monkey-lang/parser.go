@@ -57,25 +57,28 @@ func (p *parser) parseStatement() (Statement, error) {
 	} else if t.Typ == Return {
 		return p.parseReturnStatement()
 	}
-
-	return nil, fmt.Errorf("unknown token %v", t)
+	return p.parseExpressionStatement()
 }
 
 func (p *parser) parseLetStatement() (*LetStatement, error) {
 	if !p.expectPeek(Identifier){
-		return nil, expectedTokenErr(Identifier, p.current.Typ) 
+		return nil, expectedTokenErr(Identifier, p.peek.Typ) 
 	}
 
 	identifier := p.current.Lexeme
 	if !p.expectPeek(Assign) {
-		return nil, expectedTokenErr(Assign, p.current.Typ) 
+		return nil, expectedTokenErr(Assign, p.peek.Typ) 
 	}
 
-	exp, err := p.parseExpression()
+	exp, err := p.parseExpression(Lowest)
 	if err != nil {
 		return nil, err
 	}
 
+	if !p.expectPeek(Semicolon){
+		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
+	}
+	p.consume()
 	return &LetStatement{
 		&IdentifierExpression{identifier},
 		exp,
@@ -84,20 +87,37 @@ func (p *parser) parseLetStatement() (*LetStatement, error) {
 
 func (p *parser) parseReturnStatement() (*ReturnStatement, error) {
 	p.consume()	// return
-	exp, err := p.parseExpression()
+	exp, err := p.parseExpression(Lowest)
 	if err != nil {
 		return nil, err
 	}
-	
+
+	if !p.expectPeek(Semicolon){
+		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
+	}
+	p.consume()
 	return &ReturnStatement{exp},nil
 }
 
-func (p *parser) parseExpression() (Expression, error) {
-	for !p.currentIs(Semicolon) {
+func (p *parser) parseExpressionStatement() (*ExpressionStatement, error) {
+	exp, err := p.parseExpression(Lowest)
+	if err != nil {
+		return nil, err
+	}
+
+	if !p.expectPeek(Semicolon){
+		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
+	}
+	p.consume()
+	return &ExpressionStatement{exp},nil
+}
+
+func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
+	for !p.peekIs(Semicolon) {
 		// todo
 		p.consume()
 	}
-	p.consume()// semicolon
+
 	return nil, nil
 }
 

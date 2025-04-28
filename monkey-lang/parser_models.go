@@ -1,5 +1,16 @@
 package main
 
+type Precedence int
+const (
+	Lowest Precedence = iota+1
+	Equals
+	LessGreater
+	Sum
+	Product
+	Prefix
+	Call
+)
+
 type Statement interface {
 	statementTag()
 }

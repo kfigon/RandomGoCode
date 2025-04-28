@@ -39,16 +39,23 @@ func TestParser(t *testing.T) {
 		},
 		{
 			desc: "number literal",
-			input: `15`,
+			input: `15;`,
 			expected: []Statement{
 				&ExpressionStatement{&PrimitiveLiteral[int]{15}},
 			},
 		},
 		{
 			desc: "boolean literal",
-			input: `true`,
+			input: `true;`,
 			expected: []Statement{
 				&ExpressionStatement{&PrimitiveLiteral[bool]{true}},
+			},
+		},
+		{
+			desc: "identifier expression",
+			input: `foobar;`,
+			expected: []Statement{
+				&ExpressionStatement{&IdentifierExpression{"foobar"}},
 			},
 		},
 	}
