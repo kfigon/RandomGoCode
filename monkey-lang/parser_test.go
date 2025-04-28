@@ -24,6 +24,22 @@ func TestParser(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			desc: "return stmt",
+			input: `return 234;`,
+			expected: []Statement{
+				&ReturnStatement{ nil },
+			},
+			wantErr: false,
+		},
+		{
+			desc: "return stmt with identifier",
+			input: `return foobar;`,
+			expected: []Statement{
+				&ReturnStatement{ nil },
+			},
+			wantErr: false,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

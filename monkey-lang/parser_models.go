@@ -21,4 +21,8 @@ type IdentifierExpression struct {
 
 func (*IdentifierExpression) expressionTag() {}
 
+type ReturnStatement struct {
+	Exp Expression
+}
 
+func (*ReturnStatement) statementTag() {}

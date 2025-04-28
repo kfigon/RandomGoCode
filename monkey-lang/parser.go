@@ -45,7 +45,6 @@ func (p *parser) parse() ([]Statement, error)  {
 		if err != nil {
 			return nil, err
 		}
-		p.consume()
 		out = append(out, stmt)
 	}
 	return out, nil
@@ -63,20 +62,34 @@ func (p *parser) parseStatement() (Statement, error) {
 			return nil, expectedTokenErr(Assign, p.current.Typ) 
 		}
 
-		p.consume() // assign
-		var exp Expression
-		for !p.currentIs(Semicolon) {
-			// todo
-			p.consume()
+		exp, err := p.parseExpression()
+		if err != nil {
+			return nil, err
 		}
 
 		return &LetStatement{
 			&IdentifierExpression{identifier},
 			exp,
 		}, nil
+	} else if t.Typ == Return {
+		p.consume()	// return
+		exp, err := p.parseExpression()
+		if err != nil {
+			return nil, err
+		}
+		return &ReturnStatement{exp},nil
 	}
 
 	return nil, fmt.Errorf("unknown token %v", t)
+}
+
+func (p *parser) parseExpression() (Expression, error) {
+	for !p.currentIs(Semicolon) {
+		// todo
+		p.consume()
+	}
+	p.consume()// semicolon
+	return nil, nil
 }
 
 func (p *parser) currentIs(t TokenType) bool {
