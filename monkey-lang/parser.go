@@ -53,34 +53,43 @@ func (p *parser) parse() ([]Statement, error)  {
 func (p *parser) parseStatement() (Statement, error) {
 	t := p.current
 	if t.Typ == Let {
-		if !p.expectPeek(Identifier){
-			return nil, expectedTokenErr(Identifier, p.current.Typ) 
-		}
-
-		identifier := p.current.Lexeme
-		if !p.expectPeek(Assign) {
-			return nil, expectedTokenErr(Assign, p.current.Typ) 
-		}
-
-		exp, err := p.parseExpression()
-		if err != nil {
-			return nil, err
-		}
-
-		return &LetStatement{
-			&IdentifierExpression{identifier},
-			exp,
-		}, nil
+		return p.parseLetStatement()
 	} else if t.Typ == Return {
-		p.consume()	// return
-		exp, err := p.parseExpression()
-		if err != nil {
-			return nil, err
-		}
-		return &ReturnStatement{exp},nil
+		return p.parseReturnStatement()
 	}
 
 	return nil, fmt.Errorf("unknown token %v", t)
+}
+
+func (p *parser) parseLetStatement() (*LetStatement, error) {
+	if !p.expectPeek(Identifier){
+		return nil, expectedTokenErr(Identifier, p.current.Typ) 
+	}
+
+	identifier := p.current.Lexeme
+	if !p.expectPeek(Assign) {
+		return nil, expectedTokenErr(Assign, p.current.Typ) 
+	}
+
+	exp, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+
+	return &LetStatement{
+		&IdentifierExpression{identifier},
+		exp,
+	}, nil
+}
+
+func (p *parser) parseReturnStatement() (*ReturnStatement, error) {
+	p.consume()	// return
+	exp, err := p.parseExpression()
+	if err != nil {
+		return nil, err
+	}
+	
+	return &ReturnStatement{exp},nil
 }
 
 func (p *parser) parseExpression() (Expression, error) {

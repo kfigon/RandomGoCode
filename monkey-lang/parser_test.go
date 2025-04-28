@@ -22,7 +22,6 @@ func TestParser(t *testing.T) {
 					nil, 
 				},
 			},
-			wantErr: false,
 		},
 		{
 			desc: "return stmt",
@@ -30,7 +29,6 @@ func TestParser(t *testing.T) {
 			expected: []Statement{
 				&ReturnStatement{ nil },
 			},
-			wantErr: false,
 		},
 		{
 			desc: "return stmt with identifier",
@@ -38,7 +36,20 @@ func TestParser(t *testing.T) {
 			expected: []Statement{
 				&ReturnStatement{ nil },
 			},
-			wantErr: false,
+		},
+		{
+			desc: "number literal",
+			input: `15`,
+			expected: []Statement{
+				&ExpressionStatement{&PrimitiveLiteral[int]{15}},
+			},
+		},
+		{
+			desc: "boolean literal",
+			input: `true`,
+			expected: []Statement{
+				&ExpressionStatement{&PrimitiveLiteral[bool]{true}},
+			},
 		},
 	}
 	for _, tC := range testCases {
