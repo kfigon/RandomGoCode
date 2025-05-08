@@ -18,8 +18,8 @@ func TestParser(t *testing.T) {
 			input: `let foobar = 234;`,
 			expected: []Statement{
 				&LetStatement{
-					&IdentifierExpression{"foobar"},
-					nil, 
+					Ident: &IdentifierExpression{"foobar"},
+					Value: &PrimitiveLiteral[int]{234},
 				},
 			},
 		},

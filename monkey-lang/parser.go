@@ -71,6 +71,7 @@ func (p *parser) parseLetStatement() (*LetStatement, error) {
 		return nil, expectedTokenErr(Assign, p.peek.Typ) 
 	}
 
+	p.consume()
 	exp, err := p.parseExpression(Lowest)
 	if err != nil {
 		return nil, err
