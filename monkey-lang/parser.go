@@ -114,19 +114,45 @@ func (p *parser) parseExpressionStatement() (*ExpressionStatement, error) {
 }
 
 func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
-	left, err := p.parseInfixExpression()
+	left, err := p.parsePrefixExpression()
 	if err != nil {
 		return nil, err
 	}
 
-	for !p.peekIs(Semicolon) {
-		// todo
+	for !p.peekIs(Semicolon) && precedence < precedenceForToken(p.peek.Typ) {
+		newExpr, err := p.parseInfixExpression(left)
+		if err != nil {
+			return nil, err
+		} else if newExpr == nil {
+			break
+		}
+		left = newExpr
 		p.consume()
 	}
 	return left, nil
 }
 
-func (p *parser) parseInfixExpression() (Expression, error) {
+func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
+	op := p.current
+	t := op.Typ
+	if !(t == Plus || t == Minus || t == Slash || t == Asterisk || t == EQ || t == NEQ || t == LT || t == GT) {
+		return nil, nil
+	}
+
+	precedence := precedenceForToken(t)
+	right, err := p.parseExpression(precedence)
+	if err != nil {
+		return nil, err
+	}
+
+	return &InfixExpression{
+		Operator: op,
+		Left: left,
+		Right: right,
+	}, nil
+}
+
+func (p *parser) parsePrefixExpression() (Expression, error) {
 	switch p.current.Typ {
 	case Identifier: return &IdentifierExpression{p.current.Lexeme}, nil
 	case Number:
@@ -141,7 +167,19 @@ func (p *parser) parseInfixExpression() (Expression, error) {
 			return nil, err
 		}
 		return &PrimitiveLiteral[bool]{b}, nil
+	case Bang, Minus:
+		op := p.current
+		p.consume()
+		left, err := p.parseExpression(Prefix)
+		if err != nil {
+			return nil, err
+		}
+		return &PrefixExpression{
+			Operator: op,
+			Expr: left,
+		},nil
 	}
+
 
 	return nil,nil
 }
@@ -164,4 +202,14 @@ func (p *parser) expectPeek(t TokenType) bool {
 
 func expectedTokenErr(exp, got TokenType) error {
 	return fmt.Errorf("expected %v, got %v", exp, got)
+}
+
+func precedenceForToken(tok TokenType) Precedence {
+	switch tok {
+	case EQ, NEQ: return Equals
+	case LT, GT: return LessGreater
+	case Plus, Minus: return Sum
+	case Assign, Slash: return Product
+	default: return Lowest
+	}
 }

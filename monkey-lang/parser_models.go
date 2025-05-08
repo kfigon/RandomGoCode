@@ -59,3 +59,12 @@ type PrefixExpression struct {
 }
 
 func (*PrefixExpression) expressionTag(){}
+
+
+type InfixExpression struct {
+	Operator Token
+	Left Expression
+	Right Expression
+}
+
+func (*InfixExpression) expressionTag(){}

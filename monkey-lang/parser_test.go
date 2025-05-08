@@ -98,6 +98,19 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "basic infix",
+			input: `12 + 34;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&InfixExpression{
+						Operator: Token{Plus,"+"},
+						Left: &PrimitiveLiteral[int]{12},
+						Right: &PrimitiveLiteral[int]{34},
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
