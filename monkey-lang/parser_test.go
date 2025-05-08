@@ -111,6 +111,42 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "infix with 2 operators with different predescence",
+			input: `1 + 2 * 3;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					// todo: is this test correct?
+					&InfixExpression{
+						Operator: Token{Plus,"+"},
+						Left: &PrimitiveLiteral[int]{1},
+						Right: &InfixExpression{
+							Operator: Token{Asterisk, "*"},
+							Left: &PrimitiveLiteral[int]{2},
+							Right: &PrimitiveLiteral[int]{3},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "infix with 2 operators with different predescence 2",
+			input: `1 * 2 + 3;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&InfixExpression{
+						// todo: is this test correct?
+						Operator: Token{Plus,"+"},
+						Left: &PrimitiveLiteral[int]{1},
+						Right: &InfixExpression{
+							Operator: Token{Asterisk, "*"},
+							Left: &PrimitiveLiteral[int]{2},
+							Right: &PrimitiveLiteral[int]{3},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
