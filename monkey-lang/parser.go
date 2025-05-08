@@ -121,6 +121,7 @@ func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
 	}
 
 	for !p.peekIs(Semicolon) && precedence < precedenceForToken(p.peek.Typ) {
+		p.consume()
 		newExpr, err := p.parseInfixExpression(left)
 		if err != nil {
 			return nil, err
@@ -128,7 +129,6 @@ func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
 			break
 		}
 		left = newExpr
-		p.consume()
 	}
 	return left, nil
 }
@@ -141,6 +141,7 @@ func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
 	}
 
 	precedence := precedenceForToken(t)
+	p.consume()
 	right, err := p.parseExpression(precedence)
 	if err != nil {
 		return nil, err
