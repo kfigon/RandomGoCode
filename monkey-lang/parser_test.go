@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParser(t *testing.T) {
@@ -112,11 +113,27 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
+			desc: "basic infix2",
+			input: `12 + 34 + 1;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&InfixExpression{
+						Operator: Token{Plus,"+"},
+						Left: &InfixExpression{
+							Operator: Token{Plus,"+"},
+							Left: &PrimitiveLiteral[int]{12},
+							Right: &PrimitiveLiteral[int]{34},
+						},
+						Right: &PrimitiveLiteral[int]{1},
+					},
+				},
+			},
+		},
+		{
 			desc: "infix with 2 operators with different predescence",
 			input: `1 + 2 * 3;`,
 			expected: []Statement{
 				&ExpressionStatement{
-					// todo: is this test correct?
 					&InfixExpression{
 						Operator: Token{Plus,"+"},
 						Left: &PrimitiveLiteral[int]{1},
@@ -135,14 +152,13 @@ func TestParser(t *testing.T) {
 			expected: []Statement{
 				&ExpressionStatement{
 					&InfixExpression{
-						// todo: is this test correct?
 						Operator: Token{Plus,"+"},
-						Left: &PrimitiveLiteral[int]{1},
-						Right: &InfixExpression{
+						Left: &InfixExpression{
 							Operator: Token{Asterisk, "*"},
-							Left: &PrimitiveLiteral[int]{2},
-							Right: &PrimitiveLiteral[int]{3},
+							Left: &PrimitiveLiteral[int]{1},
+							Right: &PrimitiveLiteral[int]{2},
 						},
+						Right: &PrimitiveLiteral[int]{3},
 					},
 				},
 			},
@@ -154,7 +170,7 @@ func TestParser(t *testing.T) {
 			if tC.wantErr {
 				assert.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, tC.expected, got)
 			}
 		})

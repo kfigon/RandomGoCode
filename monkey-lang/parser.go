@@ -109,8 +109,8 @@ func (p *parser) parseExpressionStatement() (*ExpressionStatement, error) {
 		return nil, err
 	}
 
-	if !p.expectPeek(Semicolon){
-		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
+	if p.peekIs(Semicolon){
+		p.consume()
 	}
 
 	return &ExpressionStatement{exp},nil
@@ -140,7 +140,7 @@ func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
 	op := p.current
 	t := op.Typ
 	if !(t == Plus || t == Minus || t == Slash || t == Asterisk || t == EQ || t == NEQ || t == LT || t == GT) {
-		return nil, nil
+		return nil, nil // fallback to left
 	}
 
 	precedence := precedenceForToken(t)
@@ -186,11 +186,7 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 	}
 
 
-	return nil,nil
-}
-
-func (p *parser) currentIs(t TokenType) bool {
-	return p.current.Typ == t
+	return nil,fmt.Errorf("invalid token for prefix expression: %v", p.current.Typ)
 }
 
 func (p *parser) peekIs(t TokenType) bool {
@@ -214,7 +210,7 @@ func precedenceForToken(tok TokenType) Precedence {
 	case EQ, NEQ: return Equals
 	case LT, GT: return LessGreater
 	case Plus, Minus: return Sum
-	case Assign, Slash: return Product
+	case Asterisk, Slash: return Product
 	default: return Lowest
 	}
 }
