@@ -47,6 +47,7 @@ func (p *parser) parse() ([]Statement, error)  {
 			return nil, err
 		}
 		out = append(out, stmt)
+		p.consume()
 	}
 	return out, nil
 }
@@ -62,6 +63,7 @@ func (p *parser) parseStatement() (Statement, error) {
 }
 
 func (p *parser) parseLetStatement() (*LetStatement, error) {
+	// current Let, peek Identifier
 	if !p.expectPeek(Identifier){
 		return nil, expectedTokenErr(Identifier, p.peek.Typ) 
 	}
@@ -71,7 +73,7 @@ func (p *parser) parseLetStatement() (*LetStatement, error) {
 		return nil, expectedTokenErr(Assign, p.peek.Typ) 
 	}
 
-	p.consume()
+	p.consume() // assign
 	exp, err := p.parseExpression(Lowest)
 	if err != nil {
 		return nil, err
@@ -80,7 +82,7 @@ func (p *parser) parseLetStatement() (*LetStatement, error) {
 	if !p.expectPeek(Semicolon){
 		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
 	}
-	p.consume()
+
 	return &LetStatement{
 		&IdentifierExpression{identifier},
 		exp,
@@ -97,7 +99,7 @@ func (p *parser) parseReturnStatement() (*ReturnStatement, error) {
 	if !p.expectPeek(Semicolon){
 		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
 	}
-	p.consume()
+
 	return &ReturnStatement{exp},nil
 }
 
@@ -110,7 +112,7 @@ func (p *parser) parseExpressionStatement() (*ExpressionStatement, error) {
 	if !p.expectPeek(Semicolon){
 		return nil, expectedTokenErr(Semicolon, p.peek.Typ)
 	}
-	p.consume()
+
 	return &ExpressionStatement{exp},nil
 }
 
@@ -130,6 +132,7 @@ func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
 		}
 		left = newExpr
 	}
+
 	return left, nil
 }
 
