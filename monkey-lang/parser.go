@@ -214,7 +214,7 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 		if p.peekIs(Else) {
 			p.consume() // else
 			if !p.expectPeek(LBrace) {
-				return nil, fmt.Errorf("else expression error, expected open brace, got %v", p.peek.Typ)
+				return nil, fmt.Errorf("else expression error, expected open brace or another if, got %v", p.peek.Typ)
 			}
 			elseBlock, err := p.parseBlockStatements()
 			if err != nil {
