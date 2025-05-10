@@ -193,10 +193,55 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 			return nil, fmt.Errorf("unmatched parens for grouped expressions, got %v", p.peek.Typ)
 		}
 		return ex, nil
+	case If:
+		p.consume() // if
+		ex, err := p.parseExpression(Lowest)
+		if err != nil {
+			return nil, err
+		}
+		if !p.expectPeek(LBrace) {
+			return nil, fmt.Errorf("if expression error, expected open brace, got %v", p.peek.Typ)
+		}
+		block, err := p.parseBlockStatements()
+		if err != nil {
+			return nil, err
+		}
+
+		ifExp := &IfExpression{
+			Predicate: ex,
+			Consequence: block,
+		}
+		if p.peekIs(Else) {
+			p.consume() // else
+			if !p.expectPeek(LBrace) {
+				return nil, fmt.Errorf("else expression error, expected open brace, got %v", p.peek.Typ)
+			}
+			elseBlock, err := p.parseBlockStatements()
+			if err != nil {
+				return nil, err
+			}
+			ifExp.Alternative = elseBlock
+		}
+		return ifExp,nil
 	}
 
 
 	return nil,fmt.Errorf("invalid token for prefix expression: %v", p.current.Typ)
+}
+
+func (p *parser) parseBlockStatements() ([]Statement, error) {
+	p.consume() // {
+	var out []Statement
+	for !p.eof() && p.current.Typ != RBrace {
+		stmt, err := p.parseStatement()
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, stmt)
+		p.consume()
+	}
+
+	return out, nil
 }
 
 func (p *parser) peekIs(t TokenType) bool {

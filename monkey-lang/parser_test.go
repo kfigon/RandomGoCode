@@ -205,6 +205,40 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "if else expression",
+			input: `if x < y { x } else { y }`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&IfExpression{
+						Predicate: &InfixExpression{
+							Operator: Token{LT, "<"},
+							Left: &IdentifierExpression{"x"},
+							Right: &IdentifierExpression{"y"},
+						},
+						Consequence: []Statement{&ExpressionStatement{&IdentifierExpression{"x"}}},
+						Alternative: []Statement{&ExpressionStatement{&IdentifierExpression{"y"}}},
+					},
+				},
+			},
+		},
+		{
+			desc: "if expression",
+			input: `if x < y { x }`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&IfExpression{
+						Predicate: &InfixExpression{
+							Operator: Token{LT, "<"},
+							Left: &IdentifierExpression{"x"},
+							Right: &IdentifierExpression{"y"},
+						},
+						Consequence: []Statement{&ExpressionStatement{&IdentifierExpression{"x"}}},
+						Alternative: nil,
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

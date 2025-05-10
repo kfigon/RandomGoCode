@@ -60,7 +60,6 @@ type PrefixExpression struct {
 
 func (*PrefixExpression) expressionTag(){}
 
-
 type InfixExpression struct {
 	Operator Token
 	Left Expression
@@ -68,3 +67,11 @@ type InfixExpression struct {
 }
 
 func (*InfixExpression) expressionTag(){}
+
+type IfExpression struct {
+	Predicate Expression
+	Consequence []Statement // aka block statement
+	Alternative []Statement
+}
+
+func (*IfExpression) expressionTag(){}
