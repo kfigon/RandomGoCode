@@ -32,7 +32,7 @@ const (
 	LParen = "LParen"
 	RParen = "RParen"
 	LBrace = "LBrace"
-	RBrace
+	RBrace = "RBrace"
 
 	// keywords
 	Function = "Function"

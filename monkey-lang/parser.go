@@ -183,6 +183,16 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 			Operator: op,
 			Expr: left,
 		},nil
+	case LParen:
+		p.consume() // (
+		ex, err := p.parseExpression(Lowest)
+		if err != nil {
+			return nil, err
+		}
+		if !p.expectPeek(RParen) {
+			return nil, fmt.Errorf("unmatched parens for grouped expressions, got %v", p.peek.Typ)
+		}
+		return ex, nil
 	}
 
 

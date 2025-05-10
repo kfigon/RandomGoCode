@@ -163,6 +163,48 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "not grouped expressions",
+			input: `1 + 2+3+4;`, // (((1+2)+3)+4)
+			expected: []Statement{
+				&ExpressionStatement{
+					&InfixExpression{
+						Operator: Token{Plus, "+"},
+						Left: &InfixExpression{
+							Operator: Token{Plus, "+"},
+							Left: &InfixExpression{
+								Operator: Token{Plus, "+"},
+								Left: &PrimitiveLiteral[int]{1},
+								Right: &PrimitiveLiteral[int]{2},
+							},
+							Right: &PrimitiveLiteral[int]{3},
+						},
+						Right: &PrimitiveLiteral[int]{4},
+					},
+				},
+			},
+		},
+		{
+			desc: "grouped expressions",
+			input: `1 + (2+3)+4;`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&InfixExpression{
+						Operator: Token{Plus, "+"},
+						Left: &InfixExpression{
+							Operator: Token{Plus, "+"},
+							Left: &PrimitiveLiteral[int]{1},
+							Right: &InfixExpression{
+								Operator: Token{Plus, "+"},
+								Left: &PrimitiveLiteral[int]{2},
+								Right: &PrimitiveLiteral[int]{3},
+							},
+						},
+						Right: &PrimitiveLiteral[int]{4},
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
