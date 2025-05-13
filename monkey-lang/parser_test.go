@@ -289,6 +289,23 @@ func TestParser(t *testing.T) {
 				},
 		},
 		{
+			desc: "function literal assigned",
+			input: `let foo = fun(x,y){ return x + y; };`,
+			expected: []Statement{
+				&LetStatement{
+					&IdentifierExpression{"foo"},
+					&FunctionLiteral{
+					Parameters: []*IdentifierExpression{{"x"}, {"y"}},
+					Body: &BlockStatement{[]Statement{
+						&ReturnStatement{&InfixExpression{
+							Operator: Token{Plus,"+"},
+							Left: &IdentifierExpression{"x"},
+							Right: &IdentifierExpression{"y"},
+						}}},
+					}}},
+			},
+		},
+		{
 			desc: "function literal without args",
 			input: `fun(){ return x + y; }`,
 			expected: []Statement{
