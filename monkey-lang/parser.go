@@ -194,42 +194,60 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 		}
 		return ex, nil
 	case If:
-		p.consume() // if
-		ex, err := p.parseExpression(Lowest)
-		if err != nil {
-			return nil, err
-		}
-		if !p.expectPeek(LBrace) {
-			return nil, fmt.Errorf("if expression error, expected open brace, got %v", p.peek.Typ)
-		}
-		block, err := p.parseBlockStatements()
-		if err != nil {
-			return nil, err
-		}
-
-		ifExp := &IfExpression{
-			Predicate: ex,
-			Consequence: block,
-		}
-		if p.peekIs(Else) {
-			p.consume() // else
-			if !p.expectPeek(LBrace) {
-				return nil, fmt.Errorf("else expression error, expected open brace or another if, got %v", p.peek.Typ)
-			}
-			elseBlock, err := p.parseBlockStatements()
-			if err != nil {
-				return nil, err
-			}
-			ifExp.Alternative = elseBlock
-		}
-		return ifExp,nil
+		return p.parseIf()
 	}
 
 
 	return nil,fmt.Errorf("invalid token for prefix expression: %v", p.current.Typ)
 }
 
-func (p *parser) parseBlockStatements() ([]Statement, error) {
+func (p *parser) parseIf() (*IfExpression, error) {
+	p.consume() // if
+	ex, err := p.parseExpression(Lowest)
+	if err != nil {
+		return nil, err
+	}
+
+	if !p.expectPeek(LBrace) {
+		return nil, fmt.Errorf("if expression error, expected open brace, got %v", p.peek.Typ)
+	}
+
+	block, err := p.parseBlockStatements()
+	if err != nil {
+		return nil, err
+	}
+
+	ifExp := &IfExpression{
+		Predicate: ex,
+		Consequence: block,
+	}
+
+	if p.peekIs(Else) {
+		p.consume() // }
+		p.consume() // else
+
+		if p.current.Typ == If { // if-elseif
+			next, err := p.parseIf()
+			if err != nil {
+				return nil, err
+			}
+			ifExp.Alternative = next
+		} else if p.current.Typ == LBrace { // if-else
+			alternativeBlock, err := p.parseBlockStatements()
+			if err != nil {
+				return nil, err
+			}
+			ifExp.Alternative = &IfExpression{
+				Predicate: nil,
+				Consequence: alternativeBlock,
+				Alternative: nil,
+			}
+		}
+	}
+	return ifExp,nil
+}
+
+func (p *parser) parseBlockStatements() (*BlockStatement, error) {
 	p.consume() // {
 	var out []Statement
 	for !p.eof() && p.current.Typ != RBrace {
@@ -241,7 +259,11 @@ func (p *parser) parseBlockStatements() ([]Statement, error) {
 		p.consume()
 	}
 
-	return out, nil
+	// if !p.eof() {V
+	// 	p.consume() // }
+	// }
+
+	return &BlockStatement{out}, nil
 }
 
 func (p *parser) peekIs(t TokenType) bool {

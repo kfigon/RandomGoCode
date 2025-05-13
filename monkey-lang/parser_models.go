@@ -40,6 +40,12 @@ type ExpressionStatement struct {
 
 func (*ExpressionStatement) statementTag(){}
 
+type BlockStatement struct {
+	Stmts []Statement
+}
+
+func (*BlockStatement) statementTag(){}
+
 // ------------------- expression ------------------
 // numbers, booleans, strings
 type PrimitiveLiteral[T any] struct {
@@ -70,8 +76,8 @@ func (*InfixExpression) expressionTag(){}
 
 type IfExpression struct {
 	Predicate Expression
-	Consequence []Statement // aka block statement
-	Alternative []Statement
+	Consequence *BlockStatement
+	Alternative *IfExpression
 }
 
 func (*IfExpression) expressionTag(){}

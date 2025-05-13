@@ -216,8 +216,12 @@ func TestParser(t *testing.T) {
 							Left: &IdentifierExpression{"x"},
 							Right: &IdentifierExpression{"y"},
 						},
-						Consequence: []Statement{&ExpressionStatement{&IdentifierExpression{"x"}}},
-						Alternative: []Statement{&ExpressionStatement{&IdentifierExpression{"y"}}},
+						Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&IdentifierExpression{"x"}}}},
+						Alternative: &IfExpression{
+							Predicate: nil,
+							Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&IdentifierExpression{"y"}}}},
+							Alternative: nil,
+						},
 					},
 				},
 			},
@@ -233,8 +237,37 @@ func TestParser(t *testing.T) {
 							Left: &IdentifierExpression{"x"},
 							Right: &IdentifierExpression{"y"},
 						},
-						Consequence: []Statement{&ExpressionStatement{&IdentifierExpression{"x"}}},
+						Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&IdentifierExpression{"x"}}}},
 						Alternative: nil,
+					},
+				},
+			},
+		},
+		{
+			desc: "if else if expression",
+			input: `if x < y { x } else if x > y {y} else {123}`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&IfExpression{
+						Predicate: &InfixExpression{
+							Operator: Token{LT, "<"},
+							Left: &IdentifierExpression{"x"},
+							Right: &IdentifierExpression{"y"},
+						},
+						Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&IdentifierExpression{"x"}}}},
+						Alternative: &IfExpression{
+							Predicate: &InfixExpression{
+								Operator: Token{GT, ">"},
+								Left: &IdentifierExpression{"x"},
+								Right: &IdentifierExpression{"y"},
+							},
+							Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&IdentifierExpression{"y"}}}},
+							Alternative: &IfExpression{
+								Predicate: nil,
+								Consequence: &BlockStatement{[]Statement{&ExpressionStatement{&PrimitiveLiteral[int]{123}}}},
+								Alternative: nil,
+							},
+						},
 					},
 				},
 			},
