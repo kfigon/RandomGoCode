@@ -75,6 +75,10 @@ type InfixExpression struct {
 func (*InfixExpression) expressionTag(){}
 
 type IfExpression struct {
+	// if <predicate> block
+	// optional else if <predicate> block
+	// optional else block   <- here predicate will be nil
+
 	Predicate Expression
 	Consequence *BlockStatement
 	Alternative *IfExpression
