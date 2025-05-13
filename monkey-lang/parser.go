@@ -193,8 +193,8 @@ func (p *parser) parsePrefixExpression() (Expression, error) {
 			return nil, fmt.Errorf("unmatched parens for grouped expressions, got %v", p.peek.Typ)
 		}
 		return ex, nil
-	case If:
-		return p.parseIf()
+	case If: return p.parseIf()
+	case Function: return p.parseFun()
 	}
 
 
@@ -245,6 +245,46 @@ func (p *parser) parseIf() (*IfExpression, error) {
 		}
 	}
 	return ifExp,nil
+}
+
+func (p *parser) parseFun() (*FunctionLiteral, error) {
+	if !p.expectPeek(LParen) {
+		return nil, fmt.Errorf("expected parameter list for function, got %v", p.peek)
+	}
+
+	p.consume() // fn, ( 
+	params := []*IdentifierExpression{}
+	for !p.eof() && p.current.Typ != RParen {
+		param, err := p.parsePrefixExpression()
+		if err != nil {
+			return nil, err
+		}
+		ident, ok := param.(*IdentifierExpression)
+		if !ok {
+			return nil, fmt.Errorf("expected identifier for function params, got %T", ident)
+		}
+		params = append(params, ident)
+		p.consume() // ident
+		if p.current.Typ == Comma && p.peekIs(Identifier) {
+			p.consume() // comma
+		} else if !p.eof() && p.current.Typ != RParen {
+			return nil, fmt.Errorf("error parsing parameter list, expected identifier separated by commas and end with ')', got %v", p.current.Typ)
+		}
+	}
+
+	if !p.expectPeek(LBrace) {
+		return nil, fmt.Errorf("expected function body, got %v", p.peek.Typ)
+	}
+
+	block, err := p.parseBlockStatements()
+	if err != nil {
+		return nil, err
+	}
+
+	return &FunctionLiteral{
+		Parameters: params,
+		Body: block,
+	}, nil
 }
 
 func (p *parser) parseBlockStatements() (*BlockStatement, error) {

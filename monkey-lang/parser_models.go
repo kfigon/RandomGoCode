@@ -85,3 +85,10 @@ type IfExpression struct {
 }
 
 func (*IfExpression) expressionTag(){}
+
+type FunctionLiteral struct {
+	Parameters []*IdentifierExpression
+	Body *BlockStatement
+}
+
+func (*FunctionLiteral) expressionTag(){}
