@@ -25,8 +25,8 @@ func TestEval(t *testing.T) {
 			require.NoError(t, err, "parsing error")
 
 			got, err := Eval(parsed)
-			require.NoError(t, err, "eval error")
 
+			require.NoError(t, err, "eval error")
 			assert.Equal(t, tC.exp, got)
 		})
 	}
