@@ -99,6 +99,16 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
+			desc: "null",
+			input: `let a = null;`,
+			expected: []Statement{
+				&LetStatement{
+					Ident: &IdentifierExpression{"a"},
+					Value: &IdentifierExpression{"null"},
+				},
+			},
+		},
+		{
 			desc: "basic infix",
 			input: `12 + 34;`,
 			expected: []Statement{

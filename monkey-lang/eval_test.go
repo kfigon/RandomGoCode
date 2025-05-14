@@ -14,9 +14,9 @@ func TestEval(t *testing.T) {
 		exp Object
 	}{
 		{
-			desc: "literal",
-			code: "14;",
-			exp: nil,
+			desc: "int literal",
+			code: "14",
+			exp: &PrimitiveObj[int]{14},
 		},
 	}
 	for _, tC := range testCases {
