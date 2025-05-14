@@ -8,11 +8,11 @@ func Eval(program []Statement) (Object, error) {
 	e := &evaluator{}
 	var lastObj Object
 	for _, stm := range program {
-		o, err := e.evalNode(stm)
+		var err error
+		lastObj, err = e.evalNode(stm)
 		if err != nil {
 			return nil, err
 		}
-		lastObj = o
 	}
 	return lastObj, nil
 }

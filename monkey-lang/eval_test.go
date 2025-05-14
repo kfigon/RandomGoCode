@@ -18,6 +18,21 @@ func TestEval(t *testing.T) {
 			code: "14",
 			exp: &PrimitiveObj[int]{14},
 		},
+		{
+			desc: "false literal",
+			code: "false",
+			exp: &PrimitiveObj[bool]{false},
+		},
+		{
+			desc: "true literal",
+			code: "true",
+			exp: &PrimitiveObj[bool]{true},
+		},
+		{
+			desc: "null literal",
+			code: "null",
+			exp: &NullObj{},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

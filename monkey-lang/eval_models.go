@@ -14,4 +14,3 @@ type NullObj struct{}
 func (*NullObj) objTag(){}
 
 
-
