@@ -26,7 +26,11 @@ func (e *evaluator) evalNode(st Statement) (Object, error) {
 		switch exp := vs.Exp.(type) {
 		case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{mustCast[int](exp.Val)}, nil
 		case *PrimitiveLiteral[bool]: return &PrimitiveObj[bool]{mustCast[bool](exp.Val)}, nil
-		case *IdentifierExpression: return nil, nil
+		case *IdentifierExpression: 
+			if exp.Name == "null" {
+				return &NullObj{}, nil
+			}
+			return nil, nil
 		case *PrefixExpression: return nil, nil
 		case *InfixExpression: return nil, nil
 		case *IfExpression: return nil, nil
