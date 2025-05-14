@@ -142,8 +142,8 @@ func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
 	case Plus, Minus, Slash, Asterisk, EQ, NEQ, LT, GT: 
 		return p.parseLogicalAndArithmeticInfix(left)
 	case LParen: 
-		return nil, nil
-	default: return nil, nil
+		return p.parseFunctionCall(left)
+	default: return nil, nil // fallback to left expr
 	}
 }
 
@@ -162,6 +162,10 @@ func (p *parser) parseLogicalAndArithmeticInfix(left Expression)(Expression, err
 		Left: left,
 		Right: right,
 	}, nil
+}
+
+func (p *parser) parseFunctionCall(left Expression) (*FunctionCall, error) {
+	return nil, nil
 }
 
 func (p *parser) parsePrefixExpression() (Expression, error) {
