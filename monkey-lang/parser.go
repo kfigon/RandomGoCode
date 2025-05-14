@@ -138,13 +138,19 @@ func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
 }
 
 func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
-	op := p.current
-	t := op.Typ
-	if !allowedInfixOperators(t) {
-		return nil, nil // fallback to left
+	switch p.current.Typ {
+	case Plus, Minus, Slash, Asterisk, EQ, NEQ, LT, GT: 
+		return p.parseLogicalAndArithmeticInfix(left)
+	case LParen: 
+		return nil, nil
+	default: return nil, nil
 	}
+}
 
-	precedence := precedenceForToken(t)
+func (p *parser) parseLogicalAndArithmeticInfix(left Expression)(Expression, error) {
+	op := p.current
+
+	precedence := precedenceForToken(op.Typ)
 	p.consume()
 	right, err := p.parseExpression(precedence)
 	if err != nil {
@@ -326,12 +332,5 @@ func precedenceForToken(tok TokenType) Precedence {
 	case Plus, Minus: return Sum
 	case Asterisk, Slash: return Product
 	default: return Lowest
-	}
-}
-
-func allowedInfixOperators(tok TokenType) bool {
-	switch tok {
-	case Plus, Minus, Slash, Asterisk, EQ, NEQ, LT, GT: return true
-	default: return false
 	}
 }
