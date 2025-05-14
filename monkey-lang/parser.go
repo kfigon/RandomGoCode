@@ -12,6 +12,7 @@ type parser struct {
 	peek Token
 }
 
+
 func Parse(toks iter.Seq[Token]) ([]Statement, error) {
 	nextFn, stop := iter.Pull(toks)
 	defer stop()
@@ -139,7 +140,7 @@ func (p *parser) parseExpression(precedence Precedence) (Expression, error) {
 func (p *parser) parseInfixExpression(left Expression) (Expression, error) {
 	op := p.current
 	t := op.Typ
-	if !(t == Plus || t == Minus || t == Slash || t == Asterisk || t == EQ || t == NEQ || t == LT || t == GT) {
+	if !allowedInfixOperators(t) {
 		return nil, nil // fallback to left
 	}
 
@@ -299,10 +300,6 @@ func (p *parser) parseBlockStatements() (*BlockStatement, error) {
 		p.consume()
 	}
 
-	// if !p.eof() {V
-	// 	p.consume() // }
-	// }
-
 	return &BlockStatement{out}, nil
 }
 
@@ -329,5 +326,12 @@ func precedenceForToken(tok TokenType) Precedence {
 	case Plus, Minus: return Sum
 	case Asterisk, Slash: return Product
 	default: return Lowest
+	}
+}
+
+func allowedInfixOperators(tok TokenType) bool {
+	switch tok {
+	case Plus, Minus, Slash, Asterisk, EQ, NEQ, LT, GT: return true
+	default: return false
 	}
 }

@@ -12,7 +12,6 @@ func TestParser(t *testing.T) {
 		desc	string
 		input string
 		expected []Statement
-		wantErr bool
 	}{
 		{
 			desc: "basic let stmt",
@@ -321,16 +320,61 @@ func TestParser(t *testing.T) {
 					}}},
 				},
 		},
+		{
+			desc: "function call with name",
+			input: `foo(a, 1+c)`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&FunctionCall{
+						&IdentifierExpression{"foo"},
+						[]Expression{
+							&IdentifierExpression{"a"},
+							&InfixExpression{
+								Operator: Token{Plus, "+"},
+								Left: &PrimitiveLiteral[int]{1},
+								Right: &IdentifierExpression{"c"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "function call with function literal",
+			input: `fun(x,y){ return x + y; }(a, 1+c)`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&FunctionCall{
+						&FunctionLiteral{
+							Parameters: []*IdentifierExpression{ {"x"}, {"y"} },
+							Body: &BlockStatement{
+								[]Statement{&ReturnStatement{
+									&InfixExpression{
+										Token{Plus,"+"},
+										&IdentifierExpression{"x"},
+										&IdentifierExpression{"y"},
+									},
+								}},
+							},
+						},
+						[]Expression{
+							&IdentifierExpression{"a"},
+							&InfixExpression{
+								Operator: Token{Plus, "+"},
+								Left: &PrimitiveLiteral[int]{1},
+								Right: &IdentifierExpression{"c"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			got, err := Parse(Lex(tC.input))	
-			if tC.wantErr {
-				assert.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tC.expected, got)
-			}
+			require.NoError(t, err)
+			assert.Equal(t, tC.expected, got)
 		})
 	}
 }

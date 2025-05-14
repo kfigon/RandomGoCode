@@ -92,3 +92,10 @@ type FunctionLiteral struct {
 }
 
 func (*FunctionLiteral) expressionTag(){}
+
+type FunctionCall struct {
+	Func Expression // Identifier or function literal
+	Arguments []Expression
+}
+
+func(*FunctionCall) expressionTag(){}
