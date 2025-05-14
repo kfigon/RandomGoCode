@@ -165,7 +165,36 @@ func (p *parser) parseLogicalAndArithmeticInfix(left Expression)(Expression, err
 }
 
 func (p *parser) parseFunctionCall(left Expression) (*FunctionCall, error) {
-	return nil, nil
+	p.consume() // (
+	args := []Expression{}
+	if p.current.Typ == RParen { // call without args
+		p.consume() // )
+	} else {
+		ex, err := p.parseExpression(Lowest)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ex)
+
+		for p.peekIs(Comma) {
+			p.consume() // prev tok
+			p.consume() // comma
+
+			ex, err = p.parseExpression(Lowest)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ex)
+		}
+		if !p.expectPeek(RParen) {
+			return nil, fmt.Errorf("function call err, expected close paren after arguments, got %v", p.peek.Typ)
+		}
+	}
+
+	return &FunctionCall{
+		Func: left,
+		Arguments: args,
+	}, nil
 }
 
 func (p *parser) parsePrefixExpression() (Expression, error) {
@@ -335,6 +364,7 @@ func precedenceForToken(tok TokenType) Precedence {
 	case LT, GT: return LessGreater
 	case Plus, Minus: return Sum
 	case Asterisk, Slash: return Product
+	case LParen: return Call
 	default: return Lowest
 	}
 }

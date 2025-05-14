@@ -322,13 +322,17 @@ func TestParser(t *testing.T) {
 		},
 		{
 			desc: "function call with name",
-			input: `foo(a, 1+c)`,
+			input: `foo(a-2, 1+c)`,
 			expected: []Statement{
 				&ExpressionStatement{
 					&FunctionCall{
 						&IdentifierExpression{"foo"},
 						[]Expression{
-							&IdentifierExpression{"a"},
+							&InfixExpression{
+								Operator: Token{Minus, "-"},
+								Left: &IdentifierExpression{"a"},
+								Right: &PrimitiveLiteral[int]{2},
+							},
 							&InfixExpression{
 								Operator: Token{Plus, "+"},
 								Left: &PrimitiveLiteral[int]{1},
@@ -337,6 +341,17 @@ func TestParser(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			desc: "function call without args",
+			input: `foo()`,
+			expected: []Statement{
+				&ExpressionStatement{
+					&FunctionCall{
+						&IdentifierExpression{"foo"},
+						[]Expression{}},
+					},
 			},
 		},
 		{
