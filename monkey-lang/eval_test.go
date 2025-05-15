@@ -78,6 +78,31 @@ func TestEval(t *testing.T) {
 			code: "7 + (3 - 2) * (8 + 1) - 4",
 			exp: &PrimitiveObj[int]{12},
 		},
+		{
+			desc: "simple if",
+			code: "if true { 1 }",
+			exp: &PrimitiveObj[int]{1},
+		},
+		{
+			desc: "simple false if",
+			code: "if false { 1 }",
+			exp: NULL,
+		},
+		{
+			desc: "if else when true",
+			code: "if true { 1 } else { 2 }",
+			exp: &PrimitiveObj[int]{1},
+		},
+		{
+			desc: "if else when false",
+			code: "if false { 1 } else { 2 }",
+			exp: &PrimitiveObj[int]{2},
+		},
+		{
+			desc: "if else if when false",
+			code: "if false { 1 } else if false { 2 } else { 3 }",
+			exp: &PrimitiveObj[int]{3},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

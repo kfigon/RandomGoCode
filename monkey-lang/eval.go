@@ -86,12 +86,35 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 			}
 		}
 		return nil, fmt.Errorf("expected int or boolean expression, got %T, %T", left, right)
-	case *IfExpression: todo()
+	case *IfExpression: return e.evalIf(exp)
 	case *FunctionLiteral: todo()
 	case *FunctionCall: todo()
 	}
 
 	return nil, fmt.Errorf("invalid expression: %T", vs)
+}
+
+func (e *evaluator) evalIf(ex *IfExpression) (Object, error) {
+	if ex == nil {
+		return NULL, nil
+	}
+
+	pred, err := e.evalExp(ex.Predicate)
+	if err != nil {
+		return nil, err
+	}
+	b, ok := pred.(*PrimitiveObj[bool])
+	if !ok {
+		return nil, fmt.Errorf("if statement requires predicate")
+	}
+
+	if b.Data {
+		return e.processStatements(ex.Consequence.Stmts)
+	}
+	if ex.Alternative != nil && ex.Alternative.Predicate == nil {
+		return e.processStatements(ex.Alternative.Consequence.Stmts)
+	}
+	return e.evalIf(ex.Alternative)
 }
 
 func todo() {
