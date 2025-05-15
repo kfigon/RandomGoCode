@@ -6,8 +6,12 @@ type evaluator struct{}
 
 func Eval(program []Statement) (Object, error) {
 	e := &evaluator{}
+	return e.processStatements(program)
+}
+
+func (e *evaluator) processStatements(stmts []Statement) (Object, error) {
 	var lastObj Object
-	for _, stm := range program {
+	for _, stm := range stmts {
 		var err error
 		lastObj, err = e.evalNode(stm)
 		if err != nil {
@@ -19,9 +23,9 @@ func Eval(program []Statement) (Object, error) {
 
 func (e *evaluator) evalNode(st Statement) (Object, error) {
 	switch vs := st.(type) {
-	case *LetStatement: return nil, nil
+	case *LetStatement: todo()
 	case *ReturnStatement: return e.evalExp(vs.Exp)
-	case *BlockStatement: return nil, nil
+	case *BlockStatement: return e.processStatements(vs.Stmts)
 	case *ExpressionStatement: return e.evalExp(vs.Exp)
 	}
 	return nil, fmt.Errorf("invalid node: %T", st)
@@ -30,19 +34,17 @@ func (e *evaluator) evalNode(st Statement) (Object, error) {
 func (e *evaluator) evalExp(vs Expression) (Object, error) {
 	switch exp := vs.(type) {
 	case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{exp.Val}, nil
-	case *PrimitiveLiteral[bool]: 
-		return toBool(exp.Val), nil
+	case *PrimitiveLiteral[bool]: return toBool(exp.Val), nil
 	case *IdentifierExpression: 
 		if exp.Name == "null" {
 			return NULL, nil
 		}
-		return nil, nil
+		todo()
 	case *PrefixExpression: 
 		evaluated, err := e.evalExp(exp.Expr)
 		if err != nil {
 			return nil, err
-		}
-		if exp.Operator.Typ == Bang {
+		} else if exp.Operator.Typ == Bang {
 			b, ok := evaluated.(*PrimitiveObj[bool])
 			if !ok{
 				return nil, fmt.Errorf("expected boolean type, got %T", evaluated)
@@ -54,9 +56,8 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 				return nil, fmt.Errorf("expected int type, got %T", evaluated)
 			}
 			return &PrimitiveObj[int]{-i.Data},nil
-		} else {
-			return nil, fmt.Errorf("unsupported prefix operator: %v", exp.Operator.Typ)
 		}
+		return nil, fmt.Errorf("unsupported prefix operator: %v", exp.Operator.Typ)
 	case *InfixExpression: 
 		left, err := e.evalExp(exp.Left)
 		if err != nil {
@@ -87,15 +88,18 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 			case NEQ: return &PrimitiveObj[bool]{bLeft.Data != bRight.Data},nil
 			default: return nil, fmt.Errorf("invalid operator for booleans %T, %T", left, right)
 			}
-		} else {
-			return nil, fmt.Errorf("expected int or boolean expression, got %T, %T", left, right)
 		}
-	case *IfExpression: return nil, nil
-	case *FunctionLiteral: return nil, nil
-	case *FunctionCall: return nil, nil
+		return nil, fmt.Errorf("expected int or boolean expression, got %T, %T", left, right)
+	case *IfExpression: todo()
+	case *FunctionLiteral: todo()
+	case *FunctionCall: todo()
 	}
 
 	return nil, fmt.Errorf("invalid expression: %T", vs)
+}
+
+func todo() {
+	panic("not implemented")
 }
 
 func toBool(v bool) Object {
