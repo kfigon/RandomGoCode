@@ -9,6 +9,13 @@ type environment struct {
 	outer *environment
 }
 
+func newEnv(outer *environment) *environment {
+	return &environment{
+		vals: map[string]Object{},
+		outer: outer,
+	}
+}
+
 func (e *environment) set(name string, obj Object) {
 	e.vals[name] = obj
 }
@@ -24,10 +31,7 @@ func (e *environment) get(name string) (Object, bool) {
 
 func Eval(program []Statement) (Object, error) {
 	e := &evaluator{}
-	env := &environment{
-		vals: map[string]Object{},
-	}
-	return e.processProgram(program, env)
+	return e.processProgram(program, newEnv(nil))
 }
 
 func (e *evaluator) processProgram(stmts []Statement, env *environment) (Object, error) {
@@ -137,8 +141,45 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 		}
 		return nil, fmt.Errorf("expected int or boolean expression, got %T, %T", left, right)
 	case *IfExpression: return e.evalIf(exp, env)
-	case *FunctionLiteral: todo()
-	case *FunctionCall: todo()
+	case *FunctionLiteral: 
+		args := []string{}
+		for _, x := range exp.Parameters {
+			if x == nil {
+				continue
+			}
+			args = append(args, x.Name)
+		}
+		fun := &FunctionObj{
+			Args: args,
+			Body: exp.Body,
+		}
+		return fun, nil
+	case *FunctionCall: 
+		switch fn := exp.Func.(type) {
+		case *IdentifierExpression:
+			o, ok := env.get(fn.Name)
+			if !ok {
+				return nil, fmt.Errorf("unknown function name %v", fn.Name)
+			}
+			call, ok := o.(*FunctionObj)
+			if !ok {
+				return nil, fmt.Errorf("function object not found, got %T", o)
+			} else if len(exp.Arguments) != len(call.Args) {
+				return nil, fmt.Errorf("mismatched args, declated %d, got %d", len(exp.Arguments), len(call.Args))
+			}
+
+			innerEnv := newEnv(env)
+			for i := 0; i < len(exp.Arguments); i++ {
+				evaluated, err := e.evalExp(exp.Arguments[i], env)
+				if err != nil {
+					return nil, err
+				}
+				innerEnv.set(call.Args[i], evaluated)
+			}
+			return e.evalBlockStatement(call.Body, innerEnv)
+		case *FunctionLiteral:
+			panic("todo")
+		}
 	}
 
 	return nil, fmt.Errorf("invalid expression: %T", vs)
@@ -165,10 +206,6 @@ func (e *evaluator) evalIf(ex *IfExpression, env *environment) (Object, error) {
 		return e.evalBlockStatement(ex.Alternative.Consequence, env)
 	}
 	return e.evalIf(ex.Alternative, env)
-}
-
-func todo() {
-	panic("not implemented")
 }
 
 func castBothToPrimitive[T any](a,b Object) (T, T, bool) {

@@ -25,4 +25,9 @@ type ReturnObj struct {
 
 func (*ReturnObj) objTag(){}
 
+type FunctionObj struct {
+	Args []string
+	Body *BlockStatement
+}
 
+func (*FunctionObj) objTag(){}

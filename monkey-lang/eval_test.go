@@ -150,6 +150,21 @@ func TestEval(t *testing.T) {
 			x;`,
 			exp: NULL,
 		},
+		{
+			desc: "function literals",
+			code: `let max = fun(x,y) { if x > y { x } else {y}};
+			max(2+1,2);`,
+			exp: &PrimitiveObj[int]{3},
+		},
+		{
+			desc: "function literals without args and inner env",
+			code: `let foo = fun() {
+				let x = 123;
+				return x + 3;
+			};
+			foo();`,
+			exp: &PrimitiveObj[int]{126},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
