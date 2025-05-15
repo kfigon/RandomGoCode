@@ -178,7 +178,19 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 			}
 			return e.evalBlockStatement(call.Body, innerEnv)
 		case *FunctionLiteral:
-			panic("todo")
+			if len(exp.Arguments) != len(fn.Parameters) {
+				return nil, fmt.Errorf("mismatched args, declated %d, got %d", len(exp.Arguments), len(fn.Parameters))
+			}
+
+			innerEnv := newEnv(env)
+			for i := 0; i < len(exp.Arguments); i++ {
+				evaluated, err := e.evalExp(exp.Arguments[i], env)
+				if err != nil {
+					return nil, err
+				}
+				innerEnv.set(fn.Parameters[i].Name, evaluated)
+			}
+			return e.evalBlockStatement(fn.Body, innerEnv)
 		}
 	}
 

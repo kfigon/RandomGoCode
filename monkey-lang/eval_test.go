@@ -151,18 +151,26 @@ func TestEval(t *testing.T) {
 			exp: NULL,
 		},
 		{
-			desc: "function literals",
+			desc: "function",
 			code: `let max = fun(x,y) { if x > y { x } else {y}};
 			max(2+1,2);`,
 			exp: &PrimitiveObj[int]{3},
 		},
 		{
-			desc: "function literals without args and inner env",
+			desc: "function without args and inner env",
 			code: `let foo = fun() {
 				let x = 123;
 				return x + 3;
 			};
 			foo();`,
+			exp: &PrimitiveObj[int]{126},
+		},
+		{
+			desc: "function literal",
+			code: `fun(y) {
+				let x = 123;
+				return x + y;
+			}(3);`,
 			exp: &PrimitiveObj[int]{126},
 		},
 	}
