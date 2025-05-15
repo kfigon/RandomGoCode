@@ -19,4 +19,10 @@ func (*PrimitiveObj[T]) objTag(){}
 type NullObj struct{}
 func (*NullObj) objTag(){}
 
+type ReturnObj struct {
+	Val Object
+}
+
+func (*ReturnObj) objTag(){}
+
 

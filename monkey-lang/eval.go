@@ -6,26 +6,46 @@ type evaluator struct{}
 
 func Eval(program []Statement) (Object, error) {
 	e := &evaluator{}
-	return e.processStatements(program)
+	return e.processProgram(program)
 }
 
-func (e *evaluator) processStatements(stmts []Statement) (Object, error) {
+func (e *evaluator) processProgram(stmts []Statement) (Object, error) {
 	var lastObj Object
 	for _, stm := range stmts {
 		var err error
 		lastObj, err = e.evalNode(stm)
 		if err != nil {
 			return nil, err
+		} else if ret, ok := lastObj.(*ReturnObj); ok {
+			return ret.Val, nil
 		}
 	}
 	return lastObj, nil
 }
 
+func (e *evaluator) evalBlockStatement(block *BlockStatement) (Object, error) {
+	var lastObj Object
+	for _, stm := range block.Stmts {
+		var err error
+		lastObj, err = e.evalNode(stm)
+		if err != nil {
+			return nil, err
+		} else if ret, ok := lastObj.(*ReturnObj); ok {
+			return ret, nil
+		}
+	}
+	return lastObj, nil
+}
 func (e *evaluator) evalNode(st Statement) (Object, error) {
 	switch vs := st.(type) {
 	case *LetStatement: todo()
-	case *ReturnStatement: return e.evalExp(vs.Exp)
-	case *BlockStatement: return e.processStatements(vs.Stmts)
+	case *ReturnStatement:
+		exp, err := e.evalExp(vs.Exp)
+		if err != nil {
+			return nil, err
+		}
+		return &ReturnObj{exp},nil
+	case *BlockStatement: return e.evalBlockStatement(vs)
 	case *ExpressionStatement: return e.evalExp(vs.Exp)
 	}
 	return nil, fmt.Errorf("invalid node: %T", st)
@@ -111,10 +131,10 @@ func (e *evaluator) evalIf(ex *IfExpression) (Object, error) {
 	}
 
 	if b.Data {
-		return e.processStatements(ex.Consequence.Stmts)
+		return e.evalBlockStatement(ex.Consequence)
 	}
 	if ex.Alternative != nil && ex.Alternative.Predicate == nil {
-		return e.processStatements(ex.Alternative.Consequence.Stmts)
+		return e.evalBlockStatement(ex.Alternative.Consequence)
 	}
 	return e.evalIf(ex.Alternative)
 }

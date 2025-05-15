@@ -113,6 +113,25 @@ func TestEval(t *testing.T) {
 			code: "if false { 1 } else if false { 2 } else { 3 }",
 			exp: &PrimitiveObj[int]{3},
 		},
+		{
+			desc: "simple return",
+			code: `1+1;
+			return 3;
+			3+13;`,
+			exp: &PrimitiveObj[int]{3},
+		},
+		{
+			desc: "block return",
+			code: 
+			`if true {
+				if true {
+					return 3;
+				}	
+				return 1;
+			} `,
+			exp: &PrimitiveObj[int]{3},
+		},
+
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
