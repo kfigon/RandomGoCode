@@ -51,7 +51,7 @@ func TestEval(t *testing.T) {
 		{
 			desc: "prefix4",
 			code: "-123",
-			exp: &PrimitiveObj[int]{123},
+			exp: &PrimitiveObj[int]{-123},
 		},
 	}
 	for _, tC := range testCases {

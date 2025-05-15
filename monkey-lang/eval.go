@@ -29,7 +29,7 @@ func (e *evaluator) evalNode(st Statement) (Object, error) {
 
 func (e *evaluator) evalExp(vs Expression) (Object, error) {
 	switch exp := vs.(type) {
-	case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{mustCast[int](exp.Val)}, nil
+	case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{exp.Val}, nil
 	case *PrimitiveLiteral[bool]: 
 		if exp.Val {
 			return TRUE,nil
@@ -41,7 +41,29 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 			return NULL, nil
 		}
 		return nil, nil
-	case *PrefixExpression: return nil, nil
+	case *PrefixExpression: 
+		evaluated, err := e.evalExp(exp.Expr)
+		if err != nil {
+			return nil, err
+		}
+		if exp.Operator.Typ == Bang {
+			b, ok := evaluated.(*PrimitiveObj[bool])
+			if !ok{
+				return nil, fmt.Errorf("expected boolean type, got %T", evaluated)
+			}
+			if b.Data {
+				return FALSE,nil
+			}
+			return TRUE, nil
+		} else if exp.Operator.Typ == Minus {
+			i, ok := evaluated.(*PrimitiveObj[int])
+			if !ok{
+				return nil, fmt.Errorf("expected int type, got %T", evaluated)
+			}
+			return &PrimitiveObj[int]{-i.Data},nil
+		} else {
+			return nil, fmt.Errorf("unsupported prefix operator: %v", exp.Operator.Typ)
+		}
 	case *InfixExpression: return nil, nil
 	case *IfExpression: return nil, nil
 	case *FunctionLiteral: return nil, nil
