@@ -67,25 +67,21 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 		if err != nil {
 			return nil, err
 		}
-		iLeft, ilOk := left.(*PrimitiveObj[int])
-		iRight, irOk := right.(*PrimitiveObj[int])
-		bLeft, blOk := left.(*PrimitiveObj[bool])
-		bRight, brOk := right.(*PrimitiveObj[bool])
 
-		if ilOk && irOk {
+		if iL, iR, ok := castBothToPrimitive[int](left,right); ok{
 			switch exp.Operator.Typ{
-			case Plus: return &PrimitiveObj[int]{iLeft.Data+iRight.Data},nil
-			case Minus: return &PrimitiveObj[int]{iLeft.Data-iRight.Data},nil
-			case Asterisk: return &PrimitiveObj[int]{iLeft.Data*iRight.Data},nil
-			case Slash: return &PrimitiveObj[int]{iLeft.Data/iRight.Data},nil
-			case LT: return &PrimitiveObj[bool]{iLeft.Data < iRight.Data}, nil
-			case GT: return &PrimitiveObj[bool]{iLeft.Data > iRight.Data}, nil
+			case Plus: return &PrimitiveObj[int]{iL+iR}, nil
+			case Minus: return &PrimitiveObj[int]{iL-iR}, nil
+			case Asterisk: return &PrimitiveObj[int]{iL*iR}, nil
+			case Slash: return &PrimitiveObj[int]{iL/iR}, nil
+			case LT: return &PrimitiveObj[bool]{iL < iR}, nil
+			case GT: return &PrimitiveObj[bool]{iL > iR}, nil
 			default: return nil, fmt.Errorf("invalid operator for integers: %v", exp.Operator.Typ)
 			}
-		} else if blOk && brOk {
+		} else if bL, bR, ok := castBothToPrimitive[bool](left,right); ok{
 			switch exp.Operator.Typ{
-			case EQ: return &PrimitiveObj[bool]{bLeft.Data == bRight.Data},nil
-			case NEQ: return &PrimitiveObj[bool]{bLeft.Data != bRight.Data},nil
+			case EQ: return &PrimitiveObj[bool]{bL == bR}, nil
+			case NEQ: return &PrimitiveObj[bool]{bL != bR}, nil
 			default: return nil, fmt.Errorf("invalid operator for booleans %T, %T", left, right)
 			}
 		}
@@ -100,6 +96,16 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 
 func todo() {
 	panic("not implemented")
+}
+
+func castBothToPrimitive[T any](a,b Object) (T, T, bool) {
+	a2, aOk := a.(*PrimitiveObj[T])
+	b2, bOk := b.(*PrimitiveObj[T])
+	if aOk && bOk {
+		return a2.Data,b2.Data, true
+	}
+	var zero T
+	return zero, zero, false
 }
 
 func toBool(v bool) Object {
