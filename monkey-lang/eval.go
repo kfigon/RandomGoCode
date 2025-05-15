@@ -4,16 +4,37 @@ import "fmt"
 
 type evaluator struct{}
 
-func Eval(program []Statement) (Object, error) {
-	e := &evaluator{}
-	return e.processProgram(program)
+type environment struct {
+	vals map[string]Object
+	outer *environment
 }
 
-func (e *evaluator) processProgram(stmts []Statement) (Object, error) {
+func (e *environment) set(name string, obj Object) {
+	e.vals[name] = obj
+}
+
+func (e *environment) get(name string) (Object, bool) {
+	if v, ok := e.vals[name]; ok {
+		return v, true
+	} else if e.outer != nil {
+		return e.outer.get(name)
+	}
+	return NULL, false
+}
+
+func Eval(program []Statement) (Object, error) {
+	e := &evaluator{}
+	env := &environment{
+		vals: map[string]Object{},
+	}
+	return e.processProgram(program, env)
+}
+
+func (e *evaluator) processProgram(stmts []Statement, env *environment) (Object, error) {
 	var lastObj Object
 	for _, stm := range stmts {
 		var err error
-		lastObj, err = e.evalNode(stm)
+		lastObj, err = e.evalNode(stm, env)
 		if err != nil {
 			return nil, err
 		} else if ret, ok := lastObj.(*ReturnObj); ok {
@@ -23,11 +44,11 @@ func (e *evaluator) processProgram(stmts []Statement) (Object, error) {
 	return lastObj, nil
 }
 
-func (e *evaluator) evalBlockStatement(block *BlockStatement) (Object, error) {
+func (e *evaluator) evalBlockStatement(block *BlockStatement, env *environment) (Object, error) {
 	var lastObj Object
 	for _, stm := range block.Stmts {
 		var err error
-		lastObj, err = e.evalNode(stm)
+		lastObj, err = e.evalNode(stm, env)
 		if err != nil {
 			return nil, err
 		} else if ret, ok := lastObj.(*ReturnObj); ok {
@@ -36,22 +57,28 @@ func (e *evaluator) evalBlockStatement(block *BlockStatement) (Object, error) {
 	}
 	return lastObj, nil
 }
-func (e *evaluator) evalNode(st Statement) (Object, error) {
+func (e *evaluator) evalNode(st Statement, env *environment) (Object, error) {
 	switch vs := st.(type) {
-	case *LetStatement: todo()
+	case *LetStatement: 
+		ex, err := e.evalExp(vs.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		env.set(vs.Ident.Name, ex)
+		return NULL, nil
 	case *ReturnStatement:
-		exp, err := e.evalExp(vs.Exp)
+		exp, err := e.evalExp(vs.Exp, env)
 		if err != nil {
 			return nil, err
 		}
 		return &ReturnObj{exp},nil
-	case *BlockStatement: return e.evalBlockStatement(vs)
-	case *ExpressionStatement: return e.evalExp(vs.Exp)
+	case *BlockStatement: return e.evalBlockStatement(vs, env)
+	case *ExpressionStatement: return e.evalExp(vs.Exp, env)
 	}
 	return nil, fmt.Errorf("invalid node: %T", st)
 }
 
-func (e *evaluator) evalExp(vs Expression) (Object, error) {
+func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 	switch exp := vs.(type) {
 	case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{exp.Val}, nil
 	case *PrimitiveLiteral[bool]: return toBool(exp.Val), nil
@@ -59,9 +86,10 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 		if exp.Name == "null" {
 			return NULL, nil
 		}
-		todo()
+		v, _ := env.get(exp.Name)
+		return v, nil
 	case *PrefixExpression: 
-		evaluated, err := e.evalExp(exp.Expr)
+		evaluated, err := e.evalExp(exp.Expr, env)
 		if err != nil {
 			return nil, err
 		} else if exp.Operator.Typ == Bang {
@@ -79,11 +107,11 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 		}
 		return nil, fmt.Errorf("unsupported prefix operator: %v", exp.Operator.Typ)
 	case *InfixExpression: 
-		left, err := e.evalExp(exp.Left)
+		left, err := e.evalExp(exp.Left, env)
 		if err != nil {
 			return nil, err
 		}
-		right, err := e.evalExp(exp.Right)
+		right, err := e.evalExp(exp.Right, env)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +136,7 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 			}
 		}
 		return nil, fmt.Errorf("expected int or boolean expression, got %T, %T", left, right)
-	case *IfExpression: return e.evalIf(exp)
+	case *IfExpression: return e.evalIf(exp, env)
 	case *FunctionLiteral: todo()
 	case *FunctionCall: todo()
 	}
@@ -116,12 +144,12 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 	return nil, fmt.Errorf("invalid expression: %T", vs)
 }
 
-func (e *evaluator) evalIf(ex *IfExpression) (Object, error) {
+func (e *evaluator) evalIf(ex *IfExpression, env *environment) (Object, error) {
 	if ex == nil {
 		return NULL, nil
 	}
 
-	pred, err := e.evalExp(ex.Predicate)
+	pred, err := e.evalExp(ex.Predicate, env)
 	if err != nil {
 		return nil, err
 	}
@@ -131,12 +159,12 @@ func (e *evaluator) evalIf(ex *IfExpression) (Object, error) {
 	}
 
 	if b.Data {
-		return e.evalBlockStatement(ex.Consequence)
+		return e.evalBlockStatement(ex.Consequence, env)
 	}
 	if ex.Alternative != nil && ex.Alternative.Predicate == nil {
-		return e.evalBlockStatement(ex.Alternative.Consequence)
+		return e.evalBlockStatement(ex.Alternative.Consequence, env)
 	}
-	return e.evalIf(ex.Alternative)
+	return e.evalIf(ex.Alternative, env)
 }
 
 func todo() {

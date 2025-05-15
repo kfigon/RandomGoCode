@@ -131,7 +131,25 @@ func TestEval(t *testing.T) {
 			} `,
 			exp: &PrimitiveObj[int]{3},
 		},
-
+		{
+			desc: "let statetements 1",
+			code: `let a = 5;
+			a;`,
+			exp: &PrimitiveObj[int]{5},
+		},
+		{
+			desc: "let statetements 2",
+			code: `let a = 5;
+			let x = 5 + a;
+			x;`,
+			exp: &PrimitiveObj[int]{10},
+		},
+		{
+			desc: "let statetements when invalid",
+			code: `let a = 5;
+			x;`,
+			exp: NULL,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
