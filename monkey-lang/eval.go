@@ -76,6 +76,8 @@ func (e *evaluator) evalExp(vs Expression) (Object, error) {
 			case Slash: return &PrimitiveObj[int]{iL/iR}, nil
 			case LT: return &PrimitiveObj[bool]{iL < iR}, nil
 			case GT: return &PrimitiveObj[bool]{iL > iR}, nil
+			case EQ: return &PrimitiveObj[bool]{iL == iR}, nil
+			case NEQ: return &PrimitiveObj[bool]{iL != iR}, nil
 			default: return nil, fmt.Errorf("invalid operator for integers: %v", exp.Operator.Typ)
 			}
 		} else if bL, bR, ok := castBothToPrimitive[bool](left,right); ok{

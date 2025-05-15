@@ -99,6 +99,16 @@ func TestEval(t *testing.T) {
 			exp: &PrimitiveObj[int]{2},
 		},
 		{
+			desc: "if else if when else true",
+			code: "if false { 1 } else if true { 2 } else { 3 }",
+			exp: &PrimitiveObj[int]{2},
+		},
+		{
+			desc: "evaluated if",
+			code: "if 2 > 3 { 1 } else if 1 == 1 { 2 }",
+			exp: &PrimitiveObj[int]{2},
+		},
+		{
 			desc: "if else if when false",
 			code: "if false { 1 } else if false { 2 } else { 3 }",
 			exp: &PrimitiveObj[int]{3},
