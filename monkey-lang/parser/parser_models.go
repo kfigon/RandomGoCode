@@ -1,4 +1,7 @@
-package main
+package parser
+import (
+	"monkey-lang/lexer"
+)
 
 type Precedence int
 const (
@@ -60,14 +63,14 @@ type IdentifierExpression struct {
 func (*IdentifierExpression) expressionTag() {}
 
 type PrefixExpression struct {
-	Operator Token
+	Operator lexer.Token
 	Expr Expression
 }
 
 func (*PrefixExpression) expressionTag(){}
 
 type InfixExpression struct {
-	Operator Token
+	Operator lexer.Token
 	Left Expression
 	Right Expression
 }

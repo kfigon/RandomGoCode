@@ -1,4 +1,7 @@
-package main
+package interpreter
+import (
+	"monkey-lang/parser"
+)
 
 type Object interface {
 	objTag()
@@ -27,7 +30,7 @@ func (*ReturnObj) objTag(){}
 
 type FunctionObj struct {
 	Args []string
-	Body *BlockStatement
+	Body *parser.BlockStatement
 }
 
 func (*FunctionObj) objTag(){}

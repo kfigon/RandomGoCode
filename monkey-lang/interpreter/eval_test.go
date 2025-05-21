@@ -1,6 +1,8 @@
-package main
+package interpreter
 
 import (
+	"monkey-lang/lexer"
+	"monkey-lang/parser"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -176,7 +178,7 @@ func TestEval(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			parsed, err := Parse(Lex(tC.code))
+			parsed, err := parser.Parse(lexer.Lex(tC.code))
 			require.NoError(t, err, "parsing error")
 
 			got, err := Eval(parsed)

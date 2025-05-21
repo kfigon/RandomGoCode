@@ -1,9 +1,10 @@
-package main
+package parser
 
 import (
 	"fmt"
 	"iter"
 	"strconv"
+	. "monkey-lang/lexer"
 )
 
 type parser struct {

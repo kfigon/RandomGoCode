@@ -1,6 +1,10 @@
-package main
+package interpreter
 
-import "fmt"
+import (
+	"fmt"
+	. "monkey-lang/parser"
+	"monkey-lang/lexer"
+)
 
 type evaluator struct{}
 
@@ -96,13 +100,13 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 		evaluated, err := e.evalExp(exp.Expr, env)
 		if err != nil {
 			return nil, err
-		} else if exp.Operator.Typ == Bang {
+		} else if exp.Operator.Typ == lexer.Bang {
 			b, ok := evaluated.(*PrimitiveObj[bool])
 			if !ok{
 				return nil, fmt.Errorf("expected boolean type, got %T", evaluated)
 			}
 			return toBool(!b.Data),nil
-		} else if exp.Operator.Typ == Minus {
+		} else if exp.Operator.Typ == lexer.Minus {
 			i, ok := evaluated.(*PrimitiveObj[int])
 			if !ok{
 				return nil, fmt.Errorf("expected int type, got %T", evaluated)
@@ -122,20 +126,20 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 
 		if iL, iR, ok := castBothToPrimitive[int](left,right); ok{
 			switch exp.Operator.Typ{
-			case Plus: return &PrimitiveObj[int]{iL+iR}, nil
-			case Minus: return &PrimitiveObj[int]{iL-iR}, nil
-			case Asterisk: return &PrimitiveObj[int]{iL*iR}, nil
-			case Slash: return &PrimitiveObj[int]{iL/iR}, nil
-			case LT: return &PrimitiveObj[bool]{iL < iR}, nil
-			case GT: return &PrimitiveObj[bool]{iL > iR}, nil
-			case EQ: return &PrimitiveObj[bool]{iL == iR}, nil
-			case NEQ: return &PrimitiveObj[bool]{iL != iR}, nil
+			case lexer.Plus: return &PrimitiveObj[int]{iL+iR}, nil
+			case lexer.Minus: return &PrimitiveObj[int]{iL-iR}, nil
+			case lexer.Asterisk: return &PrimitiveObj[int]{iL*iR}, nil
+			case lexer.Slash: return &PrimitiveObj[int]{iL/iR}, nil
+			case lexer.LT: return &PrimitiveObj[bool]{iL < iR}, nil
+			case lexer.GT: return &PrimitiveObj[bool]{iL > iR}, nil
+			case lexer.EQ: return &PrimitiveObj[bool]{iL == iR}, nil
+			case lexer.NEQ: return &PrimitiveObj[bool]{iL != iR}, nil
 			default: return nil, fmt.Errorf("invalid operator for integers: %v", exp.Operator.Typ)
 			}
 		} else if bL, bR, ok := castBothToPrimitive[bool](left,right); ok{
 			switch exp.Operator.Typ{
-			case EQ: return &PrimitiveObj[bool]{bL == bR}, nil
-			case NEQ: return &PrimitiveObj[bool]{bL != bR}, nil
+			case lexer.EQ: return &PrimitiveObj[bool]{bL == bR}, nil
+			case lexer.NEQ: return &PrimitiveObj[bool]{bL != bR}, nil
 			default: return nil, fmt.Errorf("invalid operator for booleans %T, %T", left, right)
 			}
 		}

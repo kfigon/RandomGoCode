@@ -1,10 +1,11 @@
-package main
+package parser
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	. "monkey-lang/lexer"
 )
 
 func TestParser(t *testing.T) {
