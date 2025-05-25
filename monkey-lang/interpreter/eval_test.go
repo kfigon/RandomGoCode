@@ -3,6 +3,7 @@ package interpreter
 import (
 	"monkey-lang/lexer"
 	"monkey-lang/parser"
+	. "monkey-lang/objects"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

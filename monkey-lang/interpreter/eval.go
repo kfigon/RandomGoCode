@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	. "monkey-lang/parser"
+	. "monkey-lang/objects"
 	"monkey-lang/lexer"
 )
 

@@ -1,4 +1,4 @@
-package interpreter
+package objects
 import (
 	"monkey-lang/parser"
 )
