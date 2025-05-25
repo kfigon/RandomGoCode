@@ -3,6 +3,7 @@ package compiler
 import (
 	"encoding/binary"
 	"fmt"
+	"iter"
 )
 
 type Instructions []byte
@@ -56,4 +57,20 @@ func MakeCommand(op Opcode, operands ...int) ([]byte, error) {
 	}
 
 	return instr, nil
+}
+
+func (ins Instructions) Iter() iter.Seq[[]byte] {
+	return func(yield func([]byte) bool) {
+		for i := 0; i < len(ins); {
+			nextOffset := i + 1
+			for _, v := range opcodeLookup[Opcode(ins[i])].operandWidth {
+				nextOffset += v
+			}	
+
+			if !yield(ins[i:nextOffset]) {
+				return
+			}
+			i += nextOffset
+		}
+	}
 }
