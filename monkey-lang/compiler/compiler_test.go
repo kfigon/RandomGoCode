@@ -24,6 +24,19 @@ func TestCompiler(t *testing.T) {
 			expectedInstr: []byte{byte(OpConst), 0,0},
 			expConstants: []objects.Object{&objects.PrimitiveObj[int]{3}},
 		},
+		{
+			desc: "infix",
+			input: "3 + 1",
+			expectedInstr: []byte{
+				byte(OpConst), 0,0,
+				byte(OpConst), 0,1,
+				byte(OpAdd),
+			},
+			expConstants: []objects.Object{
+				&objects.PrimitiveObj[int]{3},
+				&objects.PrimitiveObj[int]{1},
+			},
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
@@ -40,10 +53,14 @@ func TestCompiler(t *testing.T) {
 }
 
 func TestInstructionIter(t *testing.T) {
-	t.Run("two constants", func(t *testing.T) {
+	t.Run("two constants and add", func(t *testing.T) {
 		ins := Instructions{}
 
 		c, err := MakeCommand(OpConst, 2)
+		require.NoError(t, err)
+		ins = append(ins, c...)
+
+		c,err = MakeCommand(OpAdd)
 		require.NoError(t, err)
 		ins = append(ins, c...)
 
@@ -54,10 +71,12 @@ func TestInstructionIter(t *testing.T) {
 		got := slices.Collect(ins.Iter())
 		exp := [][]byte{
 			{0, 0, 2},
+			{1},
 			{0, 0, 0xf},
 		}
 		assert.Equal(t, exp, got)
 	})	
+
 }
 
 

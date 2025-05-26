@@ -11,6 +11,7 @@ type Instructions []byte
 type Opcode byte
 const (
 	OpConst Opcode = iota
+	OpAdd
 )
 
 func(o Opcode) String() string {
@@ -24,6 +25,7 @@ type opcodeDefinition struct {
 
 var opcodeLookup = map[Opcode]opcodeDefinition {
 	OpConst: {"OpConst", []int{2}},
+	OpAdd: {"OpAdd", nil},
 }
 
 var endianness = binary.BigEndian
@@ -62,15 +64,15 @@ func MakeCommand(op Opcode, operands ...int) ([]byte, error) {
 func (ins Instructions) Iter() iter.Seq[[]byte] {
 	return func(yield func([]byte) bool) {
 		for i := 0; i < len(ins); {
-			nextOffset := i + 1
+			operandsWidth := 0
 			for _, v := range opcodeLookup[Opcode(ins[i])].operandWidth {
-				nextOffset += v
+				operandsWidth += v
 			}	
 
-			if !yield(ins[i:nextOffset]) {
+			if !yield(ins[i:i+operandsWidth+1]) {
 				return
 			}
-			i += nextOffset
+			i += operandsWidth + 1
 		}
 	}
 }

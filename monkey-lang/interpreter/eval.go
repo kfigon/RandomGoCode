@@ -90,7 +90,7 @@ func (e *evaluator) evalNode(st Statement, env *environment) (Object, error) {
 func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 	switch exp := vs.(type) {
 	case *PrimitiveLiteral[int]: return &PrimitiveObj[int]{exp.Val}, nil
-	case *PrimitiveLiteral[bool]: return toBool(exp.Val), nil
+	case *PrimitiveLiteral[bool]: return ToBool(exp.Val), nil
 	case *IdentifierExpression: 
 		if exp.Name == "null" {
 			return NULL, nil
@@ -106,7 +106,7 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 			if !ok{
 				return nil, fmt.Errorf("expected boolean type, got %T", evaluated)
 			}
-			return toBool(!b.Data),nil
+			return ToBool(!b.Data),nil
 		} else if exp.Operator.Typ == lexer.Minus {
 			i, ok := evaluated.(*PrimitiveObj[int])
 			if !ok{
@@ -125,7 +125,7 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 			return nil, err
 		}
 
-		if iL, iR, ok := castBothToPrimitive[int](left,right); ok{
+		if iL, iR, ok := CastBothToPrimitive[int](left,right); ok{
 			switch exp.Operator.Typ{
 			case lexer.Plus: return &PrimitiveObj[int]{iL+iR}, nil
 			case lexer.Minus: return &PrimitiveObj[int]{iL-iR}, nil
@@ -137,7 +137,7 @@ func (e *evaluator) evalExp(vs Expression, env *environment) (Object, error) {
 			case lexer.NEQ: return &PrimitiveObj[bool]{iL != iR}, nil
 			default: return nil, fmt.Errorf("invalid operator for integers: %v", exp.Operator.Typ)
 			}
-		} else if bL, bR, ok := castBothToPrimitive[bool](left,right); ok{
+		} else if bL, bR, ok := CastBothToPrimitive[bool](left,right); ok{
 			switch exp.Operator.Typ{
 			case lexer.EQ: return &PrimitiveObj[bool]{bL == bR}, nil
 			case lexer.NEQ: return &PrimitiveObj[bool]{bL != bR}, nil
@@ -223,21 +223,4 @@ func (e *evaluator) evalIf(ex *IfExpression, env *environment) (Object, error) {
 		return e.evalBlockStatement(ex.Alternative.Consequence, env)
 	}
 	return e.evalIf(ex.Alternative, env)
-}
-
-func castBothToPrimitive[T any](a,b Object) (T, T, bool) {
-	a2, aOk := a.(*PrimitiveObj[T])
-	b2, bOk := b.(*PrimitiveObj[T])
-	if aOk && bOk {
-		return a2.Data,b2.Data, true
-	}
-	var zero T
-	return zero, zero, false
-}
-
-func toBool(v bool) Object {
-	if v {
-		return TRUE
-	}
-	return FALSE
 }

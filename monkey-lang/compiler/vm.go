@@ -50,6 +50,15 @@ func (v *VM) Execute() error {
 		case OpConst: 
 			c := v.constants[int(endianness.Uint16(i[1:]))]
 			v.stack.Push(c)
+		case OpAdd:
+			right := v.stack.Pop()
+			left := v.stack.Pop()
+			
+			a,b, ok := objects.CastBothToPrimitive[int](right, left)
+			if !ok {
+				return fmt.Errorf("invalid values provided to summary %T, %T", left, right)
+			}
+			v.stack.Push(&objects.PrimitiveObj[int]{a+b})
 		default: return fmt.Errorf("unknown opcode %v", op)
 		}
 	}

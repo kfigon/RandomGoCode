@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"monkey-lang/lexer"
 	"monkey-lang/objects"
 	"monkey-lang/parser"
 )
@@ -46,7 +47,32 @@ func (c *Compiler) compileExpression(exp parser.Expression) error {
 		}
 		c.constants = append(c.constants, &objects.PrimitiveObj[int]{Data: v.Val})
 		c.instructions = append(c.instructions, instr...)
+	case *parser.InfixExpression: return c.compileInfixExpression(v)
 	default: return fmt.Errorf("invalid expression type %T", exp)
 	}
+	return nil
+}
+
+func (c *Compiler) compileInfixExpression(exp *parser.InfixExpression) error {
+	if err := c.compileExpression(exp.Left); err != nil {
+		return err
+	}
+	if err := c.compileExpression(exp.Right); err != nil {
+		return err
+	}
+	var op Opcode
+	operation := exp.Operator.Typ 
+	switch operation {
+	case lexer.Plus:
+		op = OpAdd
+	default: return fmt.Errorf("invalid opcode %v", operation)
+	}
+
+	i, err := MakeCommand(op)
+	if err != nil {
+		return err
+	}
+
+	c.instructions = append(c.instructions, i...)
 	return nil
 }
