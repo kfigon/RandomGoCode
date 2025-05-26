@@ -1,6 +1,9 @@
 package compiler
 
-import "monkey-lang/objects"
+import (
+	"fmt"
+	"monkey-lang/objects"
+)
 
 type Stack[T any] struct {
 	s []T
@@ -33,5 +36,22 @@ type VM struct {
 	instructions Instructions
 	constants []objects.Object
 
-	stack Stack[objects.Object]
+	stack *Stack[objects.Object]
+}
+
+func NewVM(instr Instructions, consts []objects.Object) *VM {
+	return &VM{ instr, consts, NewStack[objects.Object]() }
+}
+
+func (v *VM) Execute() error {
+	for i := range v.instructions.Iter() {
+		op := Opcode(i[0]) 
+		switch op {
+		case OpConst: 
+			c := v.constants[int(endianness.Uint16(i[1:]))]
+			v.stack.Push(c)
+		default: return fmt.Errorf("unknown opcode %v", op)
+		}
+	}
+	return nil
 }
