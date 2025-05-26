@@ -12,13 +12,13 @@ type Stack[T any] struct {
 
 func NewStack[T any]() *Stack[T] {
 	return &Stack[T]{
-		s: make([]T, 0, 512),
+		s: make([]T, 512),
 		pointer: 0,
 	}
 }
 
 func (s *Stack[T]) Push(v T) {
-	s.s = append(s.s, v)
+	s.s[s.pointer] = v
 	s.pointer++
 }
 
@@ -43,7 +43,7 @@ func NewVM(instr Instructions, consts []objects.Object) *VM {
 	return &VM{ instr, consts, NewStack[objects.Object]() }
 }
 
-func (v *VM) Execute() error {
+func (v *VM) Execute() (objects.Object, error) {
 	for i := range v.instructions.Iter() {
 		op := Opcode(i[0]) 
 		switch op {
@@ -56,11 +56,16 @@ func (v *VM) Execute() error {
 			
 			a,b, ok := objects.CastBothToPrimitive[int](right, left)
 			if !ok {
-				return fmt.Errorf("invalid values provided to summary %T, %T", left, right)
+				return nil, fmt.Errorf("invalid values provided to summary %T, %T", left, right)
 			}
 			v.stack.Push(&objects.PrimitiveObj[int]{a+b})
-		default: return fmt.Errorf("unknown opcode %v", op)
+		default: return nil, fmt.Errorf("unknown opcode %v", op)
 		}
 	}
-	return nil
+
+	var out objects.Object
+	for !v.stack.Empty() {
+		out = v.stack.Pop()
+	}
+	return out, nil
 }
