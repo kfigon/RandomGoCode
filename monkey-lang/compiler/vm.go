@@ -51,21 +51,29 @@ func (v *VM) Execute() (objects.Object, error) {
 			c := v.constants[int(endianness.Uint16(i[1:]))]
 			v.stack.Push(c)
 		case OpAdd:
-			right := v.stack.Pop()
-			left := v.stack.Pop()
-			
-			a,b, ok := objects.CastBothToPrimitive[int](right, left)
-			if !ok {
-				return nil, fmt.Errorf("invalid values provided to summary %T, %T", left, right)
+			if err := infixOpOnVM(v, func(right, left int) int {return right+left}); err != nil {
+				return nil, err
 			}
-			v.stack.Push(&objects.PrimitiveObj[int]{a+b})
 		default: return nil, fmt.Errorf("unknown opcode %v", op)
 		}
 	}
 
-	var out objects.Object
+	var out objects.Object = objects.NULL
 	for !v.stack.Empty() {
 		out = v.stack.Pop()
 	}
 	return out, nil
+}
+
+func infixOpOnVM[T any, K any](v *VM, operation func(T,T)K) error {
+	right := v.stack.Pop()
+	left := v.stack.Pop()
+	a,b, ok := objects.CastBothToPrimitive[T](right, left)
+	if !ok {
+		return fmt.Errorf("invalid values provided %T, %T", left, right)
+	}
+
+	out := operation(a,b)
+	v.stack.Push(&objects.PrimitiveObj[K]{out})
+	return nil
 }
