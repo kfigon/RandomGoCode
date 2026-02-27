@@ -3,42 +3,39 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("hello")
-
-	// opt := None[int]()
-	opt := Some(42)
-
-	// this is pattern matching
-	got := opt(
-		func(v int) int {
-			fmt.Println("got", v)
-			return v
+	makeCall(false)(
+		func(v string) {
+			fmt.Println("call succeed:", v)
 		},
-		func() int {
-			fmt.Println("nothing, returning default")
-			return -1
+		func(err error) {
+			fmt.Println("call failed:", err)
 		},
 	)
-	fmt.Println(got)
 }
 
-// pattern to emulate sum types and pattern matching
-// using only functions
+type Result[T any] func(
+	onOk func(v T),
+	onErr func(err error),
+)
 
-type Option[T any] func(
-	onSome func(T) T,
-	onEmpty func() T,
-) T
-
-// constructors
-func None[T any]() Option[T] {
-	return func(onSome func(T) T, onEmpty func() T) T {
-		return onEmpty()
+func Ok[T any](v T) Result[T] {
+	return func(onOk func(v T), onErr func(err error)) {
+		onOk(v)
 	}
 }
 
-func Some[T any](v T) Option[T] {
-	return func(onSome func(T) T, onEmpty func() T) T {
-		return onSome(v)
+func Err[T any](err error) Result[T] {
+	return func(onOk func(v T), onErr func(err error)) {
+		onErr(err)
+	}
+}
+
+func makeCall(shouldFail bool) Result[string] {
+	return func(onOk func(v string), onErr func(err error)) {
+		if shouldFail {
+			onErr(fmt.Errorf("oopsie"))
+		} else {
+			onOk("secret code")
+		}
 	}
 }
